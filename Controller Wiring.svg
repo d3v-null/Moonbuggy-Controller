@@ -1,0 +1,214 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 6000 6000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+    <g>
+        <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:3px;stroke:black;"/>
+        <g transform="matrix(1,0,0,0.255716,0.392363,598.012)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:4.11px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-0.462132,0.392363,1176.61)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:3.85px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-0.500001,1499.76,898.117)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:3.79px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1.0021,0,0,1.25004,1496.2,12.7834)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:2.65px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1.00131,0,0,1.24398,1497.77,320.808)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:2.66px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-1.00607,1499.76,1473.37)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:2.99px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-0.204893,0.392363,1090.4)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:4.16px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-1.46706,0.392363,2068.78)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:2.39px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,-1.70994,0.392363,2144.44)">
+            <path d="M1701.27,734.462C1802.17,734.462 1902.13,535.018 2000.87,534.462" style="fill:none;stroke-width:2.14px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,0.704418,-8.21565e-15,76.2128)">
+            <path d="M500,386.518C198.869,386.518 196.782,934.471 500,934.471" style="fill:none;stroke-width:3.47px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,0.432775,1.26562,381.419)">
+            <path d="M500,386.518C199.283,386.518 195.148,934.194 500,934.471" style="fill:none;stroke-width:3.89px;stroke:black;"/>
+        </g>
+    </g>
+    <g id="Arduino" transform="matrix(1,0,0,1,-240.862,-579.377)">
+        <g transform="matrix(0.347903,-1.65363e-17,-8.16373e-18,0.205086,592.949,1178.48)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:10.51px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,0,-3.98209)">
+            <text x="803.337px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Digital In (1)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-1.26562,47.3812)">
+            <text x="777.286px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Analogue In (1)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,0,98.7445)">
+            <text x="777.286px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Analogue In (2)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,0,150.108)">
+            <text x="777.286px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Analogue In (3)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,0.738281,201.471)">
+            <text x="777.286px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Analogue In (4)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,0.738281,252.834)">
+            <text x="777.286px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Analogue In (5)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,882.78,-3.98209)">
+            <text x="795.366px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">PWM Out (1)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,881.515,47.3812)">
+            <text x="795.366px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">PWM Out (2)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,882.78,98.7445)">
+            <text x="795.366px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">PWM Out (3)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,882.78,150.108)">
+            <text x="795.366px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">PWM Out (4)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,883.519,201.471)">
+            <text x="789.336px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Digital Out (1)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,883.519,252.834)">
+            <text x="789.336px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Digital Out (2)</text>
+        </g>
+        <g transform="matrix(1,0,0,1,138.687,339.076)">
+            <text x="1126.22px" y="1113.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Arduino</text>
+        </g>
+    </g>
+    <g id="Kill Switch" transform="matrix(1.01392,1.06789e-16,1.06789e-16,0.577917,-252.455,-29.8423)">
+        <rect x="742.128" y="570.743" width="591.765" height="173.035" style="fill:rgb(235,235,235);stroke-width:3.64px;stroke:black;"/>
+        <g transform="matrix(0.986275,0,0,1.73035,-142.613,-1229.83)">
+            <text x="1106.04px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Kill Switch</text>
+        </g>
+    </g>
+    <g id="Throttle" transform="matrix(1.01392,-1.6756e-17,-3.33445e-17,0.577917,-353.847,112.366)">
+        <g transform="matrix(1,0,0,1,100,100)">
+            <rect x="742.128" y="570.743" width="591.765" height="173.035" style="fill:rgb(235,235,235);stroke-width:3.64px;stroke:black;"/>
+        </g>
+        <g transform="matrix(0.986275,6.07839e-33,-1.06641e-32,1.73035,-42.5172,-1129.83)">
+            <text x="1130.06px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Throttle</text>
+        </g>
+    </g>
+    <g id="Left Armature Half Bridge" transform="matrix(1,0,0,1,1259.14,-779.385)">
+        <g transform="matrix(0.347903,1.77526e-18,2.67191e-19,0.0512714,592.949,1254.15)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:12.06px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="765.64px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left <tspan x="833.703px 857.715px " y="1327.15px 1327.15px ">Ar</tspan>mature V<tspan x="1013.77px 1033.8px " y="1327.15px 1327.15px ">ol</tspan>tage</text>
+        </g>
+        <g transform="matrix(1,0,0,1,861.798,-3.98209)">
+            <text x="769.162px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left <tspan x="837.225px 861.236px " y="1327.15px 1327.15px ">Ar</tspan>mature Out</text>
+        </g>
+        <g transform="matrix(1,0,0,1,146.922,223.879)">
+            <text x="1077.85px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Left <tspan x="1152.51px 1178.51px " y="1101.93px 1101.93px ">Ar</tspan>mature</text>
+            <text x="1099.19px" y="1139.11px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Half Bridge</text>
+        </g>
+    </g>
+    <g id="Right Armature Half Bridge" transform="matrix(1,0,0,1,1257.87,-579.385)">
+        <g transform="matrix(0.347903,1.77526e-18,2.67191e-19,0.0512714,592.949,1254.15)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:12.06px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="753.643px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right <tspan x="845.7px 869.712px " y="1327.15px 1327.15px ">Ar</tspan>mature V<tspan x="1025.77px 1045.79px " y="1327.15px 1327.15px ">ol</tspan>tage</text>
+        </g>
+        <g transform="matrix(1,0,0,1,828.595,-3.98209)">
+            <text x="773.767px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right <tspan x="865.824px 889.835px " y="1327.15px 1327.15px ">Ar</tspan>mature Out</text>
+        </g>
+        <g transform="matrix(1,0,0,1,146.922,223.879)">
+            <text x="1064.86px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Right <tspan x="1165.5px 1191.5px " y="1101.93px 1101.93px ">Ar</tspan>mature</text>
+            <text x="1099.19px" y="1139.11px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Half Bridge</text>
+        </g>
+    </g>
+    <g id="Left Field Full Bridge" transform="matrix(1,0,0,1,1259.14,-379.377)">
+        <g transform="matrix(0.347903,-1.41189e-18,-4.20742e-19,0.102543,592.949,1228.93)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:11.7px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="799.654px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left Field V<tspan x="979.76px 999.781px " y="1327.15px 1327.15px ">ol</tspan>tage</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-1.26562,46.0179)">
+            <text x="852.687px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left Phase</text>
+        </g>
+        <g transform="matrix(1,0,0,1,866.311,-3.98209)">
+            <text x="792.316px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left Field Out</text>
+        </g>
+        <g transform="matrix(1,0,0,1,177.307,273.879)">
+            <g>
+                <text x="1084.82px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Left Field</text>
+                <text x="1070.82px" y="1139.11px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Full Bridge</text>
+            </g>
+        </g>
+    </g>
+    <g id="Right Field Full Bridge" transform="matrix(1,0,0,1,1259.14,-79.3768)">
+        <g transform="matrix(0.347903,-1.41189e-18,-4.20742e-19,0.102543,592.949,1228.93)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:11.7px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="787.657px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right Field V<tspan x="991.757px 1011.78px " y="1327.15px 1327.15px ">ol</tspan>tage</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-1.26562,46.0179)">
+            <text x="840.69px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right Phase</text>
+        </g>
+        <g transform="matrix(1,0,0,1,866.311,-3.98209)">
+            <text x="780.319px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right Field Out</text>
+        </g>
+        <g transform="matrix(1,0,0,1,177.916,273.879)">
+            <g>
+                <text x="1071.83px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Right Field</text>
+                <text x="1070.82px" y="1139.11px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Full Bridge</text>
+            </g>
+        </g>
+    </g>
+    <g id="Left Motor" transform="matrix(1,0,0,1,2759.14,-679.385)">
+        <g transform="matrix(0.347903,-1.41189e-18,-4.20742e-19,0.102543,592.949,1228.93)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:11.7px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="830.697px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left <tspan x="898.76px 922.771px " y="1327.15px 1327.15px ">Ar</tspan>mature</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-1.26562,46.0179)">
+            <text x="864.711px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left Field</text>
+        </g>
+        <g transform="matrix(1,0,0,1,883.519,-4.9588)">
+            <text x="764.621px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left <tspan x="834.02px 852.02px 872.041px " y="1327.15px 1327.15px 1327.15px ">Tem</tspan>perature</text>
+        </g>
+        <g transform="matrix(1,0,0,1,810.117,40.2269)">
+            <text x="764.281px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Left <tspan x="832.343px 856.355px " y="1327.15px 1327.15px ">Ar</tspan>mature Current</text>
+        </g>
+        <g transform="matrix(1,0,0,1,177.916,273.879)">
+            <text x="1076.84px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Left Motor</text>
+        </g>
+    </g>
+    <g id="Left Motor1" transform="matrix(1,0,0,1,2759.14,-378.4)">
+        <g transform="matrix(0.347903,-1.41189e-18,-4.20742e-19,0.102543,592.949,1228.93)">
+            <rect x="428.794" y="491.954" width="3449.24" height="1950.4" style="fill:rgb(235,235,235);stroke-width:11.7px;stroke:black;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-8.52651e-14,-3.98209)">
+            <text x="818.7px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right <tspan x="910.757px 934.768px " y="1327.15px 1327.15px ">Ar</tspan>mature</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-1.26562,46.0179)">
+            <text x="852.714px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right Field</text>
+        </g>
+        <g transform="matrix(1,0,0,1,883.519,-4.9588)">
+            <text x="752.624px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right <tspan x="846.017px 864.017px 884.038px " y="1327.15px 1327.15px 1327.15px ">Tem</tspan>perature</text>
+        </g>
+        <g transform="matrix(1,0,0,1,810.117,40.2269)">
+            <text x="752.284px" y="1327.15px" style="font-family:'ArialMT';font-size:36px;fill:black;">Right <tspan x="844.34px 868.352px " y="1327.15px 1327.15px ">Ar</tspan>mature Current</text>
+        </g>
+        <g transform="matrix(1,0,0,1,177.916,273.879)">
+            <text x="1063.85px" y="1101.93px" style="font-family:'Arial-BoldMT';font-size:36px;fill:black;">Right Motor</text>
+        </g>
+    </g>
+    <path d="M4701.27,633.275C5001.93,633.275 5000.13,1497.12 4700,1499.87C4399.87,1502.63 798.21,1499.87 500.343,1499.87C202.476,1499.87 201.585,837.197 500.343,837.197" style="fill:none;stroke-width:3px;stroke:black;"/>
+    <path d="M4701.27,633.275C5001.93,633.275 5000.13,1497.12 4700,1499.87C4399.87,1502.63 798.21,1499.87 500.343,1499.87C202.476,1499.87 201.585,837.197 500.343,837.197" style="fill:none;stroke-width:3px;stroke:black;"/>
+    <path d="M4701.27,633.275C5001.93,633.275 5000.13,1497.12 4700,1499.87C4399.87,1502.63 798.21,1499.87 500.343,1499.87C202.476,1499.87 201.585,837.197 500.343,837.197" style="fill:none;stroke-width:3px;stroke:black;"/>
+    <g transform="matrix(1,0,0,1,0,41.8283)">
+        <path d="M4701.27,633.275C5001.93,633.275 5000.13,1497.12 4700,1499.87C4399.87,1502.63 798.21,1499.87 500.343,1499.87C202.476,1499.87 201.585,837.197 500.343,837.197" style="fill:none;stroke-width:3px;stroke:black;"/>
+    </g>
+</svg>

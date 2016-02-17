@@ -1,4 +1,6 @@
 
+#include "Configuration.h"
+
 // Safety Stuff
 typedef enum {SAFE, TERMINATING, TERMINATED} safetyStatusType;
 safetyStatusType safetyStatus = SAFE; // Safety status of system, starts off as safe
