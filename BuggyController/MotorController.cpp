@@ -37,13 +37,14 @@ MotorController::MotorController(){
     setPins();
     setMotorMode();
     setThrottle();
+    setTempBounds();
 }
 
-MotorController::MotorController(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin) {
-    setPins(tempPin, armSensePin, armVoltPin, fieldVoltPin, fieldPhasePin);
-    setMotorMode();
-    setThrottle();
-}
+// MotorController::MotorController(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin) {
+//     setPins(tempPin, armSensePin, armVoltPin, fieldVoltPin, fieldPhasePin);
+//     setMotorMode();
+//     setThrottle();
+// }
 
 void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1, int fieldVoltPin = -1, int fieldPhasePin = -1) {
     _tempPin = tempPin;
@@ -53,12 +54,27 @@ void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVol
     _fieldPhasePin = fieldPhasePin;
 }
 
+void MotorController::setTempBounds(int minTemp = -1, int regTemp = -1, int maxTemp = -1){
+    _minTemp = minTemp;
+    _regTemp = regTemp;
+    _maxTemp = maxTemp;
+}
+
 void MotorController::initPins(){
     pinMode(_tempPin, INPUT);
     pinMode(_armSensePin, INPUT);
     pinMode(_armVoltPin, OUTPUT);
     pinMode(_fieldVoltPin, OUTPUT);
     pinMode(_fieldPhasePin, OUTPUT);
+}
+
+void MotorController::updateInputs(){
+    _tempValRaw = analogRead(_tempPin);
+    _armSenseRaw = analogRead(_armSensePin);
+}
+
+void MotorController::getTempStatus(){
+    if()
 }
 
 void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){

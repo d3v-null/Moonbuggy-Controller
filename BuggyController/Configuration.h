@@ -60,8 +60,8 @@
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define MOTOR_0_MAXTEMP 275
-#define MOTOR_1_MAXTEMP 275
+#define MOTOR_0_MAXTEMP 70
+#define MOTOR_1_MAXTEMP 70
 
 //TODO set these values
 
