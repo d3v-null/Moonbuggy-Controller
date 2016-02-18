@@ -1,16 +1,14 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-// SERIAL_PORT selects which serial port should be used for communication with the host.
-// This allows the connection of wireless adapters (for instance) to non-default port pins.
-// Serial port 0 is still used by the Arduino bootloader regardless of this setting.
-#define SERIAL_PORT 0
-
 // This determines the communication speed of the printer
 #define BAUDRATE 115200
 
 // This defines the number of motors
 #define MOTORS 2
+
+#define THROTTLE_MIN 0
+#define THROTTLE_MAX 255
 
 //===========================================================================
 //=============================Thermal Settings  ============================
@@ -65,9 +63,12 @@
 #define MOTOR_0_MAXTEMP 275
 #define MOTOR_1_MAXTEMP 275
 
-
-
 //TODO set these values
+
+#define KILLSWITCH_PIN -1
+#define VEHICLE_MODE_PIN -1
+#define THROTTLE_PIN -1
+
 #define MOTOR_0_TEMP_PIN -1
 #define MOTOR_0_ARM_SENSE_PIN -1
 #define MOTOR_0_ARM_VOLT_PIN -1
