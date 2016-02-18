@@ -30,12 +30,11 @@
  *      Mode changes to forward
  */
 
-#include "Arduino.h"
 #include "MotorController.h"
 
 MotorController::MotorController(){
     setPins();
-    setMotorMode();
+    _motorMode = M_NEUTRAL;
     setThrottle();
     setTempBounds();
 }
@@ -54,10 +53,23 @@ void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVol
     _fieldPhasePin = fieldPhasePin;
 }
 
-void MotorController::setTempBounds(int minTemp = -1, int regTemp = -1, int maxTemp = -1){
+void MotorController::setTempBounds(int tempType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0){
+    _tempType = tempType;
     _minTemp = minTemp;
     _regTemp = regTemp;
     _maxTemp = maxTemp;
+}
+
+void MotorController::setArmatureBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0){
+    _armType = armType;
+    _regArm = regArm;
+    _maxArm = maxArm;
+}
+
+void setPhase(phaseType phase){
+    if(_phaseVal != phase){
+        _phaseVal = phase;
+    }
 }
 
 void MotorController::initPins(){
@@ -69,16 +81,61 @@ void MotorController::initPins(){
 }
 
 void MotorController::updateInputs(){
-    _tempValRaw = analogRead(_tempPin);
-    _armSenseRaw = analogRead(_armSensePin);
+    _tempVal = analog2temp( analogRead(_tempPin), _tempType );
+    _armVal = analog2current( analogRead(_armSensePin), _armType );
 }
 
-void MotorController::getTempStatus(){
-    if()
+tempStatusType MotorController::getTempStatus(){
+    tempStatusType status = T_HOT;
+    int statuses[][2] = {
+        {_minTemp, T_COLD},
+        {_regTemp, T_NOMINAL},
+        {_maxTemp, T_REGULATED}
+    }
+    int statusLen = sizeof(statuses) / sizeof(statuses[0]);
+    int i;
+    for(i=0, i<statusLen, i++ ){
+        if(_tempVal < statuses[i][0]){
+            status = statuses[i][1];
+        }
+    }
+    return status;
+}
+
+
+armStatusType MotorController::getArmStatus(){
+    armStatusType status = A_HIGH;
+    int statuses[][2] = {
+        {_regArm, A_NOMINAL},
+        {_maxArm, A_REGULATED}
+    }
+    int statusLen = sizeof(statuses) / sizeof(statuses[0]);
+    int i;
+    for(i=0, i<statusLen, i++ ){
+        if(_armVal < statuses[i][0]){
+            status = statuses[i][1];
+        }
+    }
+    return status;
 }
 
 void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
-    _motorMode = motorMode;
+    if(_motorMode != motorMode){
+        switch(motorMode){
+            case M_REVERSE:
+                setPhase(P_REVERSE);
+                break;
+            case M_NEUTRAL:
+                setThrottle();
+                break;
+            case M_FORWARD:
+                setPhase(P_FORWARD);
+                break;
+            default:
+                break;
+        }
+        _motorMode = motorMode;
+    }
 }
 
 void MotorController::setThrottle(double throttleVal = 0.0){

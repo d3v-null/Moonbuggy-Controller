@@ -25,8 +25,8 @@
 #include "MotorController.h"
 
 // Safety Stuff
-typedef enum {SAFE, TERMINATING, TERMINATED} safetyStatusType;
-safetyStatusType safetyStatus = SAFE; // Safety status of system, starts off as safe
+typedef enum {S_SAFE, S_TERMINATING, TERMINATED} safetyStatusType;
+safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
 motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
 
 double throttleNormalized; // The normalized value of the throttle (0.0 -> 1.0)
@@ -49,14 +49,22 @@ void readInputs() {
  */
 void safetyCheck() {
     switch (safetyStatus) {
-        case SAFE:
+        case S_SAFE:
+            int i;
+            for(i=0; i<MOTORS; i++){
+                if(! IGNORE_TEMPS){
+                    if(motorControllers[i].getTempStatus() == T_HOT){
+                        safetyStatus = 
+                    }
+                }
+            }
             // checks killswitch value
             // checks voltages
             // checks temperatures
             // updates safetyStatus if necessary
             // terminates system if necessary
             break;
-        case TERMINATING:
+        case S_TERMINATING:
             // Should not be terminating
             break;
         default:
@@ -82,6 +90,17 @@ void setup() {
             MOTOR_0_FIELD_VOLT_PIN,
             MOTOR_0_FIELD_PHASE_PIN
         );
+        MotorControllers[0].setTempBounds(
+            TEMP_SENSOR_0,
+            MOTOR_0_MINTEMP,
+            MOTOR_0_REGTEMP,
+            MOTOR_0_MAXTEMP
+        );
+        MotorControllers[0].setArmBounds(
+            CURRENT_SENSOR_0,
+            MOTOR_0_REG_CURRENT,
+            MOTOR_0_MAX_CURRENT
+        );
         motorControllers[0].initPins();
     }
     if(MOTORS > 1){
@@ -93,13 +112,24 @@ void setup() {
             MOTOR_1_FIELD_VOLT_PIN,
             MOTOR_1_FIELD_PHASE_PIN
         );
+        MotorControllers[1].setTempBounds(
+            TEMP_SENSOR_1,
+            MOTOR_1_MINTEMP,
+            MOTOR_1_REGTEMP,
+            MOTOR_1_MAXTEMP
+        );
+        MotorControllers[1].setArmBounds(
+            CURRENT_SENSOR_1,
+            MOTOR_1_REG_CURRENT,
+            MOTOR_1_MAX_CURRENT
+        );
         motorControllers[1].initPins();
     }
 }
 
 void loop() {
     safetyCheck();
-    if(safetyStatus == SAFE){
+    if(safetyStatus == S_SAFE){
 
     }    
 

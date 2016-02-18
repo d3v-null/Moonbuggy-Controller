@@ -16,30 +16,30 @@
  */
 
 /**
- * Source file for temperature sensing functions
+ * Source file for current sensing functions
  */
 
-double analog2temp(rawValue, sensorType) {
-    double celsius = 0;
+ double analog2current(rawValue, sensorType) {
+    double current = 0.0;
 
     switch(sensorType){
         case 1:
-            tempTable = tempTable_1;
+            currentTable = currentTable_1;
             break;
         default:
             //sensorType not recognised
-            return celsius;
+            return current;
             break;
     }
-    tempTableLen = sizeof(tempTable) / sizeof(tempTable[0]);
+    currentTableLen = sizeof(currentTable) / sizeof(currentTable[0]);
 
     int i;
-    for(i=1; i<tempTableLen; i++){
-        if (tempTable[i][0] > rawValue){
-            celsius = tempTable[i-1] + 
-                (raw - tempTable[i][0]) * 
-                (double)(tempTable[i][1] - tempTable[i-1][1])/
-                (double)(tempTable[i][0] - tempTable[i-1][0])
+    for(i=1; i<currentTableLen; i++){
+        if (currentTable[i][0] > rawValue){
+            current = currentTable[i-1] + 
+                (raw - currentTable[i][0]) * 
+                (double)(currentTable[i][1] - currentTable[i-1][1])/
+                (double)(currentTable[i][0] - currentTable[i-1][0])
         }
     }
 }

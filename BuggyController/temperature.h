@@ -1,7 +1,11 @@
+#ifndef Temperature_h
+#define Temperature_h 
 
-const double temptable_1[][2] = {
+const double tempTable_1[][2] = {
     {0, 300},
     {255, 0}
 };
 
-double analogue2temp(int rawValue, int sensorType);
+double analog2temp(int rawValue, int sensorType);
+
+#endif
