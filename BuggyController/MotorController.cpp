@@ -60,7 +60,7 @@ void MotorController::setTempBounds(int tempType = 1, double minTemp = 0.0, doub
     _maxTemp = maxTemp;
 }
 
-void MotorController::setArmatureBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0){
+void MotorController::setArmBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0){
     _armType = armType;
     _regArm = regArm;
     _maxArm = maxArm;

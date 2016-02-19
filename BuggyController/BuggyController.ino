@@ -25,7 +25,7 @@
 #include "MotorController.h"
 
 // Safety Stuff
-typedef enum {S_SAFE, S_TERMINATING, TERMINATED} safetyStatusType;
+typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED} safetyStatusType;
 safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
 motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
 
@@ -40,7 +40,12 @@ void readInputs() {
     throttleNormalized = map(analogRead(THROTTLE_PIN), THROTTLE_MIN, THROTTLE_MAX, 0.0, 1.0);
 
     // Store the value of killswitch in killSwitch;
+    killswitch = digitalRead(KILLSWITCH_PIN);
 
+}
+
+void shutdown() {
+    //shuts down all the motors because not safe
 }
 
 /**
@@ -50,12 +55,16 @@ void readInputs() {
 void safetyCheck() {
     switch (safetyStatus) {
         case S_SAFE:
+            boolean shouldTerminate = false;
             int i;
             for(i=0; i<MOTORS; i++){
-                if(! IGNORE_TEMPS){
-                    if(motorControllers[i].getTempStatus() == T_HOT){
-                        safetyStatus = 
-                    }
+                if(! IGNORE_TEMPS and motorControllers[i].getTempStatus() == T_HOT){
+                    shouldTerminate = true;
+                    break;
+                }
+                if(! IGNORE_CURRENTS and motorControllers[i].getArmStatus() == A_HIGH){
+                    shouldTerminate = true;
+                    break;
                 }
             }
             // checks killswitch value
@@ -63,6 +72,10 @@ void safetyCheck() {
             // checks temperatures
             // updates safetyStatus if necessary
             // terminates system if necessary
+            if(shouldTerminate){
+                safetyStatus = S_TERMINATING;
+                shutdown();
+            }
             break;
         case S_TERMINATING:
             // Should not be terminating
