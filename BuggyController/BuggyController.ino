@@ -27,25 +27,61 @@
 // Safety Stuff
 typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED} safetyStatusType;
 safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
+
+typedef enum {TH_ZERO, TH_NORMAL, TH_BOOST} throttleStatusType;
+throttleStatusType throttleStatus;
+
 motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
 
 double throttleNormalized; // The normalized value of the throttle (0.0 -> 1.0)
 
-int killSwitch;  // The value of the killswitch sensor
+int killSwitch;  // The value of the killSwitch sensor
+
+int modeSwitch; // The value of the modeSwitch sensor
 
 MotorController motorControllers[MOTORS];
 
+
+throttleStatusType getThrottleStatus(){
+    throttleStatus = TH_BOOST;
+    int statuses[][2] = {
+        {THROTTLE_THRESHOLD_ZERO, TH_ZERO},
+        {THROTTLE_THRESHOLD_BOOST, TH_NORMAL}
+    }
+    int statusLen = sizeof(statuses) / sizeof(statuses[0]);
+    int i;
+    for( i=0; i<statusLen, i++) {
+        if(throttleNormalized > statuses[i][0]){
+            throttleStatus = statuses[i][1]
+        }
+    }
+    return throttleStatus;
+}
+
 void readInputs() {
-    // Store the value of the throttle in throttleRaw
+    // Store the normalized value of the throttle
     throttleNormalized = map(analogRead(THROTTLE_PIN), THROTTLE_MIN, THROTTLE_MAX, 0.0, 1.0);
+    // Process the status of the throttle
+    // throttleStatus = 
+    // Store the value of killSwitch in killSwitch;
+    killSwitch = digitalRead(KILLSWITCH_PIN);
 
-    // Store the value of killswitch in killSwitch;
-    killswitch = digitalRead(KILLSWITCH_PIN);
+    modeSwitch = digitalRead(VEHICLE_MODE_PIN);
 
+    for(i=0; i<MOTORS; i++){
+        motorControllers[i].readInputs();
+    }
 }
 
 void shutdown() {
-    //shuts down all the motors because not safe
+    Serial.println("Shutting Down");
+
+    vehicleMode = M_NEUTRAL;
+    int i;
+    for(i=0; i<MOTORS; i++){
+        motorControllers[i].shutdown();
+    }
+    
 }
 
 /**
@@ -58,16 +94,35 @@ void safetyCheck() {
             boolean shouldTerminate = false;
             int i;
             for(i=0; i<MOTORS; i++){
-                if(! IGNORE_TEMPS and motorControllers[i].getTempStatus() == T_HOT){
-                    shouldTerminate = true;
-                    break;
+                if(! IGNORE_TEMPS ){
+                    switch (motorControllers[i].getTempStatus()) {
+                        case T_COLD:
+                          Serial.print("Failed temp check on MOTOR: T_COLD, ");
+                          Serial.println(i);
+                          shouldTerminate = true;
+                          break;
+                        case T_HOT:
+                          Serial.print("Failed temp check on MOTOR: T_HOT, ");
+                          Serial.println(i);
+                          shouldTerminate = true;
+                          break;
+                        default:
+                          break;
+                    }
+                    if( shouldTerminate ){ break; }
                 }
                 if(! IGNORE_CURRENTS and motorControllers[i].getArmStatus() == A_HIGH){
+                    Serial.print("Failed current check on MOTOR: A_HIGH, ");
+                    Serial.println(i);
                     shouldTerminate = true;
                     break;
                 }
             }
-            // checks killswitch value
+            if(!shouldTerminate and killSwitch == HIGH){
+                Serial.println("Killswitch Engaged");
+                shouldTerminate = true;
+            }
+            // checks killSwitch value
             // checks voltages
             // checks temperatures
             // updates safetyStatus if necessary
@@ -75,10 +130,12 @@ void safetyCheck() {
             if(shouldTerminate){
                 safetyStatus = S_TERMINATING;
                 shutdown();
+                safetyStatus = S_TERMINATED;
             }
             break;
         case S_TERMINATING:
             // Should not be terminating
+            shutdown();
             break;
         default:
             break;
@@ -138,12 +195,58 @@ void setup() {
         );
         motorControllers[1].initPins();
     }
+
+    throttleNormalized = 0.0;
+    // throttleStatus = TH_ZERO;
+    vehicleMode = M_NEUTRAL;
 }
 
 void loop() {
+    readInputs();
     safetyCheck();
     if(safetyStatus == S_SAFE){
+        // set vehicle mode
+        switch (getThrottleStatus()) {
+            case TH_ZERO:
+                if(vehicleMode != M_NEUTRAL){
+                    shutdown();                   
+                }
+              break;
+            case TH_NORMAL:
+                switch (modeSwitch) {
+                    case LOW:
+                        vehicleMode = M_FORWARD;
+                        break;
+                    case HIGH:
+                        vehicleMode = M_REVERSE;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TH_BOOST:
+                switch (modeSwitch) {
+                    case LOW:
+                        vehicleMode = M_FORWARD_BOOST;
+                        break;
+                    case HIGH:
+                        vehicleMode = M_REVERSE;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+              break;
+        }
 
+        // set throttles
+        int i;
+        for(i=0; i<MOTORS; i++){
+            motorControllers[i].setMotorMode(vehicleMode);
+            motorControllers[i].setThrottle(throttleNormalized);
+            motorControllers[i].updateOutputs();
+        }
     }    
 
 }

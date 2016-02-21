@@ -35,6 +35,7 @@
 MotorController::MotorController(){
     setPins();
     _motorMode = M_NEUTRAL;
+    _phaseVal = P_FORWARD;
     setThrottle();
     setTempBounds();
 }
@@ -66,9 +67,40 @@ void MotorController::setArmBounds(int armType = 1, double regArm = 0.0, double 
     _maxArm = maxArm;
 }
 
-void setPhase(phaseType phase){
-    if(_phaseVal != phase){
-        _phaseVal = phase;
+void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
+    if(_motorMode != motorMode){
+        switch(motorMode){
+            case M_REVERSE:
+                setPhase(P_REVERSE)
+                break;
+            case M_FORWARD:
+            case M_FORWARD_BOOST:
+                setPhase(P_FORWARD)
+                break;
+            default:
+                break;
+        }
+        _motorMode = motorMode;
+    }
+}
+
+void MotorController::setThrottle(double throttleVal = 0.0){
+    _throttleVal = throttleVal;
+}
+
+void MotorController::setPhase(phaseType phase){
+    if(_phaseStatus != phase){
+        switch (phase) {
+            case P_FORWARD:
+                _phaseVal = HIGH
+                break;
+            case P_REVERSE:
+                _phaseVal = LOW
+                break;
+            default:
+                break;
+        }
+        _phaseStatus = phase;
     }
 }
 
@@ -80,66 +112,62 @@ void MotorController::initPins(){
     pinMode(_fieldPhasePin, OUTPUT);
 }
 
-void MotorController::updateInputs(){
-    _tempVal = analog2temp( analogRead(_tempPin), _tempType );
-    _armVal = analog2current( analogRead(_armSensePin), _armType );
+void MotorController::readInputs(){
+    if(! IGNORE_TEMPS ) { _tempVal = analog2temp( analogRead(_tempPin), _tempType ); }
+    if(! IGNORE_CURRENTS ) { _armVal = analog2current( analogRead(_armSensePin), _armType ); }
 }
 
 tempStatusType MotorController::getTempStatus(){
-    tempStatusType status = T_HOT;
+    if( IGNORE_TEMPS ) { return T_NORMAL; }
+    tempStatusType tempStatus = T_HOT;
     int statuses[][2] = {
         {_minTemp, T_COLD},
-        {_regTemp, T_NOMINAL},
+        {_regTemp, T_NORMAL},
         {_maxTemp, T_REGULATED}
     }
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
     for(i=0, i<statusLen, i++ ){
         if(_tempVal < statuses[i][0]){
-            status = statuses[i][1];
+            tempStatus = statuses[i][1];
         }
     }
-    return status;
+    return tempStatus;
 }
 
 
 armStatusType MotorController::getArmStatus(){
-    armStatusType status = A_HIGH;
+    if( IGNORE_CURRENTS) { return A_NORMAL; }
+    armStatusType armStatus = A_HIGH;
     int statuses[][2] = {
-        {_regArm, A_NOMINAL},
+        {_regArm, A_NORMAL},
         {_maxArm, A_REGULATED}
     }
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
     for(i=0, i<statusLen, i++ ){
         if(_armVal < statuses[i][0]){
-            status = statuses[i][1];
+            armStatus = statuses[i][1];
         }
     }
-    return status;
+    return armStatus;
 }
 
-void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
-    if(_motorMode != motorMode){
-        switch(motorMode){
-            case M_REVERSE:
-                setPhase(P_REVERSE);
-                break;
-            case M_NEUTRAL:
-                setThrottle();
-                break;
-            case M_FORWARD:
-                setPhase(P_FORWARD);
-                break;
-            default:
-                break;
-        }
-        _motorMode = motorMode;
+void MotorController::updateOutputs(){
+    digitalWrite(_fieldPhasePin, _phaseVal);
+    switch(_motorMode){
+        case M_NEUTRAL:
+            _armVoltVal = 0;
+            _fieldVoltVal = 0;
+        case M_FORWARD:
+        case M_REVERSE:
+        case M_FORWARD_BOOST:
+            _armVoltVal = map(_throttleVal, 0.0, 1.0, 0, 255);
+            _fieldVoltVal = 255;
+            // nothing special for boost or reg yet.
     }
-}
-
-void MotorController::setThrottle(double throttleVal = 0.0){
-    _throttleVal = throttleVal;
+    analogueWrite(_fieldVoltPin, _fieldVoltVal);
+    analogueWrite(_armVoltPin, _armVoltVal);
 }
 
 void MotorController::shutDown(){
