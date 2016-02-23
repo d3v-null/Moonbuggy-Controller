@@ -7,11 +7,14 @@
 // This defines the number of motors
 #define MOTORS 2
 
-#define IGNORE_TEMPS = false;
-#define IGNORE_CURRENTS = false;
+#define IGNORE_TEMPS false
+#define IGNORE_CURRENTS false
 
 #define THROTTLE_MIN 0
 #define THROTTLE_MAX 255
+
+#define THROTTLE_THRESHOLD_ZERO 0.05
+#define THROTTLE_THRESHOLD_BOOST 0.90
 
 //===========================================================================
 //=============================Thermal Settings  ============================
@@ -101,3 +104,5 @@
 #define MOTOR_1_ARM_VOLT_PIN -1
 #define MOTOR_1_FIELD_VOLT_PIN -1
 #define MOTOR_1_FIELD_PHASE_PIN -1
+
+#endif

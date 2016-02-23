@@ -170,7 +170,7 @@ void MotorController::updateOutputs(){
     analogueWrite(_armVoltPin, _armVoltVal);
 }
 
-void MotorController::shutDown(){
+void MotorController::shutdown(){
     setMotorMode();
     setThrottle();
 }

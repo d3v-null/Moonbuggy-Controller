@@ -23,13 +23,12 @@
 
 #include "Configuration.h"
 #include "MotorController.h"
+#include "statusEnums.h"
 
 // Safety Stuff
-typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED} safetyStatusType;
 safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
 
-typedef enum {TH_ZERO, TH_NORMAL, TH_BOOST} throttleStatusType;
-throttleStatusType throttleStatus;
+// throttleStatusType throttleStatus;
 
 motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
 
@@ -43,16 +42,16 @@ MotorController motorControllers[MOTORS];
 
 
 throttleStatusType getThrottleStatus(){
-    throttleStatus = TH_BOOST;
+    throttleStatusType throttleStatus = TH_BOOST;
     int statuses[][2] = {
         {THROTTLE_THRESHOLD_ZERO, TH_ZERO},
         {THROTTLE_THRESHOLD_BOOST, TH_NORMAL}
-    }
+    };
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
-    for( i=0; i<statusLen, i++) {
+    for( i=0; i<statusLen; i++) {
         if(throttleNormalized > statuses[i][0]){
-            throttleStatus = statuses[i][1]
+            throttleStatus = (throttleStatusType)(statuses[i][1]);
         }
     }
     return throttleStatus;
@@ -68,6 +67,7 @@ void readInputs() {
 
     modeSwitch = digitalRead(VEHICLE_MODE_PIN);
 
+    int i;
     for(i=0; i<MOTORS; i++){
         motorControllers[i].readInputs();
     }
@@ -80,8 +80,7 @@ void shutdown() {
     int i;
     for(i=0; i<MOTORS; i++){
         motorControllers[i].shutdown();
-    }
-    
+    }   
 }
 
 /**
@@ -89,9 +88,9 @@ void shutdown() {
  * updates variable safetyStatus
  */
 void safetyCheck() {
+    boolean shouldTerminate = false;
     switch (safetyStatus) {
         case S_SAFE:
-            boolean shouldTerminate = false;
             int i;
             for(i=0; i<MOTORS; i++){
                 if(! IGNORE_TEMPS ){
@@ -160,13 +159,13 @@ void setup() {
             MOTOR_0_FIELD_VOLT_PIN,
             MOTOR_0_FIELD_PHASE_PIN
         );
-        MotorControllers[0].setTempBounds(
+        motorControllers[0].setTempBounds(
             TEMP_SENSOR_0,
             MOTOR_0_MINTEMP,
             MOTOR_0_REGTEMP,
             MOTOR_0_MAXTEMP
         );
-        MotorControllers[0].setArmBounds(
+        motorControllers[0].setArmBounds(
             CURRENT_SENSOR_0,
             MOTOR_0_REG_CURRENT,
             MOTOR_0_MAX_CURRENT
@@ -182,13 +181,13 @@ void setup() {
             MOTOR_1_FIELD_VOLT_PIN,
             MOTOR_1_FIELD_PHASE_PIN
         );
-        MotorControllers[1].setTempBounds(
+        motorControllers[1].setTempBounds(
             TEMP_SENSOR_1,
             MOTOR_1_MINTEMP,
             MOTOR_1_REGTEMP,
             MOTOR_1_MAXTEMP
         );
-        MotorControllers[1].setArmBounds(
+        motorControllers[1].setArmBounds(
             CURRENT_SENSOR_1,
             MOTOR_1_REG_CURRENT,
             MOTOR_1_MAX_CURRENT
@@ -238,7 +237,7 @@ void loop() {
                 break;
             default:
               break;
-        }
+        };
 
         // set throttles
         int i;
@@ -248,5 +247,4 @@ void loop() {
             motorControllers[i].updateOutputs();
         }
     }    
-
 }

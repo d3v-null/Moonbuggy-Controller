@@ -27,7 +27,7 @@ public:
     armStatusType   getArmStatus();
     // void            setPIDs(double kp, double ki, double kd);
     void            updateOutputs();
-    void            shutDown();
+    void            shutdown();
 
 private:
     int             _tempPin;

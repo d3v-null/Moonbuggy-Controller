@@ -24,7 +24,7 @@ double analog2temp(rawValue, sensorType) {
 
     switch(sensorType){
         case 1:
-            tempTable = tempTable_1;
+            const double tempTable[][2] = tempTable_1;
             break;
         default:
             //sensorType not recognised

@@ -19,12 +19,14 @@
  * Source file for current sensing functions
  */
 
- double analog2current(rawValue, sensorType) {
+ #include "Current.h"
+
+double analog2current(int rawValue, int sensorType) {
     double current = 0.0;
 
     switch(sensorType){
         case 1:
-            currentTable = currentTable_1;
+            const double currentTable[][2] = currentTable_1;
             break;
         default:
             //sensorType not recognised
