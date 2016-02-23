@@ -24,7 +24,7 @@ const double tempTable[][2] = {
     {255, 0}
 };
 
-double analog2temp(rawValue, sensorType) {
+double analog2temp(int rawValue, int sensorType) {
     double celsius = 0;
 
     switch(sensorType){
@@ -35,15 +35,15 @@ double analog2temp(rawValue, sensorType) {
             return celsius;
             break;
     }
-    tempTableLen = sizeof(tempTable) / sizeof(tempTable[0]);
+    int tempTableLen = sizeof(tempTable) / sizeof(tempTable[0]);
 
     int i;
     for(i=1; i<tempTableLen; i++){
         if (tempTable[i][0] > rawValue){
-            celsius = tempTable[i-1] + 
-                (raw - tempTable[i][0]) * 
+            celsius = tempTable[i-1][1] + 
+                (rawValue - tempTable[i][0]) * 
                 (double)(tempTable[i][1] - tempTable[i-1][1])/
-                (double)(tempTable[i][0] - tempTable[i-1][0])
+                (double)(tempTable[i][0] - tempTable[i-1][0]);
         }
     }
 }

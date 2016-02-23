@@ -31,13 +31,14 @@
  */
 
 #include "MotorController.h"
+#include "Arduino.h"
 
 MotorController::MotorController(){
-    setPins();
+    // setPins();
     _motorMode = M_NEUTRAL;
     _phaseVal = P_FORWARD;
-    setThrottle();
-    setTempBounds();
+    // setThrottle();
+    // setTempBounds();
 }
 
 // MotorController::MotorController(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin) {
@@ -54,28 +55,30 @@ void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVol
     _fieldPhasePin = fieldPhasePin;
 }
 
-void MotorController::setTempBounds(int tempType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0){
+void MotorController::setTempBounds(int tempType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0, bool ignoreTemps = false){
     _tempType = tempType;
     _minTemp = minTemp;
     _regTemp = regTemp;
     _maxTemp = maxTemp;
+    _ignoreTemps = ignoreTemps;
 }
 
-void MotorController::setArmBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0){
+void MotorController::setArmBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0, bool ignoreCurrents = false){
     _armType = armType;
     _regArm = regArm;
     _maxArm = maxArm;
+    _ignoreCurrents = ignoreCurrents;
 }
 
 void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
     if(_motorMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
-                setPhase(P_REVERSE)
+                setPhase(P_REVERSE);
                 break;
             case M_FORWARD:
             case M_FORWARD_BOOST:
-                setPhase(P_FORWARD)
+                setPhase(P_FORWARD);
                 break;
             default:
                 break;
@@ -84,7 +87,7 @@ void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
     }
 }
 
-void MotorController::setThrottle(double throttleVal = 0.0){
+void MotorController::setThrottle(double throttleVal){
     _throttleVal = throttleVal;
 }
 
@@ -92,10 +95,10 @@ void MotorController::setPhase(phaseType phase){
     if(_phaseStatus != phase){
         switch (phase) {
             case P_FORWARD:
-                _phaseVal = HIGH
+                _phaseVal = HIGH;
                 break;
             case P_REVERSE:
-                _phaseVal = LOW
+                _phaseVal = LOW;
                 break;
             default:
                 break;
@@ -113,23 +116,23 @@ void MotorController::initPins(){
 }
 
 void MotorController::readInputs(){
-    if(! IGNORE_TEMPS ) { _tempVal = analog2temp( analogRead(_tempPin), _tempType ); }
-    if(! IGNORE_CURRENTS ) { _armVal = analog2current( analogRead(_armSensePin), _armType ); }
+    if(! _ignoreTemps ) { _tempVal = analog2temp( analogRead(_tempPin), _tempType ); }
+    if(! _ignoreCurrents ) { _armVal = analog2current( analogRead(_armSensePin), _armType ); }
 }
 
 tempStatusType MotorController::getTempStatus(){
-    if( IGNORE_TEMPS ) { return T_NORMAL; }
+    if( _ignoreTemps ) { return T_NORMAL; }
     tempStatusType tempStatus = T_HOT;
     int statuses[][2] = {
         {_minTemp, T_COLD},
         {_regTemp, T_NORMAL},
         {_maxTemp, T_REGULATED}
-    }
+    };
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
-    for(i=0, i<statusLen, i++ ){
+    for(i=0; i<statusLen; i++ ){
         if(_tempVal < statuses[i][0]){
-            tempStatus = statuses[i][1];
+            tempStatus = (tempStatusType) statuses[i][1];
         }
     }
     return tempStatus;
@@ -137,17 +140,17 @@ tempStatusType MotorController::getTempStatus(){
 
 
 armStatusType MotorController::getArmStatus(){
-    if( IGNORE_CURRENTS) { return A_NORMAL; }
+    if( _ignoreCurrents ) { return A_NORMAL; }
     armStatusType armStatus = A_HIGH;
     int statuses[][2] = {
         {_regArm, A_NORMAL},
         {_maxArm, A_REGULATED}
-    }
+    };
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
-    for(i=0, i<statusLen, i++ ){
+    for(i=0; i<statusLen; i++ ){
         if(_armVal < statuses[i][0]){
-            armStatus = statuses[i][1];
+            armStatus = (armStatusType) statuses[i][1];
         }
     }
     return armStatus;
@@ -166,11 +169,12 @@ void MotorController::updateOutputs(){
             _fieldVoltVal = 255;
             // nothing special for boost or reg yet.
     }
-    analogueWrite(_fieldVoltPin, _fieldVoltVal);
-    analogueWrite(_armVoltPin, _armVoltVal);
+    analogWrite(_fieldVoltPin, _fieldVoltVal);
+    analogWrite(_armVoltPin, _armVoltVal);
 }
 
 void MotorController::shutdown(){
     setMotorMode();
     setThrottle();
+    updateOutputs();
 }

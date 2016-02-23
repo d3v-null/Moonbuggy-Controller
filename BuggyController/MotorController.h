@@ -17,10 +17,10 @@ public:
     MotorController();
     // MotorController(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin);
     void            setPins(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin);
-    void            setTempBounds(int tempType, double minTemp, double regTemp, double maxTemp);
-    void            setArmBounds(int armType, double regArm, double maxArm);
+    void            setTempBounds(int tempType, double minTemp, double regTemp, double maxTemp, bool ignoreTemps);
+    void            setArmBounds(int armType, double regArm, double maxArm, bool ignoreCurrents);
     void            setMotorMode(motorModeType motorMode);
-    void            setThrottle(double throttleVal);
+    void            setThrottle(double throttleVal = 0.0);
     void            initPins();
     void            readInputs();
     tempStatusType  getTempStatus();
@@ -44,11 +44,13 @@ private:
     double          _minTemp;
     double          _regTemp;    
     double          _maxTemp;
+    bool            _ignoreTemps;
     
     double          _armVal;
     int             _armType;
     double          _regArm;
     double          _maxArm;
+    bool            _ignoreCurrents;
     
     int             _phaseVal;
     int             _armVoltVal;

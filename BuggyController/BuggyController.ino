@@ -163,12 +163,14 @@ void setup() {
             TEMP_SENSOR_0,
             MOTOR_0_MINTEMP,
             MOTOR_0_REGTEMP,
-            MOTOR_0_MAXTEMP
+            MOTOR_0_MAXTEMP,
+            IGNORE_TEMPS
         );
         motorControllers[0].setArmBounds(
             CURRENT_SENSOR_0,
             MOTOR_0_REG_CURRENT,
-            MOTOR_0_MAX_CURRENT
+            MOTOR_0_MAX_CURRENT,
+            IGNORE_CURRENTS
         );
         motorControllers[0].initPins();
     }
@@ -185,12 +187,14 @@ void setup() {
             TEMP_SENSOR_1,
             MOTOR_1_MINTEMP,
             MOTOR_1_REGTEMP,
-            MOTOR_1_MAXTEMP
+            MOTOR_1_MAXTEMP,
+            IGNORE_TEMPS
         );
         motorControllers[1].setArmBounds(
             CURRENT_SENSOR_1,
             MOTOR_1_REG_CURRENT,
-            MOTOR_1_MAX_CURRENT
+            MOTOR_1_MAX_CURRENT,
+            IGNORE_CURRENTS
         );
         motorControllers[1].initPins();
     }
@@ -198,6 +202,16 @@ void setup() {
     throttleNormalized = 0.0;
     // throttleStatus = TH_ZERO;
     vehicleMode = M_NEUTRAL;
+}
+
+char* digitalStatus(int digitalValue){
+    return "off";
+}
+
+void printDebugInfo(){
+    // |KSW|VMP|THS|THR|SSS|SMD - system
+    // TPN|ASN|AVN|FVN|FPN| - per motor
+
 }
 
 void loop() {
@@ -247,5 +261,8 @@ void loop() {
             motorControllers[i].updateOutputs();
         }
     }    
+    if(DEBUG){
+        printDebugInfo();
+    }
 }
 

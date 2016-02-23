@@ -4,6 +4,8 @@
 // This determines the communication speed of the printer
 #define BAUDRATE 115200
 
+#define DEBUG true
+
 // This defines the number of motors
 #define MOTORS 2
 

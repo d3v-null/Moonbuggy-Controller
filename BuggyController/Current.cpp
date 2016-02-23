@@ -19,29 +19,34 @@
  * Source file for current sensing functions
  */
 
- #include "Current.h"
+#include "Current.h"
+
+double currentTable[][2] = {
+    {0, 0},
+    {255, 40}
+};
 
 double analog2current(int rawValue, int sensorType) {
     double current = 0.0;
 
     switch(sensorType){
         case 1:
-            const double currentTable[][2] = currentTable_1;
+            // const double currentTable[][2] = currentTable_1;
             break;
         default:
             //sensorType not recognised
             return current;
             break;
     }
-    currentTableLen = sizeof(currentTable) / sizeof(currentTable[0]);
+    int currentTableLen = sizeof(currentTable) / sizeof(currentTable[0]);
 
     int i;
     for(i=1; i<currentTableLen; i++){
         if (currentTable[i][0] > rawValue){
-            current = currentTable[i-1] + 
-                (raw - currentTable[i][0]) * 
+            current = currentTable[i-1][1] + 
+                (rawValue - currentTable[i][0]) * 
                 (double)(currentTable[i][1] - currentTable[i-1][1])/
-                (double)(currentTable[i][0] - currentTable[i-1][0])
+                (double)(currentTable[i][0] - currentTable[i-1][0]);
         }
     }
 }
