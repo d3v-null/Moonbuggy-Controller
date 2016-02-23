@@ -19,12 +19,16 @@
  * Source file for temperature sensing functions
  */
 
+const double tempTable[][2] = {
+    {0, 300},
+    {255, 0}
+};
+
 double analog2temp(rawValue, sensorType) {
     double celsius = 0;
 
     switch(sensorType){
         case 1:
-            const double tempTable[][2] = tempTable_1;
             break;
         default:
             //sensorType not recognised
