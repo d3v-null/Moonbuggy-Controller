@@ -1,22 +1,33 @@
+#include "Arduino.h"
+
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
 // This determines the communication speed of the printer
-#define BAUDRATE 115200
+#define BAUDRATE 9600
 
 #define DEBUG true
 
 // This defines the number of motors
-#define MOTORS 2
+#define MOTORS 0
+// #define MOTORS 2
 
-#define IGNORE_TEMPS false
-#define IGNORE_CURRENTS false
+#define IGNORE_TEMPS true
+#define IGNORE_CURRENTS true
+#define IGNORE_MODE true
 
-#define THROTTLE_MIN 0
-#define THROTTLE_MAX 255
+// #define IGNORE_TEMPS false
+// #define IGNORE_CURRENTS false
+
+#define THROTTLE_MIN 150
+#define THROTTLE_MAX 850
 
 #define THROTTLE_THRESHOLD_ZERO 0.05
 #define THROTTLE_THRESHOLD_BOOST 0.90
+
+#define KILLSWITCH_PIN 2
+#define THROTTLE_PIN A0
+#define VEHICLE_MODE_PIN -1
 
 //===========================================================================
 //=============================Thermal Settings  ============================
@@ -90,10 +101,6 @@
 
 
 //TODO set these values
-
-#define KILLSWITCH_PIN -1
-#define VEHICLE_MODE_PIN -1
-#define THROTTLE_PIN -1
 
 #define MOTOR_0_TEMP_PIN -1
 #define MOTOR_0_ARM_SENSE_PIN -1

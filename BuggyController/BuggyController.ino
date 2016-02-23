@@ -24,6 +24,7 @@
 #include "Configuration.h"
 #include "MotorController.h"
 #include "statusEnums.h"
+#include <stdlib.h>
 
 // Safety Stuff
 safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
@@ -32,6 +33,7 @@ safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off a
 
 motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
 
+int throttleRaw;
 double throttleNormalized; // The normalized value of the throttle (0.0 -> 1.0)
 
 int killSwitch;  // The value of the killSwitch sensor
@@ -59,13 +61,15 @@ throttleStatusType getThrottleStatus(){
 
 void readInputs() {
     // Store the normalized value of the throttle
-    throttleNormalized = map(analogRead(THROTTLE_PIN), THROTTLE_MIN, THROTTLE_MAX, 0.0, 1.0);
+    int throttleRaw = analogRead(THROTTLE_PIN);
+    throttleNormalized = map(throttleRaw, THROTTLE_MIN, THROTTLE_MAX, 0.0, 1.0);
+    throttleNormalized = min(max(throttleNormalized, 0.0), 1.0);
     // Process the status of the throttle
     // throttleStatus = 
     // Store the value of killSwitch in killSwitch;
     killSwitch = digitalRead(KILLSWITCH_PIN);
 
-    modeSwitch = digitalRead(VEHICLE_MODE_PIN);
+    if(!IGNORE_MODE) modeSwitch = digitalRead(VEHICLE_MODE_PIN);
 
     int i;
     for(i=0; i<MOTORS; i++){
@@ -74,7 +78,7 @@ void readInputs() {
 }
 
 void shutdown() {
-    Serial.println("Shutting Down");
+    if(DEBUG) Serial.println("Shutting Down");
 
     vehicleMode = M_NEUTRAL;
     int i;
@@ -96,13 +100,13 @@ void safetyCheck() {
                 if(! IGNORE_TEMPS ){
                     switch (motorControllers[i].getTempStatus()) {
                         case T_COLD:
-                          Serial.print("Failed temp check on MOTOR: T_COLD, ");
-                          Serial.println(i);
+                          if(DEBUG) Serial.print("Failed temp check on MOTOR: T_COLD, ");
+                          if(DEBUG) Serial.println(i);
                           shouldTerminate = true;
                           break;
                         case T_HOT:
-                          Serial.print("Failed temp check on MOTOR: T_HOT, ");
-                          Serial.println(i);
+                          if(DEBUG) Serial.print("Failed temp check on MOTOR: T_HOT, ");
+                          if(DEBUG) Serial.println(i);
                           shouldTerminate = true;
                           break;
                         default:
@@ -111,14 +115,14 @@ void safetyCheck() {
                     if( shouldTerminate ){ break; }
                 }
                 if(! IGNORE_CURRENTS and motorControllers[i].getArmStatus() == A_HIGH){
-                    Serial.print("Failed current check on MOTOR: A_HIGH, ");
-                    Serial.println(i);
+                    if(DEBUG) Serial.print("Failed current check on MOTOR: A_HIGH, ");
+                    if(DEBUG) Serial.println(i);
                     shouldTerminate = true;
                     break;
                 }
             }
             if(!shouldTerminate and killSwitch == HIGH){
-                Serial.println("Killswitch Engaged");
+                if(DEBUG) Serial.println("Killswitch Engaged");
                 shouldTerminate = true;
             }
             // checks killSwitch value
@@ -142,13 +146,14 @@ void safetyCheck() {
 }
 
 void setup() {
-    Serial.begin(BAUDRATE);
-    Serial.println("Initializing");
+    if(DEBUG) Serial.begin(BAUDRATE);
+    if(DEBUG) Serial.println("Initializing");
+    delay(1000);
 
     //Set pinmodes
     pinMode(THROTTLE_PIN, INPUT);
     pinMode(KILLSWITCH_PIN, INPUT);
-    pinMode(VEHICLE_MODE_PIN, INPUT);
+    if(! IGNORE_MODE) pinMode(VEHICLE_MODE_PIN, INPUT);
 
     if(MOTORS > 0){
         Serial.println("Initializing Motor 1");
@@ -175,7 +180,7 @@ void setup() {
         motorControllers[0].initPins();
     }
     if(MOTORS > 1){
-        Serial.println("Initializing Motor 2");
+        if(DEBUG) Serial.println("Initializing Motor 2");
         motorControllers[1].setPins(
             MOTOR_1_TEMP_PIN,
             MOTOR_1_ARM_SENSE_PIN,
@@ -202,13 +207,86 @@ void setup() {
     throttleNormalized = 0.0;
     // throttleStatus = TH_ZERO;
     vehicleMode = M_NEUTRAL;
+    modeSwitch = LOW;
 }
 
-char* digitalStatus(int digitalValue){
-    return "off";
+char* digitalStatusString(int digitalValue){
+    switch (digitalValue) {
+        case HIGH:
+          return "ON ";
+          break;
+        case LOW:
+          return "OFF";
+          break;
+        default:
+          return "???";
+    }
 }
+
+char* throttleStatusString(throttleStatusType throttleStatus){
+    switch (throttleStatus) {
+        case TH_ZERO:
+          return "ZER";
+          break;
+        case TH_NORMAL:
+          return "NOR";
+          break;
+        case TH_BOOST:
+          return "BST";
+          break;
+        default:
+          return "???";
+    }
+}
+
+// char* throttleNormString(double throttleNormalized){
+//     // int percentage = (int)(100* throttleNormalized);
+//     char* buffer;
+//     malloc() 
+//     // sprintf(buffer, "%3d", percentage);
+//     itoa(throttleRaw, buffer, 10);
+
+//     return buffer
+//     // sprintf(buffer, "%s",  ) ;
+//     // return buffer;
+// }
 
 void printDebugInfo(){
+    char* parameters[] = {
+        // "SSS",
+        "KSW",
+        // "VMS",
+        "THS",
+        // "THR"
+    };
+    char* values[] = {
+        // SSS
+        digitalStatusString(killSwitch),
+        // VMS
+        throttleStatusString(getThrottleStatus()),
+        // throttleNormString(throttleNormalized)
+    };
+    int parLen = sizeof(parameters) / sizeof(parameters[0]);
+    int valLen = sizeof(values) / sizeof(values[0]);
+    int minLen = min(parLen, valLen);
+    int i;
+    for(i=0; i<minLen; i++){
+        if(DEBUG) {
+            Serial.print('|');
+            Serial.print(parameters[i]);
+            // Serial.print((int)parameters[i][3]);
+            Serial.print(':');
+            Serial.print(values[i]);
+            // int j;
+            // for(j=0; j<4; j++){
+            //     Serial.print(values[i][j]);
+            // }
+            // Serial.print((int)values[i][3]);
+            // free(parameters[i]);
+            // free(values[i]);
+        }
+    }
+    Serial.println();
     // |KSW|VMP|THS|THR|SSS|SMD - system
     // TPN|ASN|AVN|FVN|FPN| - per motor
 
