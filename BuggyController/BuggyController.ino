@@ -23,7 +23,7 @@
 
 #include "Configuration.h"
 #include "MotorController.h"
-#include "statusEnums.h"
+#include "BuggyController.h"
 #include <stdlib.h>
 
 // Safety Stuff
@@ -40,30 +40,56 @@ int killSwitch;  // The value of the killSwitch sensor
 
 int modeSwitch; // The value of the modeSwitch sensor
 
+double systemTempVal;
+
 MotorController motorControllers[MOTORS];
 
+throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusType throttleStatus){
+    throttleStatusNode node;
+    node.threshold = threshold;
+    node.statusVal = throttleStatus;
+    return node;
+}
 
-throttleStatusType getThrottleStatus(){
+throttleStatusType getThrottleStatus(double _throttleNormalized){
     throttleStatusType throttleStatus = TH_BOOST;
-    int statuses[][2] = {
-        {THROTTLE_THRESHOLD_ZERO, TH_ZERO},
-        {THROTTLE_THRESHOLD_BOOST, TH_NORMAL}
+    throttleStatusNode statuses[] = {
+        constructThrottleStatusNode(THROTTLE_THRESHOLD_ZERO,  TH_ZERO),
+        constructThrottleStatusNode(THROTTLE_THRESHOLD_BOOST, TH_NORMAL)
     };
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
     for( i=0; i<statusLen; i++) {
-        if(throttleNormalized > statuses[i][0]){
-            throttleStatus = (throttleStatusType)(statuses[i][1]);
+        if(_throttleNormalized < statuses[i].threshold){
+            throttleStatus = statuses[i].statusVal;
+            break;
+        } else {
         }
     }
+    char buffer[50];
+    // Serial.println( sprintf(buffer, "returning %d", (int)(throttleStatus) ) );
     return throttleStatus;
+}
+
+tempStatusType getTempStatus(){
+    return TemperatureSensor::getTempStatus(systemTempVal, ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP, IGNORE_TEMPS);
+}
+
+double normalize(int input, int minimum, int maximum){
+    input = min(max(input, minimum), maximum);
+    if(minimum == maximum) return input;
+    return (double)( input - minimum ) / (double)( maximum  - minimum);
 }
 
 void readInputs() {
     // Store the normalized value of the throttle
-    int throttleRaw = analogRead(THROTTLE_PIN);
-    throttleNormalized = map(throttleRaw, THROTTLE_MIN, THROTTLE_MAX, 0.0, 1.0);
-    throttleNormalized = min(max(throttleNormalized, 0.0), 1.0);
+    throttleRaw = analogRead(THROTTLE_PIN);
+    throttleNormalized = normalize(throttleRaw, THROTTLE_MIN, THROTTLE_MAX);
+
+    if(!IGNORE_TEMPS) systemTempVal = TemperatureSensor::analog2temp(analogRead(ONBOARD_TEMP_PIN), ONBOARD_TEMP_PIN);
+
+    //  map((double)throttleRaw, (double)THROTTLE_MIN, (double)THROTTLE_MAX, 0.0, 1.0);
+    // throttleNormalized = min(max(throttleNormalized, 0.0), 1.0);
     // Process the status of the throttle
     // throttleStatus = 
     // Store the value of killSwitch in killSwitch;
@@ -124,6 +150,20 @@ void safetyCheck() {
             if(!shouldTerminate and killSwitch == HIGH){
                 if(DEBUG) Serial.println("Killswitch Engaged");
                 shouldTerminate = true;
+            }
+            if(!shouldTerminate and !IGNORE_TEMPS){
+                switch(getTempStatus()){
+                    case T_COLD:
+                      if(DEBUG) Serial.println("Failed system temp check: T_COLD");
+                      shouldTerminate = true;
+                      break;
+                    case T_HOT:
+                      if(DEBUG) Serial.println("Failed system temp check: T_HOT");
+                      shouldTerminate = true;
+                      break;
+                    default:
+                      break;
+                }
             }
             // checks killSwitch value
             // checks voltages
@@ -208,6 +248,7 @@ void setup() {
     // throttleStatus = TH_ZERO;
     vehicleMode = M_NEUTRAL;
     modeSwitch = LOW;
+    systemTempVal = 0.0;
 }
 
 char* digitalStatusString(int digitalValue){
@@ -235,36 +276,91 @@ char* throttleStatusString(throttleStatusType throttleStatus){
           return "BST";
           break;
         default:
-          return "???";
+          break;
     }
+  return "???";
 }
 
-// char* throttleNormString(double throttleNormalized){
-//     // int percentage = (int)(100* throttleNormalized);
-//     char* buffer;
-//     malloc() 
-//     // sprintf(buffer, "%3d", percentage);
-//     itoa(throttleRaw, buffer, 10);
+char* throttleNormString(double throttleNormalized){
+    char buffer[50];
+    // int percentage = (int)(100* throttleNormalized);
+    // sprintf(buffer, "%3d", percentage);
+    // itoa(percentage, buffer, 10);
+    dtostrf(throttleNormalized,0,3,buffer);
+    // sprintf(buffer, "%s",  ) ;
+    return buffer;
+}
 
-//     return buffer
-//     // sprintf(buffer, "%s",  ) ;
-//     // return buffer;
-// }
+char* tempStatusString(tempStatusType tempStatus){
+    switch (tempStatus) {
+        case T_HOT:
+          return "HOT";
+          break;
+        case T_COLD:
+          return "CLD";
+          break;
+        case T_NORMAL:
+          return "NRM";
+          break;
+        case T_REGULATED:
+          return "REG";
+          break;
+        default:
+          break;
+    }
+    return "???";
+}
+
+char* tempValString(double tempVal){
+    char buffer[50];
+    dtostrf(tempVal, 0,3, buffer);
+    return buffer;
+}
 
 void printDebugInfo(){
+    char throttleNormStringVal[50] = throttleNormString(throttleNormalized);
+    Serial.print(throttleNormStringVal);
+    Serial.print(",");
+    Serial.print((unsigned int)&throttleNormStringVal, HEX );
+    Serial.print("|");
+    char tempValStringVal[50] = tempValString(systemTempVal);
+    Serial.print(tempValStringVal);
+    Serial.print(",");
+    Serial.print((unsigned int)&tempValStringVal, HEX );
+    Serial.print("|");
+    char tempStatusStringVal[50] = tempStatusString(getTempStatus());
+    Serial.print(tempStatusStringVal);
+    Serial.print(",");
+    Serial.print((unsigned int)&tempStatusStringVal, HEX );
+    Serial.print("|");
+    Serial.println();
+
     char* parameters[] = {
         // "SSS",
         "KSW",
         // "VMS",
         "THS",
-        // "THR"
+        // "THZ",
+        // "THN",
+        // "THB",
+        "THV",
+        "TMS",
+        "TMV",
+        "TMR"
     };
     char* values[] = {
         // SSS
         digitalStatusString(killSwitch),
         // VMS
-        throttleStatusString(getThrottleStatus()),
-        // throttleNormString(throttleNormalized)
+        throttleStatusString(getThrottleStatus(throttleNormalized)),
+        // digitalStatusString((int)(throttleNormalized < THROTTLE_THRESHOLD_ZERO) ),
+        // digitalStatusString((int)(throttleNormalized >= THROTTLE_THRESHOLD_ZERO and throttleNormalized < THROTTLE_THRESHOLD_BOOST) ),
+        // digitalStatusString((int)(throttleNormalized >= THROTTLE_THRESHOLD_BOOST)),
+        // throttleStatusString(getThrottleStatus((double)0.5)),
+        throttleNormStringVal,
+        tempStatusStringVal,
+        
+
     };
     int parLen = sizeof(parameters) / sizeof(parameters[0]);
     int valLen = sizeof(values) / sizeof(values[0]);
@@ -297,7 +393,7 @@ void loop() {
     safetyCheck();
     if(safetyStatus == S_SAFE){
         // set vehicle mode
-        switch (getThrottleStatus()) {
+        switch (getThrottleStatus(throttleNormalized)) {
             case TH_ZERO:
                 if(vehicleMode != M_NEUTRAL){
                     shutdown();                   

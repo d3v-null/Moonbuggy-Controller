@@ -2,13 +2,12 @@
 #define MotorController_h
 
 #include "Arduino.h"
-#include "Temperature.h"
+#include "TemperatureSensor.h"
 #include "Current.h"
 #include <PID_v1.h>
 #include <PID_AutoTune_v0.h>
 
 typedef enum {M_NEUTRAL, M_REVERSE, M_FORWARD, M_FORWARD_BOOST}     motorModeType;
-typedef enum {T_COLD, T_NORMAL, T_REGULATED, T_HOT}                tempStatusType;
 typedef enum {A_NORMAL, A_REGULATED, A_HIGH}                       armStatusType;
 typedef enum {P_FORWARD, P_REVERSE}                                 phaseType;
 

@@ -116,26 +116,12 @@ void MotorController::initPins(){
 }
 
 void MotorController::readInputs(){
-    if(! _ignoreTemps ) { _tempVal = analog2temp( analogRead(_tempPin), _tempType ); }
+    if(! _ignoreTemps ) { _tempVal = TemperatureSensor::analog2temp( analogRead(_tempPin), _tempType ); }
     if(! _ignoreCurrents ) { _armVal = analog2current( analogRead(_armSensePin), _armType ); }
 }
 
 tempStatusType MotorController::getTempStatus(){
-    if( _ignoreTemps ) { return T_NORMAL; }
-    tempStatusType tempStatus = T_HOT;
-    int statuses[][2] = {
-        {_minTemp, T_COLD},
-        {_regTemp, T_NORMAL},
-        {_maxTemp, T_REGULATED}
-    };
-    int statusLen = sizeof(statuses) / sizeof(statuses[0]);
-    int i;
-    for(i=0; i<statusLen; i++ ){
-        if(_tempVal < statuses[i][0]){
-            tempStatus = (tempStatusType) statuses[i][1];
-        }
-    }
-    return tempStatus;
+    return TemperatureSensor::getTempStatus(_tempVal, _minTemp, _regTemp, _maxTemp, _ignoreTemps);
 }
 
 
@@ -151,6 +137,7 @@ armStatusType MotorController::getArmStatus(){
     for(i=0; i<statusLen; i++ ){
         if(_armVal < statuses[i][0]){
             armStatus = (armStatusType) statuses[i][1];
+            break;
         }
     }
     return armStatus;

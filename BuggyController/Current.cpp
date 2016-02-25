@@ -47,6 +47,8 @@ double analog2current(int rawValue, int sensorType) {
                 (rawValue - currentTable[i][0]) * 
                 (double)(currentTable[i][1] - currentTable[i-1][1])/
                 (double)(currentTable[i][0] - currentTable[i-1][0]);
+            break;
         }
     }
+    return current;
 }

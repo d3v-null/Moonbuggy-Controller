@@ -19,8 +19,8 @@
 // #define IGNORE_TEMPS false
 // #define IGNORE_CURRENTS false
 
-#define THROTTLE_MIN 150
-#define THROTTLE_MAX 850
+#define THROTTLE_MIN 100
+#define THROTTLE_MAX 1000
 
 #define THROTTLE_THRESHOLD_ZERO 0.05
 #define THROTTLE_THRESHOLD_BOOST 0.90
@@ -30,7 +30,7 @@
 #define VEHICLE_MODE_PIN -1
 
 //===========================================================================
-//=============================Thermal Settings  ============================
+//============================= Thermal Settings ============================
 //===========================================================================
 //
 //--NORMAL IS 4.7kohm PULLUP!-- 1kohm pullup can be used on motor sensor, using correct resistor and table
@@ -67,26 +67,30 @@
 // 147 is Pt100 with 4k7 pullup
 // 110 is Pt100 with 1k pullup (non standard)
 
+#define TEMP_SENSOR_ONBOARD 1
 #define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 1
 
 // The minimal temperature defines the temperature below which the motor will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.
-#define MOTOR_0_MINTEMP 5
-#define MOTOR_1_MINTEMP 5
+#define ONBOARD_MINTEMP 5.0
+#define MOTOR_0_MINTEMP 5.0
+#define MOTOR_1_MINTEMP 5.0
 
 // The tempterature at which the throttle should be regulated in order to bring the temperature down
-#define MOTOR_0_REGTEMP 70
-#define MOTOR_1_REGTEMP 70
+#define ONBOARD_REGTEMP 70.0
+#define MOTOR_0_REGTEMP 70.0
+#define MOTOR_1_REGTEMP 70.0
 
 // When temperature exceeds max temp, your motor will be switched off.
 // This feature exists to protect your motor from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define MOTOR_0_MAXTEMP 80
-#define MOTOR_1_MAXTEMP 80
+#define ONBOARD_MAXTEMP 80.0
+#define MOTOR_0_MAXTEMP 80.0
+#define MOTOR_1_MAXTEMP 80.0
 
 //===========================================================================
-//=============================Current Settings  ============================
+//============================= Current Settings ============================
 //===========================================================================
 //
 
@@ -99,6 +103,12 @@
 #define MOTOR_0_MAX_CURRENT 40
 #define MOTOR_1_MAX_CURRENT 40
 
+//===========================================================================
+//=============================== Pin Settings ==============================
+//===========================================================================
+//
+
+#define ONBOARD_TEMP_PIN A1
 
 //TODO set these values
 
