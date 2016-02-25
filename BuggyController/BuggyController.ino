@@ -318,17 +318,17 @@ char* tempValString(double tempVal){
 }
 
 void printDebugInfo(){
-    char throttleNormStringVal[50] = throttleNormString(throttleNormalized);
+    char * throttleNormStringVal = throttleNormString(throttleNormalized);
     Serial.print(throttleNormStringVal);
     Serial.print(",");
     Serial.print((unsigned int)&throttleNormStringVal, HEX );
     Serial.print("|");
-    char tempValStringVal[50] = tempValString(systemTempVal);
+    char * tempValStringVal = tempValString(systemTempVal);
     Serial.print(tempValStringVal);
     Serial.print(",");
     Serial.print((unsigned int)&tempValStringVal, HEX );
     Serial.print("|");
-    char tempStatusStringVal[50] = tempStatusString(getTempStatus());
+    char * tempStatusStringVal = tempStatusString(getTempStatus());
     Serial.print(tempStatusStringVal);
     Serial.print(",");
     Serial.print((unsigned int)&tempStatusStringVal, HEX );
