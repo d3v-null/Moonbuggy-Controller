@@ -25,9 +25,9 @@
 #define THROTTLE_THRESHOLD_ZERO 0.05
 #define THROTTLE_THRESHOLD_BOOST 0.90
 
-#define KILLSWITCH_PIN 2
-#define THROTTLE_PIN A0
-#define VEHICLE_MODE_PIN -1
+#define KILLSWITCH_PIN 41
+#define THROTTLE_PIN A13
+#define VEHICLE_MODE_PIN 40
 
 //===========================================================================
 //============================= Thermal Settings ============================
@@ -108,20 +108,18 @@
 //===========================================================================
 //
 
-#define ONBOARD_TEMP_PIN A1
+#define ONBOARD_TEMP_PIN A3
 
-//TODO set these values
+#define MOTOR_0_TEMP_PIN A4
+#define MOTOR_0_ARM_SENSE_PIN A0
+#define MOTOR_0_ARM_VOLT_PIN 5
+#define MOTOR_0_FIELD_VOLT_PIN 3
+#define MOTOR_0_FIELD_PHASE_PIN 38
 
-#define MOTOR_0_TEMP_PIN -1
-#define MOTOR_0_ARM_SENSE_PIN -1
-#define MOTOR_0_ARM_VOLT_PIN -1
-#define MOTOR_0_FIELD_VOLT_PIN -1
-#define MOTOR_0_FIELD_PHASE_PIN -1
-
-#define MOTOR_1_TEMP_PIN -1
-#define MOTOR_1_ARM_SENSE_PIN -1
-#define MOTOR_1_ARM_VOLT_PIN -1
-#define MOTOR_1_FIELD_VOLT_PIN -1
-#define MOTOR_1_FIELD_PHASE_PIN -1
+#define MOTOR_1_TEMP_PIN A5
+#define MOTOR_1_ARM_SENSE_PIN A1
+#define MOTOR_1_ARM_VOLT_PIN 4
+#define MOTOR_1_FIELD_VOLT_PIN 2
+#define MOTOR_1_FIELD_PHASE_PIN 38
 
 #endif
