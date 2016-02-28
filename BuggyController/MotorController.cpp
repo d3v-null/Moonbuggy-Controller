@@ -36,7 +36,8 @@
 MotorController::MotorController(){
     // setPins();
     _motorMode = M_NEUTRAL;
-    _phaseVal = P_FORWARD;
+    _temperatureSensor = TemperatureSensor();
+    // _phaseVal = P_FORWARD;
     // setThrottle();
     // setTempBounds();
 }
@@ -47,20 +48,24 @@ MotorController::MotorController(){
 //     setThrottle();
 // }
 
-void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1, int fieldVoltPin = -1, int fieldPhasePin = -1) {
-    _tempPin = tempPin;
+// void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1, int fieldVoltPin = -1, int fieldPhasePin = -1) {
+void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1) {
+    _temperatureSensor.setPins(tempPin);
+    // _tempPin = tempPin;
     _armSensePin = armSensePin;
     _armVoltPin = armVoltPin;
-    _fieldVoltPin = fieldVoltPin;
-    _fieldPhasePin = fieldPhasePin;
+    // _fieldVoltPin = fieldVoltPin;
+    // _fieldPhasePin = fieldPhasePin;
 }
 
 void MotorController::setTempBounds(int tempType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0, bool ignoreTemps = false){
-    _tempType = tempType;
-    _minTemp = minTemp;
-    _regTemp = regTemp;
-    _maxTemp = maxTemp;
-    _ignoreTemps = ignoreTemps;
+    _temperatureSensor.setSensorType(tempType);
+    _temperatureSensor.setTempBounds(minTemp, maxTemp, regTemp, maxTemp, ignoreTemps);
+    // _tempType = tempType;
+    // _minTemp = minTemp;
+    // _regTemp = regTemp;
+    // _maxTemp = maxTemp;
+    // _ignoreTemps = ignoreTemps;
 }
 
 void MotorController::setArmBounds(int armType = 1, double regArm = 0.0, double maxArm = 0.0, bool ignoreCurrents = false){
@@ -74,11 +79,11 @@ void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
     if(_motorMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
-                setPhase(P_REVERSE);
+                // setPhase(P_REVERSE);
                 break;
             case M_FORWARD:
             case M_FORWARD_BOOST:
-                setPhase(P_FORWARD);
+                // setPhase(P_FORWARD);
                 break;
             default:
                 break;
@@ -91,28 +96,28 @@ void MotorController::setThrottle(double throttleVal){
     _throttleVal = throttleVal;
 }
 
-void MotorController::setPhase(phaseType phase){
-    if(_phaseStatus != phase){
-        switch (phase) {
-            case P_FORWARD:
-                _phaseVal = HIGH;
-                break;
-            case P_REVERSE:
-                _phaseVal = LOW;
-                break;
-            default:
-                break;
-        }
-        _phaseStatus = phase;
-    }
-}
+// void MotorController::setPhase(phaseType phase){
+//     if(_phaseStatus != phase){
+//         switch (phase) {
+//             case P_FORWARD:
+//                 _phaseVal = HIGH;
+//                 break;
+//             case P_REVERSE:
+//                 _phaseVal = LOW;
+//                 break;
+//             default:
+//                 break;
+//         }
+//         _phaseStatus = phase;
+//     }
+// }
 
 void MotorController::initPins(){
     pinMode(_tempPin, INPUT);
     pinMode(_armSensePin, INPUT);
     pinMode(_armVoltPin, OUTPUT);
-    pinMode(_fieldVoltPin, OUTPUT);
-    pinMode(_fieldPhasePin, OUTPUT);
+    // pinMode(_fieldVoltPin, OUTPUT);
+    // pinMode(_fieldPhasePin, OUTPUT);
 }
 
 void MotorController::readInputs(){
@@ -144,19 +149,19 @@ armStatusType MotorController::getArmStatus(){
 }
 
 void MotorController::updateOutputs(){
-    digitalWrite(_fieldPhasePin, _phaseVal);
+    // digitalWrite(_fieldPhasePin, _phaseVal);
     switch(_motorMode){
         case M_NEUTRAL:
             _armVoltVal = 0;
-            _fieldVoltVal = 0;
+            // _fieldVoltVal = 0;
         case M_FORWARD:
         case M_REVERSE:
         case M_FORWARD_BOOST:
             _armVoltVal = map(_throttleVal, 0.0, 1.0, 0, 255);
-            _fieldVoltVal = 255;
+            // _fieldVoltVal = 255;
             // nothing special for boost or reg yet.
     }
-    analogWrite(_fieldVoltPin, _fieldVoltVal);
+    // analogWrite(_fieldVoltPin, _fieldVoltVal);
     analogWrite(_armVoltPin, _armVoltVal);
 }
 

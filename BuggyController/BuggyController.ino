@@ -21,20 +21,24 @@
  * the motor controller objects
  */
 
-#include "Configuration.h"
-#include "MotorController.h"
 #include "BuggyController.h"
-#include <stdlib.h>
 
 // Safety Stuff
-safetyStatusType safetyStatus = S_SAFE; // Safety status of system, starts off as safe
+safetyStatusType safetyStatus; // Safety status of system, starts off as safe
 
 // throttleStatusType throttleStatus;
+motorModeType vehicleMode; // Mode of all motors, starts off as Neutral
 
-motorModeType vehicleMode = M_NEUTRAL; // Mode of all motors, starts off as Neutral
+NormalizedVoltageSensor throttleSensor;
 
-int throttleRaw;
-double throttleNormalized; // The normalized value of the throttle (0.0 -> 1.0)
+TemperatureSensor systemTempSensor;
+
+
+
+
+
+// int throttleRaw;
+// double throttleNormalized; // The normalized value of the throttle (0.0 -> 1.0)
 
 int killSwitch;  // The value of the killSwitch sensor
 
@@ -51,7 +55,8 @@ throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusT
     return node;
 }
 
-throttleStatusType getThrottleStatus(double _throttleNormalized){
+throttleStatusType getThrottleStatus(){
+    throttleNormalized = throttleSensor.getSensorVal();
     throttleStatusType throttleStatus = TH_BOOST;
     throttleStatusNode statuses[] = {
         constructThrottleStatusNode(THROTTLE_THRESHOLD_ZERO,  TH_ZERO),
@@ -60,7 +65,7 @@ throttleStatusType getThrottleStatus(double _throttleNormalized){
     int statusLen = sizeof(statuses) / sizeof(statuses[0]);
     int i;
     for( i=0; i<statusLen; i++) {
-        if(_throttleNormalized < statuses[i].threshold){
+        if(throttleNormalized < statuses[i].threshold){
             throttleStatus = statuses[i].statusVal;
             break;
         } else {
@@ -75,16 +80,21 @@ tempStatusType getTempStatus(){
     return TemperatureSensor::getTempStatus(systemTempVal, ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP, IGNORE_TEMPS);
 }
 
-double normalize(int input, int minimum, int maximum){
-    input = min(max(input, minimum), maximum);
-    if(minimum == maximum) return input;
-    return (double)( input - minimum ) / (double)( maximum  - minimum);
+batteryStatusNode constructBatteryStatusNode(double threshold, batterStatusType batteryStatus){
+    batteryStatusNode node;
+    node.threshold = threshold;
+    node.statusVal = batteryStatus;
+    return node;
 }
+
+batteryStatusType getBatteryStatus()
 
 void readInputs() {
     // Store the normalized value of the throttle
-    throttleRaw = analogRead(THROTTLE_PIN);
-    throttleNormalized = normalize(throttleRaw, THROTTLE_MIN, THROTTLE_MAX);
+    // throttleRaw = analogRead(THROTTLE_PIN);
+    // throttleNormalized = normalize(throttleRaw, THROTTLE_MIN, THROTTLE_MAX);
+    throttleSensor.readInputs();
+
 
     if(!IGNORE_TEMPS) systemTempVal = TemperatureSensor::analog2temp(analogRead(ONBOARD_TEMP_PIN), ONBOARD_TEMP_PIN);
 
@@ -191,7 +201,16 @@ void setup() {
     delay(1000);
 
     //Set pinmodes
-    pinMode(THROTTLE_PIN, INPUT);
+    // pinMode(THROTTLE_PIN, INPUT);
+    throttleSensor = NormalizedVoltageSensor();
+    throttleSensor.setPins(THROTTLE_PIN);
+    throttleSensor.initPins();
+
+    systemTempSensor = TemperatureSensor();
+    systemTempSensor.setPins(ONBOARD_TEMP_PIN);
+    systemTempSensor.initPins();
+    
+
     pinMode(KILLSWITCH_PIN, INPUT);
     if(! IGNORE_MODE) pinMode(VEHICLE_MODE_PIN, INPUT);
 
@@ -201,8 +220,8 @@ void setup() {
             MOTOR_0_TEMP_PIN,
             MOTOR_0_ARM_SENSE_PIN,
             MOTOR_0_ARM_VOLT_PIN,
-            MOTOR_0_FIELD_VOLT_PIN,
-            MOTOR_0_FIELD_PHASE_PIN
+            // MOTOR_0_FIELD_VOLT_PIN,
+            // MOTOR_0_FIELD_PHASE_PIN
         );
         motorControllers[0].setTempBounds(
             TEMP_SENSOR_0,
@@ -225,8 +244,8 @@ void setup() {
             MOTOR_1_TEMP_PIN,
             MOTOR_1_ARM_SENSE_PIN,
             MOTOR_1_ARM_VOLT_PIN,
-            MOTOR_1_FIELD_VOLT_PIN,
-            MOTOR_1_FIELD_PHASE_PIN
+            // MOTOR_1_FIELD_VOLT_PIN,
+            // MOTOR_1_FIELD_PHASE_PIN
         );
         motorControllers[1].setTempBounds(
             TEMP_SENSOR_1,
@@ -244,11 +263,48 @@ void setup() {
         motorControllers[1].initPins();
     }
 
+    pinMode( MOTOR_FIELD_VOLT_PIN, OUTPUT );
+    pinMode( MOTOR_FIELD_PHASE_PIN, OUTPUT);
+
     throttleNormalized = 0.0;
     // throttleStatus = TH_ZERO;
     vehicleMode = M_NEUTRAL;
+    S_SAFE
     modeSwitch = LOW;
     systemTempVal = 0.0;
+    phaseStatus = P_FORWARD;
+    phaseVal = HIGH;
+}
+
+void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
+    for(i=0; i<MOTORS; i++){
+        motorControllers[i].setMotorMode(vehicleMode);
+    }
+}
+
+void setPhase(phaseType phase){
+    if(phaseStatus != phase){
+        switch (phase) {
+            case P_FORWARD:
+                phaseVal = HIGH;
+                break;
+            case P_REVERSE:
+                phaseVal = LOW;
+                break;
+            default:
+                break;
+        }
+        phaseStatus = phase;
+    }
+}
+
+void updateOutputs(){
+    digitalWrite(MOTOR_FIELD_PHASE_PIN, phaseVal);
+    digitalWrite(MOTOR_FIELD_VOLT_H_PIN, fieldVal);
+    digitalWrite(MOTOR_FIELD_VOLT_L_PIN, fieldVal);
+    for(i=0; i<MOTORS; i++){
+        motorControllers[i].updateOutputs();
+    }
 }
 
 char* digitalStatusString(int digitalValue){

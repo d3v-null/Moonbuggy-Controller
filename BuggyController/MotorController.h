@@ -9,7 +9,6 @@
 
 typedef enum {M_NEUTRAL, M_REVERSE, M_FORWARD, M_FORWARD_BOOST}     motorModeType;
 typedef enum {A_NORMAL, A_REGULATED, A_HIGH}                       armStatusType;
-typedef enum {P_FORWARD, P_REVERSE}                                 phaseType;
 
 class MotorController{
 public:
@@ -29,21 +28,22 @@ public:
     void            shutdown();
 
 private:
-    int             _tempPin;
+    TemperatureSensor _temperatureSensor;
+    // int             _tempPin;
     int             _armSensePin;
     int             _armVoltPin;
-    int             _fieldVoltPin;
-    int             _fieldPhasePin;
+    // int             _fieldVoltPin;
+    // int             _fieldPhasePin;
     motorModeType   _motorMode;
-    phaseType       _phaseStatus;
+    // phaseType       _phaseStatus;
     double          _throttleVal;
 
-    double          _tempVal;
-    int             _tempType;
-    double          _minTemp;
-    double          _regTemp;    
-    double          _maxTemp;
-    bool            _ignoreTemps;
+    // double          _tempVal;
+    // int             _tempType;
+    // double          _minTemp;
+    // double          _regTemp;    
+    // double          _maxTemp;
+    // bool            _ignoreTemps;
     
     double          _armVal;
     int             _armType;
@@ -51,10 +51,10 @@ private:
     double          _maxArm;
     bool            _ignoreCurrents;
     
-    int             _phaseVal;
-    int             _armVoltVal;
-    int             _fieldVoltVal;
-    void            setPhase(phaseType phase);
+    // int             _phaseVal;
+    // int             _armVoltVal;
+    // int             _fieldVoltVal;
+    // void            setPhase(phaseType phase);
 };
 
 #endif
