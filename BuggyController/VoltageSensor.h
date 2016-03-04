@@ -31,6 +31,8 @@ protected:
 
 class NormalizedVoltageSensor: public VoltageSensor {
 public:
+    NormalizedVoltageSensor();
+    double          getSensorVal();
     void            setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
 protected:
     int             _sensorMin;

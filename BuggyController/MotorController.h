@@ -30,7 +30,7 @@ private:
     TemperatureSensor _temperatureSensor;
     CurrentSensor     _armCurrentSensor;
     int             _armVoltPin;
-    double          _armVoltVal;
+    int             _armVoltVal;
     motorModeType   _motorMode;
     double          _throttleVal;
 };

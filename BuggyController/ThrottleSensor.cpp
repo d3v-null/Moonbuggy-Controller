@@ -16,13 +16,9 @@ throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusT
 
 void ThrottleSensor::setStatusBounds(double throttleZero, double throttleBoost){
     if(throttleZero >= 0.0 and throttleBoost > throttleZero and throttleBoost <= 1.0){
-        // _throttleZero   = throttleZero;
-        // _throttleBoost  = throttleBoost;
-        _statusTable = {
-            constructThrottleStatusNode(_throttleZero,  TH_ZERO),
-            constructThrottleStatusNode(_throttleBoost, TH_NORMAL)
-        };
-        // _statusTableLen = SIZEOFTABLE(_statusTable) ;
+        int i=0;
+        _statusTable[i++] = constructThrottleStatusNode(throttleZero,  TH_ZERO);
+        _statusTable[i++] = constructThrottleStatusNode(throttleBoost, TH_NORMAL);
     }
 }
 

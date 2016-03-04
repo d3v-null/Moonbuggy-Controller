@@ -18,10 +18,7 @@ public:
     void                    setStatusBounds(double throttleZero=0.0, double throttleBoost=1.0);
     throttleStatusType      getStatus();
 protected:
-    // double                  _throttleZero;
-    // double                  _throttleBoost;
-    throttleStatusNode*     _statusTable;
-    // int                     _statusTableLen;
+    throttleStatusNode     _statusTable[THROTTLE_STATUS_NODES];
 };
 
 #endif

@@ -14,11 +14,10 @@ sensorNode constructSensorNode(int input, double sensorVal){
 VoltageSensor::VoltageSensor() {
     _pinsSet = false;
     _pinsInit = false;
-    _sensorTable = {
-        constructSensorNode(0,                      0.0),
-        constructSensorNode(SYSTEM_ANALOGUE_MAX,    SYSTEM_VCC)
-    };
-    // _sensorTableLen = SIZEOFTABLE(_sensorTable);
+    _rawVal = 0;
+    int i=0;
+    _sensorTable[i++] = constructSensorNode(0,                      0.0);
+    _sensorTable[i++] = constructSensorNode(SYSTEM_ANALOGUE_MAX,    SYSTEM_VCC);
 };
 
 void VoltageSensor::setPins( int sensorPin ){
@@ -39,12 +38,8 @@ void VoltageSensor::readInputs(){
     }
 }
 
-int VoltageSensor::getRawValue(){
-    if(_sensorRead){
-        return _rawVal;
-    } else {
-        return 0;
-    }
+int VoltageSensor::getRawVal(){
+    return _rawVal;
 }
 
 double VoltageSensor::getSensorVal(){
@@ -52,8 +47,8 @@ double VoltageSensor::getSensorVal(){
     int i;
     for(i=1; i < SIZEOFTABLE(_sensorTable) ; i++){
         if (_sensorTable[i].input > _rawVal){
-            celsius = _sensorTable[i-1].sensorVal + 
-                (_sensorVal - _sensorTable[i].input) * 
+            sensorVal = _sensorTable[i-1].sensorVal + 
+                (_rawVal - _sensorTable[i].input) * 
                 (double)(_sensorTable[i].sensorVal - _sensorTable[i-1].sensorVal)/
                 (double)(_sensorTable[i].input - _sensorTable[i-1].input);
             break;
@@ -70,11 +65,9 @@ void NormalizedVoltageSensor::setInputConstraints(int minimum, int maximum) {
     if(minimum >= 0 and maximum <= SYSTEM_ANALOGUE_MAX){
         _sensorMin = minimum;
         _sensorMax = maximum;
-        _sensorTable = {
-            constructSensorNode(_sensorMin,    0.0),
-            constructSensorNode(_sensorMax,    1.0)
-        };
-        // _sensorTableLen = SIZEOFTABLE(_sensorTable); 
+        int i=0;
+        _sensorTable[i++] = constructSensorNode(_sensorMin,    0.0);
+        _sensorTable[i++] = constructSensorNode(_sensorMax,    1.0);
     }
 }
 
@@ -92,9 +85,9 @@ VoltageDividerSensor::VoltageDividerSensor(){
 }
 
 void VoltageDividerSensor::setSensorMultiplier(double sensorMultiplier){
-    _sensorTable = {
-        constructSensorNode(0,                      0.0),
-        constructSensorNode(SYSTEM_ANALOGUE_MAX,    sensorMultiplier * SYSTEM_VCC)
-    };
-    // _sensorTableLen = SIZEOFTABLE(_sensorTable);   
+    if(sensorMultiplier > 0.0){
+        int i=0;
+        _sensorTable[i++] = constructSensorNode(0,                      0.0);
+        _sensorTable[i++] = constructSensorNode(SYSTEM_ANALOGUE_MAX,    sensorMultiplier * SYSTEM_VCC); 
+    }
 }
