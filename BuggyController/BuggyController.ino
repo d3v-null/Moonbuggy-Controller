@@ -27,6 +27,7 @@
 safetyStatusType safetyStatus; 
 
 // Mode of all motors, starts off as Neutral
+
 motorModeType vehicleMode; 
 
 // Current phase status
@@ -34,8 +35,12 @@ phaseType phaseStatus;
 
 // sensors
 ThrottleSensor throttleSensor;
-TemperatureSensor systemTempSensor;
-BatterySensor batterySensor;
+#if ! IGNORE_BATTERY
+    BatterySensor batterySensor;
+#endif
+#if !IGNORE_TEMPS
+    TemperatureSensor systemTempSensor;
+#endif
 
 // The value of the killSwitch sensor
 int killSwitch; 
@@ -147,9 +152,15 @@ void readInputs() {
     killSwitch = digitalRead(KILLSWITCH_PIN);
 
     throttleSensor.readInputs();
-    if(!IGNORE_TEMPS)   systemTempSensor.readInputs();
-    if(!IGNORE_BATTERY) batterySensor.readInputs();
-    if(!IGNORE_MODE) modeSwitch = digitalRead(VEHICLE_MODE_PIN);
+    #if ! IGNORE_TEMPS
+        systemTempSensor.readInputs();
+    #endif
+    #if ! IGNORE_BATTERY
+        batterySensor.readInputs();
+    #endif
+    #if ! IGNORE_MODE
+        modeSwitch = digitalRead(VEHICLE_MODE_PIN);
+    #endif
 
     int i;
     for(i=0; i<MOTORS; i++){
@@ -176,64 +187,79 @@ void safetyCheck() {
     boolean shouldTerminate = false;
     switch (safetyStatus) {
         case S_SAFE:
-            int i;
-            for(i=0; i<MOTORS; i++){
-                if(! IGNORE_TEMPS ){
-                    switch (motorControllers[i].getTempStatus()) {
+            if(!shouldTerminate and killSwitch == HIGH){
+                if(DEBUG) Serial.println("Killswitch Engaged");
+                shouldTerminate = true;
+            }
+            #if ! IGNORE_TEMPS
+                if(!shouldTerminate){
+                    int i;
+                    for(i=0; i<MOTORS; i++){
+                        switch (motorControllers[i].getTempStatus()) {
+                            case T_COLD:
+                              if(DEBUG) Serial.print("Failed temp check on MOTOR: T_COLD, ");
+                              if(DEBUG) Serial.println(i);
+                              shouldTerminate = true;
+                              break;
+                            case T_HOT:
+                              if(DEBUG) Serial.print("Failed temp check on MOTOR: T_HOT, ");
+                              if(DEBUG) Serial.println(i);
+                              shouldTerminate = true;
+                              break;
+                            default:
+                              break;
+                        }
+                        if( shouldTerminate ){ break; }
+                    }
+                }
+                if(!shouldTerminate){                    
+                    switch(systemTempSensor.getStatus()){
                         case T_COLD:
-                          if(DEBUG) Serial.print("Failed temp check on MOTOR: T_COLD, ");
-                          if(DEBUG) Serial.println(i);
+                          if(DEBUG) Serial.println("Failed system temp check: T_COLD");
                           shouldTerminate = true;
                           break;
                         case T_HOT:
-                          if(DEBUG) Serial.print("Failed temp check on MOTOR: T_HOT, ");
-                          if(DEBUG) Serial.println(i);
+                          if(DEBUG) Serial.println("Failed system temp check: T_HOT");
                           shouldTerminate = true;
                           break;
                         default:
                           break;
                     }
-                    if( shouldTerminate ){ break; }
                 }
-                if(! IGNORE_CURRENTS and motorControllers[i].getArmStatus() == C_HIGH){
-                    if(DEBUG) Serial.print("Failed current check on MOTOR: C_HIGH, ");
-                    if(DEBUG) Serial.println(i);
-                    shouldTerminate = true;
-                    break;
+            #endif
+
+            #if !IGNORE_CURRENTS
+                if(!shouldTerminate){
+                    int i;
+                    for(i=0; i<MOTORS; i++){
+    
+                        if(! IGNORE_CURRENTS and motorControllers[i].getArmStatus() == C_HIGH){
+                            if(DEBUG) Serial.print("Failed current check on MOTOR: C_HIGH, ");
+                            if(DEBUG) Serial.println(i);
+                            shouldTerminate = true;
+                            break;
+                        }
+                    }
                 }
-            }
-            if(!shouldTerminate and killSwitch == HIGH){
-                if(DEBUG) Serial.println("Killswitch Engaged");
-                shouldTerminate = true;
-            }
-            if(!shouldTerminate and !IGNORE_TEMPS){
-                switch(systemTempSensor.getStatus()){
-                    case T_COLD:
-                      if(DEBUG) Serial.println("Failed system temp check: T_COLD");
-                      shouldTerminate = true;
-                      break;
-                    case T_HOT:
-                      if(DEBUG) Serial.println("Failed system temp check: T_HOT");
-                      shouldTerminate = true;
-                      break;
-                    default:
-                      break;
+            #endif
+
+            #if ! IGNORE_BATTERY
+                if(!shouldTerminate){
+                    switch(batterySensor.getStatus()){
+                        case B_LOW:
+                            if(DEBUG) Serial.println("Failed battery check: B_LOW");
+                            shouldTerminate = true;
+                            break;
+                        case B_HIGH:
+                            if(DEBUG) Serial.println("Failed battery check: B_HIGH");       
+                            shouldTerminate = true;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-            if(!shouldTerminate and !IGNORE_BATTERY){
-                switch(batterySensor.getStatus()){
-                    case B_LOW:
-                        if(DEBUG) Serial.println("Failed battery check: B_LOW");
-                        shouldTerminate = true;
-                        break;
-                    case B_HIGH:
-                        if(DEBUG) Serial.println("Failed battery check: B_HIGH");       
-                        shouldTerminate = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
+            #endif
+
             // terminates system if necessary
             if(shouldTerminate){
                 safetyStatus = S_TERMINATING;

@@ -49,7 +49,7 @@ MotorController::MotorController(){
 // }
 
 // void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1, int fieldVoltPin = -1, int fieldPhasePin = -1) {
-void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1) {
+void MotorController::setPins(int tempPin, int armSensePin, int armVoltPin) {
     _temperatureSensor.setPins(tempPin);
     _armCurrentSensor.setPins(armSensePin);
     // _tempPin = tempPin;
@@ -59,12 +59,12 @@ void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVol
     // _fieldPhasePin = fieldPhasePin;
 }
 
-void MotorController::setTempBounds(int sensorType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0){
+void MotorController::setTempBounds(int sensorType, double minTemp, double regTemp, double maxTemp){
     _temperatureSensor.setSensorType(sensorType);
-    _temperatureSensor.setStatusBounds(minTemp, maxTemp, regTemp, maxTemp, ignoreTemps);
+    _temperatureSensor.setStatusBounds(minTemp, regTemp, maxTemp);
 }
 
-void MotorController::setArmBounds(int sensorType = 1, double regArm = 0.0, double maxArm = 0.0){
+void MotorController::setArmBounds(int sensorType, double regArm, double maxArm){
     _armCurrentSensor.setSensorType(sensorType);
     _armCurrentSensor.setStatusBounds(regArm, maxArm);
 }
@@ -90,8 +90,7 @@ tempStatusType MotorController::getTempStatus(){
     return _temperatureSensor.getStatus();
 }
 
-
-armStatusType MotorController::getArmStatus(){
+currentStatusType MotorController::getArmStatus(){
     return _armCurrentSensor.getStatus();
 }
 
@@ -100,14 +99,10 @@ void MotorController::updateOutputs(){
         case M_NEUTRAL:
             _armVoltVal = 0;
             break;
-            // _fieldVoltVal = 0;
         case M_FORWARD:
         case M_REVERSE:
         case M_FORWARD_BOOST:
-            int throttleValDenormalized
-            _armVoltVal = map(_throttleVal, 0.0, 1.0, 0, 255);
-            // _fieldVoltVal = 255;
-            // nothing special for boost or reg yet.
+            _armVoltVal = (int)(255*_throttleVal);
     }
     // analogWrite(_fieldVoltPin, _fieldVoltVal);
     analogWrite(_armVoltPin, _armVoltVal);

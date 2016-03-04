@@ -3,6 +3,8 @@
 
 #include "Configuration.h"
 
+#define SIZEOFTABLE( TABLE ) sizeof( TABLE ) / sizeof( TABLE[0] )
+
 typedef struct sensorNode {
     int input;
     double sensorVal;

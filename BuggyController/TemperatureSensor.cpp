@@ -37,7 +37,7 @@ TemperatureSensor::TemperatureSensor(){
  * Sets the sensorType, tempTable and tempTableLen 
  * if the sensorType is new and valid
  */
-void TemperatureSensor::setSensorTpe(int sensorType){
+void TemperatureSensor::setSensorType(int sensorType){
     if(_sensorType != sensorType){
         switch(sensorType){
             case 1:
@@ -60,22 +60,17 @@ tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVa
 
 void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
     if(regTemp >= minTemp and maxTemp >= regTemp){
-        // _minTemp =      minTemp;
-        // _regTemp =      regTemp;
-        // _maxTemp =      maxTemp;
-        _statusTable = {
-            constructTempStatusNode(minTemp, T_COLD),
-            constructTempStatusNode(regTemp, T_NORMAL),
-            constructTempStatusNode(maxTemp, T_REGULATED)
-        };
-        // _statusTableLen = SIZEOFTABLE(_statusTable) ;
+        int i = 0;
+        _statusTable[i++] = constructTempStatusNode(minTemp, T_COLD);
+        _statusTable[i++] = constructTempStatusNode(regTemp, T_NORMAL);
+        _statusTable[i++] = constructTempStatusNode(maxTemp, T_REGULATED);
     }
 }
 
-tempStatusType TemperatureSensor::getTempStatus( ){
+tempStatusType TemperatureSensor::getStatus( ){
     tempStatusType statusVal = T_HOT;
     int i;
-    for(i=0; i < SIZEOFTABLE(_statusTable) ; i++){
+    for(i=0; i < TEMPERATURE_STATUS_NODES ; i++){
         if(getSensorVal() < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;

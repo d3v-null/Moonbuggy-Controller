@@ -1,7 +1,5 @@
 #include "VoltageSensor.h"
 
-#define SIZEOFTABLE( TABLE ) sizeof( TABLE ) / sizeof( TABLE[0] );
-
 sensorNode constructSensorNode(int input, double sensorVal){
     sensorNode node;
     node.input = input;

@@ -9,6 +9,8 @@ typedef struct batteryStatusNode {
     batteryStatusType   statusVal;
 } batteryStatusNode;
 
+#define BATTERY_STATUS_NODES 2
+
 class BatterySensor: public VoltageDividerSensor {
 public:
     BatterySensor();
@@ -17,7 +19,7 @@ public:
 protected:
     // double              _minBattery;
     // double              _maxBattery;
-    batteryStatusNode*   _statusTable;
+    batteryStatusNode   _statusTable[BATTERY_STATUS_NODES];
     // int                 _statusTableLen;
 };
 

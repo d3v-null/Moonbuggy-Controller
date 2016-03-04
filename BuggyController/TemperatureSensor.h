@@ -10,6 +10,8 @@ typedef struct tempStatusNode {
     tempStatusType  statusVal;
 } tempStatusNode;
 
+#define TEMPERATURE_STATUS_NODES 3
+
 class TemperatureSensor: public VoltageSensor {
 public:
     TemperatureSensor();
@@ -21,8 +23,8 @@ private:
     // double          _minTemp;
     // double          _regTemp;
     // double          _maxTemp;
-    tempStatusNode* _tempStatusTable;
-    // int             _tempStatusTableLen;
+    tempStatusNode* _statusTable;
+    // int             _statusTableLen;
 };
 
 #endif

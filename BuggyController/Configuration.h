@@ -16,19 +16,15 @@
     #define BOARD 0
     #define MOTORS 0
 
-    #define IGNORE_TEMPS true
-    #define IGNORE_CURRENTS true
-    #define IGNORE_BATTERY true
-    #define IGNORE_MODE true
+    #define IGNORE_TEMPS 
+    #define IGNORE_CURRENTS
+    #define IGNORE_BATTERY
+    #define IGNORE_MODE
 
 #else
     
     #define BOARD 1  
     #define MOTORS 2
-    #define IGNORE_TEMPS false
-    #define IGNORE_CURRENTS false
-    #define IGNORE_BATTERY false
-    #define IGNORE_MODE false
 
 #endif
 

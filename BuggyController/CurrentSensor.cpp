@@ -53,19 +53,18 @@ currentStatusNode constructCurrentStatusNode(double threshold, currentStatusType
 
 void CurrentSensor::setStatusBounds( double currentReg, double currentMax){
     if(currentReg >= 0.0 and currentMax <= 1.0){
-        _currentStatusTable = {
-            constructCurrentStatusNode(currentReg, A_NORMAL),
-            constructCurrentStatusNode(currentMax, A_REGULATED)
-        }
+        int i=0;
+        _statusTable[i++] = constructCurrentStatusNode(currentReg, C_NORMAL);
+        _statusTable[i++] = constructCurrentStatusNode(currentMax, C_REGULATED);
     }
 }
 
 currentStatusType CurrentSensor::getStatus(){
     currentStatusType statusVal = C_HIGH;
     int i;
-    for(i=0; i < SIZEOFTABLE(_currentStatusTable) ; i++){
-        if(getSensorVal() < _currentStatusTable[i].threshold){
-            statusVal = _currentStatusTable[i].statusVal;
+    for(i=0; i < CURRENT_STATUS_NODES ; i++){
+        if(getSensorVal() < _statusTable[i].threshold){
+            statusVal = _statusTable[i].statusVal;
             break;
         }
     }

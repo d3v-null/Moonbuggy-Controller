@@ -9,6 +9,8 @@ typedef struct throttleStatusNode {
     throttleStatusType  statusVal;
 } throttleStatusNode;
 
+#define THROTTLE_STATUS_NODES 2
+
 class ThrottleSensor: public NormalizedVoltageSensor
 {
 public:

@@ -11,15 +11,17 @@ typedef struct currentStatusNode {
     currentStatusType   statusVal;
 } currentStatusNode;
 
+#define CURRENT_STATUS_NODES 2
 
 class CurrentSensor: public VoltageDividerSensor {
 public:
     CurrentSensor();
+    void                setSensorType(int sensorType);
     void                setStatusBounds(double regCurrent=1.0, double maxCurrent=1.0);
     currentStatusType   getStatus();
 protected:
     int                 _sensorType;
-    currentStatusNode*  _currentStatusTable;
+    currentStatusNode  _statusTable[CURRENT_STATUS_NODES];
 };
 
 #endif

@@ -13,9 +13,9 @@ typedef enum {M_NEUTRAL, M_REVERSE, M_FORWARD, M_FORWARD_BOOST}     motorModeTyp
 class MotorController{
 public:
     MotorController();
-    void            setPins(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin);
-    void            setTempBounds(int tempType, double minTemp, double regTemp, double maxTemp, bool ignoreTemps);
-    void            setArmBounds(int armType, double regArm, double maxArm, bool ignoreCurrents);
+    void            setPins(int tempPin = -1, int armSensePin = -1 , int armVoltPin = -1);
+    void            setTempBounds(int sensorType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0);
+    void            setArmBounds(int sensorType = 1, double regArm = 0.0, double maxArm = 0.0);
     void            setMotorMode(motorModeType motorMode);
     void            setThrottle(double throttleVal = 0.0);
     void            initPins();
@@ -30,6 +30,7 @@ private:
     TemperatureSensor _temperatureSensor;
     CurrentSensor     _armCurrentSensor;
     int             _armVoltPin;
+    double          _armVoltVal;
     motorModeType   _motorMode;
     double          _throttleVal;
 };
