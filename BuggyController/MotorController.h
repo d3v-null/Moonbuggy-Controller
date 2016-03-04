@@ -3,17 +3,16 @@
 
 #include "Arduino.h"
 #include "TemperatureSensor.h"
-#include "Current.h"
+#include "CurrentSensor.h"
+#include "Normalization.h"
 #include <PID_v1.h>
 #include <PID_AutoTune_v0.h>
 
 typedef enum {M_NEUTRAL, M_REVERSE, M_FORWARD, M_FORWARD_BOOST}     motorModeType;
-typedef enum {A_NORMAL, A_REGULATED, A_HIGH}                       armStatusType;
 
 class MotorController{
 public:
     MotorController();
-    // MotorController(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin);
     void            setPins(int tempPin, int armSensePin, int armVoltPin, int fieldVoltPin, int fieldPhasePin);
     void            setTempBounds(int tempType, double minTemp, double regTemp, double maxTemp, bool ignoreTemps);
     void            setArmBounds(int armType, double regArm, double maxArm, bool ignoreCurrents);
@@ -22,39 +21,17 @@ public:
     void            initPins();
     void            readInputs();
     tempStatusType  getTempStatus();
-    armStatusType   getArmStatus();
+    currentStatusType getArmStatus();
     // void            setPIDs(double kp, double ki, double kd);
     void            updateOutputs();
     void            shutdown();
 
 private:
     TemperatureSensor _temperatureSensor;
-    // int             _tempPin;
-    int             _armSensePin;
+    CurrentSensor     _armCurrentSensor;
     int             _armVoltPin;
-    // int             _fieldVoltPin;
-    // int             _fieldPhasePin;
     motorModeType   _motorMode;
-    // phaseType       _phaseStatus;
     double          _throttleVal;
-
-    // double          _tempVal;
-    // int             _tempType;
-    // double          _minTemp;
-    // double          _regTemp;    
-    // double          _maxTemp;
-    // bool            _ignoreTemps;
-    
-    double          _armVal;
-    int             _armType;
-    double          _regArm;
-    double          _maxArm;
-    bool            _ignoreCurrents;
-    
-    // int             _phaseVal;
-    // int             _armVoltVal;
-    // int             _fieldVoltVal;
-    // void            setPhase(phaseType phase);
 };
 
 #endif

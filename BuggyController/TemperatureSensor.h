@@ -3,44 +3,26 @@
 
 #include "VoltageSensor.h"
 
-typedef struct sensorNode {
-    int input;
-    double temperature;
-} sensorNode;
-
-sensorNode constructTempNode(int input, double temperature);
-
 typedef enum {T_COLD, T_NORMAL, T_REGULATED, T_HOT} tempStatusType;
 
 typedef struct tempStatusNode {
-    double temperature;
-    tempStatusType tempStatus;
+    double          threshold;
+    tempStatusType  statusVal;
 } tempStatusNode;
-
-tempStatusNode constructTempStatusNode(double temperature, tempStatusType tempStatus);
 
 class TemperatureSensor: public VoltageSensor {
 public:
     TemperatureSensor();
-    // void            setPins(int sensorPin);
-    // void            initPins();
     void            setSensorType(int sensorType);
-    void            setTempBounds(double minTemp, double regTemp, double maxTemp, bool ignoreTemps);
-    double          getTemp();
-    tempStatusType  getTempStatus();
+    void            setStatusBounds( double minTemp=0.0, double regTemp=0.0, double maxTemp=0.0 );
+    tempStatusType  getStatus();
 private:
     int             _sensorType;
-    // int             _sensorPin;
-    sensorNode*       _tempTable;
-    int             _tempTableLen;
-    double          _minTemp;
-    double          _regTemp;
-    double          _maxTemp;
-    bool            _ignoreTemps;
-    // int             _sensorVal;
+    // double          _minTemp;
+    // double          _regTemp;
+    // double          _maxTemp;
     tempStatusNode* _tempStatusTable;
-    int             _tempStatusTableLen;
+    // int             _tempStatusTableLen;
 };
-
 
 #endif

@@ -1,15 +1,14 @@
 #ifndef VoltageSensor_h
 #define VoltageSensor_h 
 
-#define SYSTEM_VCC 5.0
-#define SYSTEM_ANALOGUE_MAX 1024
+#include "Configuration.h"
 
 typedef struct sensorNode {
     int input;
     double sensorVal;
 } sensorNode;
 
-sensorNode constructSensorNode(int input, double sensorVal)
+sensorNode constructSensorNode(int input, double sensorVal);
 
 class VoltageSensor {
 public:
@@ -25,13 +24,21 @@ protected:
     bool            _pinsInit;
     int             _rawVal;
     sensorNode*     _sensorTable;
-    int             _sensorTableLen;
+    // int             _sensorTableLen;
 };
 
-class VoltageDividerSensor: public VoltageDividerSensor {
+class NormalizedVoltageSensor: public VoltageSensor {
+public:
+    void            setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
+protected:
+    int             _sensorMin;
+    int             _sensorMax;
+};
+
+class VoltageDividerSensor: public VoltageSensor {
 public:
     VoltageDividerSensor();
-    void            setSensorMultiplier(double sensorMultiplier);
+    void            setSensorMultiplier(double sensorMultiplier = 1.0);
 };
 
 #endif

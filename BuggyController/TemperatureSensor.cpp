@@ -19,26 +19,19 @@
  * Source file for temperature sensing functions
  */
 
- #include "TemperatureSensor.h"
+#include "TemperatureSensor.h"
 
 sensorNode tempTable_1[] = {
-    constructSensorNode(0, 300.0),
-    constructSensorNode(255, 0.0)
+    constructSensorNode(0,                      300.0),
+    constructSensorNode(SYSTEM_ANALOGUE_MAX,    0.0)
 };
 
 TemperatureSensor::TemperatureSensor(){
     _sensorType = 1;
     _sensorTable = tempTable_1;
-    _sensorTableLen = getSensorTableSize(_sensorTable);
+    // _sensorTableLen = SIZEOFTABLE(_sensorTable);
+    setStatusBounds();
 }
-
-// TemperatureSensor::setPins(int sensorPin){
-//     _sensorPin = sensorPin;
-// }
-
-// void TemperatureSensor::initPins(){
-//     pinMode(_sensorPin, INPUT);
-// }
 
 /**
  * Sets the sensorType, tempTable and tempTableLen 
@@ -53,63 +46,40 @@ void TemperatureSensor::setSensorTpe(int sensorType){
             default:
                 return;
         }
-        _sensorTableLen = getSensorTableSize(_sensorTable);
+        // _sensorTableLen = getSensorTableSize(_sensorTable);
         _sensorType = sensorType;
     }
 }
 
-void TemperatureSensor::setTempBounds(double minTemp, double regTemp, double maxTemp, bool ignoreTemps){
-    _minTemp =      minTemp;
-    _regTemp =      regTemp;
-    _maxTemp =      maxTemp;
-    _ignoreTemps =  ignoreTemps;
-    _tempStatusTable = {
-        constructTempStatusNode(minTemp, T_NORMAL),
-        constructTempStatusNode(regTemp, T_REGULATED),
-        constructTempStatusNode(maxTemp, T_HOT)
-    };
-    _tempStatusTableLen = sizeof(_tempStatusTable) / sizeof(_tempStatusTable[0]);;
-}
-
-// void TemperatureSensor::readInputs(){
-//     _sensorVal = analogRead(_sensorPin);
-// }
-
-// double TemperatureSensor::getTemp(){
-//     double celsius = 0.0;
-//     if(_ignoreTemps) return celsius;
-
-//     int i;
-//     for(i=1; i < _sensorTableLen; i++){
-//         if (_sensorTable[i].input > _sensorVal){
-//             celsius = _sensorTable[i-1].sensorVal + 
-//                 (_sensorVal - _sensorTable[i].input) * 
-//                 (double)(_sensorTable[i].sensorVal - _sensorTable[i-1].sensorVal)/
-//                 (double)(_sensorTable[i].input - _sensorTable[i-1].input);
-//             break;
-//         }
-//     }
-//     return celsius;
-// }
-
-tempStatusNode constructTempStatusNode(double temperature, tempStatusType tempStatus){
+tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVal){
     tempStatusNode node;
-    node.temperature = temperature;
-    node.tempStatus = tempStatus;
+    node.threshold = threshold;
+    node.statusVal = statusVal;
     return node;
 }
 
-tempStatusType TemperatureSensor::getTempStatus( ){
-    if( ignoreTemps ) { return T_NORMAL; }
-    if( tempVal < minTemp ) return T_COLD;
-    tempStatusType tempStatus = T_COLD;
+void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
+    if(regTemp >= minTemp and maxTemp >= regTemp){
+        // _minTemp =      minTemp;
+        // _regTemp =      regTemp;
+        // _maxTemp =      maxTemp;
+        _statusTable = {
+            constructTempStatusNode(minTemp, T_COLD),
+            constructTempStatusNode(regTemp, T_NORMAL),
+            constructTempStatusNode(maxTemp, T_REGULATED)
+        };
+        // _statusTableLen = SIZEOFTABLE(_statusTable) ;
+    }
+}
 
+tempStatusType TemperatureSensor::getTempStatus( ){
+    tempStatusType statusVal = T_HOT;
     int i;
-    for(i=0; i < _tempStatusTableLen ; i++){
-        if(tempVal >= _tempStatusTable[i].temperature){
-            tempStatus = _tempStatusTable[i].tempStatus;
+    for(i=0; i < SIZEOFTABLE(_statusTable) ; i++){
+        if(getSensorVal() < _statusTable[i].threshold){
+            statusVal = _statusTable[i].statusVal;
             break;
         }
     }
-    return tempStatus;
+    return statusVal;
 }
