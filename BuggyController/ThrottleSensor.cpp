@@ -7,6 +7,34 @@ ThrottleSensor::ThrottleSensor(){
     setStatusBounds();
 }
 
+int ThrottleSensor::snprintStatusString(char* buffer, int charsRemaining){
+    char* statusStr = "???";
+    switch (getStatus()) {
+        case TH_ZERO:
+          statusStr = "ZER";
+          break;
+        case TH_NORMAL:
+          statusStr = "NOR";
+          break;
+        case TH_BOOST:
+          statusStr = "BST";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
+
+int ThrottleSensor::snprintReadings(char* buffer, int charsRemaining){
+    char*start = buffer;
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THP:%3d|",(int)(100 * getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THS:");
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|THR:%4d|",(getRawVal()));
+    return charsPrinted;
+
+}
 // throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusType statusVal){
 //     throttleStatusNode node;
 //     node.threshold = threshold;

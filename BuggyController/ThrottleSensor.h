@@ -17,6 +17,8 @@ public:
     ThrottleSensor();
     void                    setStatusBounds(double throttleZero=0.0, double throttleBoost=1.0);
     throttleStatusType      getStatus();
+    int                     snprintReadings(char* buffer, int charsRemaining);
+    int                     snprintStatusString(char* buffer, int charsRemaining);
 protected:
     throttleStatusNode     _statusTable[THROTTLE_STATUS_NODES];
 };

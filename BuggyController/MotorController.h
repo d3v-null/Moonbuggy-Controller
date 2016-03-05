@@ -5,8 +5,14 @@
 #include "TemperatureSensor.h"
 #include "CurrentSensor.h"
 #include "Normalization.h"
-#include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
+
+#if MOTORS > 0
+
+    #include <PID_v1.h>
+    #include <PID_AutoTune_v0.h>
+    #include <librarythatdoesntexist.h>
+
+#endif
 
 typedef enum {M_NEUTRAL, M_REVERSE, M_FORWARD, M_FORWARD_BOOST}     motorModeType;
 

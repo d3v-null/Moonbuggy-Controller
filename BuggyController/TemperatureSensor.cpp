@@ -60,10 +60,9 @@ tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVa
 
 void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
     if(regTemp >= minTemp and maxTemp >= regTemp){
-        int i = 0;
-        _statusTable[i++] = constructTempStatusNode(minTemp, T_COLD);
-        _statusTable[i++] = constructTempStatusNode(regTemp, T_NORMAL);
-        _statusTable[i++] = constructTempStatusNode(maxTemp, T_REGULATED);
+        _statusTable[0].threshold = minTemp; _statusTable[0].statusVal = T_COLD;
+        _statusTable[1].threshold = regTemp; _statusTable[1].statusVal = T_NORMAL;
+        _statusTable[2].threshold = maxTemp; _statusTable[2].statusVal = T_REGULATED;
     }
 }
 

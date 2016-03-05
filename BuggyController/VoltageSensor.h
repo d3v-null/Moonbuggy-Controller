@@ -10,7 +10,7 @@ typedef struct sensorNode {
     double  sensorVal;
 } sensorNode;
 
-// sensorNode constructSensorNode(int input, double sensorVal);
+sensorNode constructSensorNode(int input, double sensorVal);
 int snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
 
 class VoltageSensor {

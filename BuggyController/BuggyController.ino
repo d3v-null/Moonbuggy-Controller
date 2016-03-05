@@ -434,21 +434,41 @@ char* digitalStatusString(int digitalValue){
     }
 }
 
-char* throttleStatusString(throttleStatusType throttleStatus){
-    switch (throttleStatus) {
-        case TH_ZERO:
-          return "ZER";
+// char* throttleStatusString(throttleStatusType throttleStatus){
+//     switch (throttleStatus) {
+//         case TH_ZERO:
+//           return "ZER";
+//           break;
+//         case TH_NORMAL:
+//           return "NOR";
+//           break;
+//         case TH_BOOST:
+//           return "BST";
+//           break;
+//         default:
+//           break;
+//     }
+//   return "???";
+// }
+
+char* tempStatusString(tempStatusType tempStatus){
+    switch (tempStatus) {
+        case T_HOT:
+          return "HOT";
           break;
-        case TH_NORMAL:
-          return "NOR";
+        case T_COLD:
+          return "CLD";
           break;
-        case TH_BOOST:
-          return "BST";
+        case T_NORMAL:
+          return "NRM";
+          break;
+        case T_REGULATED:
+          return "REG";
           break;
         default:
           break;
     }
-  return "???";
+    return "???";
 }
 
 // char* throttleNormString(double throttleNormalized){
@@ -461,25 +481,6 @@ char* throttleStatusString(throttleStatusType throttleStatus){
 //     return buffer;
 // }
 
-// char* tempStatusString(tempStatusType tempStatus){
-//     switch (tempStatus) {
-//         case T_HOT:
-//           return "HOT";
-//           break;
-//         case T_COLD:
-//           return "CLD";
-//           break;
-//         case T_NORMAL:
-//           return "NRM";
-//           break;
-//         case T_REGULATED:
-//           return "REG";
-//           break;
-//         default:
-//           break;
-//     }
-//     return "???";
-// }
 
 // char* tempValString(double tempVal){
 //     char buffer[50];
@@ -491,27 +492,26 @@ void printDebugInfo(){
     char buffer[BUFFSIZE];
     int charsPrinted = 0;
     char*start = buffer;
-    
+
     throttleStatusType throttleStatus = throttleSensor.getStatus();
+    // tempStatusType systemTempStatus = systemTempSensor.getStatus();
 
     charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
     // charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TST:%3d|",throttleSensor.getSensorTableSize());
     // charsPrinted += throttleSensor.snprintSensorTable((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
+    // // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
+    charsPrinted += throttleSensor.snprintReadings((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMR:%3s|",systemTempSensor.);
 
 
 
 
-
-    // char * throttleNormStringVal = throttleNormString(throttleNormalized);
-    // Serial.print(throttleNormStringVal);
-    // Serial.print(",");
-    // Serial.print((unsigned int)&throttleNormStringVal, HEX );
-    // Serial.print("|");
     // char * tempValStringVal = tempValString(systemTempVal);
     // Serial.print(tempValStringVal);
     // Serial.print(",");
