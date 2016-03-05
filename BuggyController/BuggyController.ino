@@ -499,9 +499,9 @@ void printDebugInfo(){
     // charsPrinted += throttleSensor.snprintSensorTable((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
     charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
     charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
 
 
 
