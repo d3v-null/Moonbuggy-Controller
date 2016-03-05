@@ -18,13 +18,12 @@ public:
     void            setSensorType(int sensorType);
     void            setStatusBounds( double minTemp=0.0, double regTemp=0.0, double maxTemp=0.0 );
     tempStatusType  getStatus();
+    // debug
+    int                     snprintReadings(char* buffer, int charsRemaining);
+    int                     snprintStatusString(char* buffer, int charsRemaining);
 private:
     int             _sensorType;
-    // double          _minTemp;
-    // double          _regTemp;
-    // double          _maxTemp;
     tempStatusNode* _statusTable;
-    // int             _statusTableLen;
 };
 
 #endif

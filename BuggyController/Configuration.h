@@ -105,7 +105,7 @@
 
     #define KILLSWITCH_PIN 2
     #define THROTTLE_PIN A0
-    #define VEHICLE_MODE_PIN -1
+    #define ONBOARD_TEMP_PIN A1
 
     #define MOTOR_FIELD_VOLT_H_PIN 2
     #define MOTOR_FIELD_VOLT_L_PIN 3

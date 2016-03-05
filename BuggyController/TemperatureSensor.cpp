@@ -77,3 +77,35 @@ tempStatusType TemperatureSensor::getStatus( ){
     }
     return statusVal;
 }
+
+
+int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining){
+    char* statusStr = "???";
+    switch (getStatus()) {
+        case T_HOT:
+          statusStr = "HOT";
+          break;
+        case T_COLD:
+          statusStr = "CLD";
+          break;
+        case T_NORMAL:
+          statusStr = "NRM";
+          break;
+        case T_REGULATED:
+          statusStr = "REG";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
+
+int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
+    char*start = buffer;
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PER:%3d|",(int)(100 * getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d|",(getRawVal()));
+    return charsPrinted;
+}

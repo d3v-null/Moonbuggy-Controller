@@ -72,37 +72,30 @@ void setup() {
     char*start; 
     int charsPrinted;
 
-    Serial.println("Current throttle ");
-    start = buffer;
-    charsPrinted = 0;
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    Serial.println(buffer); delay(100);
-
-    Serial.println("setting throttle ");
-    start = buffer;
-    charsPrinted = 0;
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(THROTTLE_RAW_MIN));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(THROTTLE_RAW_MAX));
-    Serial.println(buffer); delay(100);
+    if(DEBUG){
+        Serial.println("Throttle PRE Input Constraints ");
+        start = buffer; charsPrinted = 0;
+        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+        Serial.println(buffer); delay(100);
+    }
 
     throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
     
-    Serial.println("Current throttle ");
-    start = buffer;
-    charsPrinted = 0;
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    Serial.println(buffer); delay(100);
+    if(DEBUG){
+        Serial.println("Throttle POST Input Constraints ");
+        start = buffer; charsPrinted = 0;
+        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+        Serial.println(buffer); delay(100);
+    }
 
     throttleSensor.setStatusBounds(THROTTLE_THRESHOLD_ZERO, THROTTLE_THRESHOLD_BOOST);
 
-    Serial.println("throttle post status bounds ");
-    start = buffer;
-    charsPrinted = 0;
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
-    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    Serial.println(buffer); delay(100);
+    if(DEBUG){
+        Serial.println("Throttle POST status bounds ");
+        start = buffer; charsPrinted = 0;
+        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+        Serial.println(buffer); delay(100);
+    }
 
     #ifndef IGNORE_TEMPS
 
@@ -451,25 +444,25 @@ char* digitalStatusString(int digitalValue){
 //   return "???";
 // }
 
-char* tempStatusString(tempStatusType tempStatus){
-    switch (tempStatus) {
-        case T_HOT:
-          return "HOT";
-          break;
-        case T_COLD:
-          return "CLD";
-          break;
-        case T_NORMAL:
-          return "NRM";
-          break;
-        case T_REGULATED:
-          return "REG";
-          break;
-        default:
-          break;
-    }
-    return "???";
-}
+// char* tempStatusString(tempStatusType tempStatus){
+//     switch (tempStatus) {
+//         case T_HOT:
+//           return "HOT";
+//           break;
+//         case T_COLD:
+//           return "CLD";
+//           break;
+//         case T_NORMAL:
+//           return "NRM";
+//           break;
+//         case T_REGULATED:
+//           return "REG";
+//           break;
+//         default:
+//           break;
+//     }
+//     return "???";
+// }
 
 // char* throttleNormString(double throttleNormalized){
 //     char buffer[50];
@@ -493,7 +486,7 @@ void printDebugInfo(){
     int charsPrinted = 0;
     char*start = buffer;
 
-    throttleStatusType throttleStatus = throttleSensor.getStatus();
+    // throttleStatusType throttleStatus = throttleSensor.getStatus();
     // tempStatusType systemTempStatus = systemTempSensor.getStatus();
 
     charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
@@ -504,7 +497,16 @@ void printDebugInfo(){
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
+    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "THR{");
     charsPrinted += throttleSensor.snprintReadings((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "}|");
+
+    #ifndef IGNORE_TEMPS
+        charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TMP{");
+        charsPrinted += systemTempSensor.snprintReadings((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+        charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "}|");
+
+    #endif
 
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMR:%3s|",systemTempSensor.);
