@@ -20,11 +20,26 @@ VoltageSensor::VoltageSensor() {
     _pinsSet = false;
     _pinsInit = false;
     _rawVal = 0;
-    _sensorTable = new sensorNode[2];
-    int i=0;
-    _sensorTable[i++] = constructSensorNode(0,                      0.0);
-    _sensorTable[i++] = constructSensorNode(SYSTEM_ANALOGUE_MAX,    SYSTEM_VCC);
+    int rawVals[] =         {0,     SYSTEM_ANALOGUE_MAX};
+    double sensorVals[] =   {0.0,   SYSTEM_VCC};
+    int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));
+    populateSensorTable(len, rawVals, sensorVals);
 };
+
+VoltageSensor::~VoltageSensor(){
+    delete[] _sensorTable;
+}
+
+void VoltageSensor::populateSensorTable(int len, int rawVals[], double sensorVals[] ){
+    delete[] _sensorTable;
+    _sensorTable = new sensorNode[len];
+    _sensorTableLen = len;
+    int i;
+    for(i=0; i<len; i++){
+        _sensorTable[i].input = rawVals[i];
+        _sensorTable[i].sensorVal = sensorVals[i];
+    }
+}
 
 void VoltageSensor::setPins( int sensorPin ){
     _sensorPin = sensorPin;
@@ -48,9 +63,9 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
     char*start = buffer;
     int charsPrinted = 0;
     int i;
-    for(i=0; i < SIZEOFTABLE(_sensorTable) ; i++){
+    for(i=0; i < _sensorTableLen ; i++){
         if(charsPrinted < charsRemaining){
-            charsPrinted += snprintSensorNode(buffer, charsRemaining - charsPrinted, _sensorTable[i]);
+            charsPrinted += snprintSensorNode((buffer+charsPrinted), charsRemaining - charsPrinted, _sensorTable[i]);
         } else{
             break;
         }
@@ -59,7 +74,7 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
 }
 
 int VoltageSensor::getSensorTableSize(){
-    return SIZEOFTABLE(_sensorTable) ;
+    return _sensorTableLen ;
 }
 
 /** 
@@ -73,10 +88,11 @@ double VoltageSensor::getSensorVal(){
     double sensorVal = 0.0;
     int rawVal = getRawVal();
     int i;
-    for(i=1; i < SIZEOFTABLE(_sensorTable) ; i++){
-        if (_sensorTable[i].input > rawVal){
+    for(i=1; i < _sensorTableLen ; i++){
+        if (_sensorTable[i].input >= rawVal){
+            /* y = mx + c */
             sensorVal = _sensorTable[i-1].sensorVal + 
-                (rawVal - _sensorTable[i].input) * 
+                (rawVal - _sensorTable[i-1].input) * 
                 (double)(_sensorTable[i].sensorVal - _sensorTable[i-1].sensorVal)/
                 (double)(_sensorTable[i].input - _sensorTable[i-1].input);
             break;
@@ -98,15 +114,17 @@ int NormalizedVoltageSensor::getRawVal(){
     );
 }
 
+int NormalizedVoltageSensor::getSensorMin() {return _sensorMin;}
+int NormalizedVoltageSensor::getSensorMax() {return _sensorMax;}
+
 void NormalizedVoltageSensor::setInputConstraints(int minimum, int maximum) {
     if(minimum >= 0 and maximum > minimum and maximum <= SYSTEM_ANALOGUE_MAX){
         _sensorMin = minimum;
         _sensorMax = maximum;
-        delete[] _sensorTable;
-        _sensorTable = new sensorNode[2];
-        int i=0;
-        _sensorTable[i++] = constructSensorNode(_sensorMin,    0.0);
-        _sensorTable[i++] = constructSensorNode(_sensorMax,    1.0);
+        int rawVals[] =         {minimum,    maximum};
+        double sensorVals[] =   {0.0,        1.0};
+        int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));
+        populateSensorTable(len, rawVals, sensorVals);
     }
 }
 
@@ -120,10 +138,9 @@ VoltageDividerSensor::VoltageDividerSensor(){
 
 void VoltageDividerSensor::setSensorMultiplier(double sensorMultiplier){
     if(sensorMultiplier > 0.0){
-        delete[] _sensorTable;
-        _sensorTable = new sensorNode[2];
-        int i=0;
-        _sensorTable[i++] = constructSensorNode(0,                      0.0);
-        _sensorTable[i++] = constructSensorNode(SYSTEM_ANALOGUE_MAX,    sensorMultiplier * SYSTEM_VCC); 
+        int rawVals[] =         {0,   SYSTEM_ANALOGUE_MAX};
+        double sensorVals[] =   {0.0, sensorMultiplier * SYSTEM_VCC};
+        int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));
+        populateSensorTable(len, rawVals, sensorVals);
     }
 }

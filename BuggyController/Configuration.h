@@ -1,8 +1,8 @@
-#include "Arduino.h"
 
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+#include "Arduino.h"
 #define DEBUG true
 
 // This determines the communication speed
@@ -13,7 +13,6 @@
 
 #if DEBUG
 
-    #define BOARD 0
     #define MOTORS 0
 
     #define IGNORE_TEMPS 
@@ -23,16 +22,19 @@
 
 #else
     
-    #define BOARD 1  
     #define MOTORS 2
 
 #endif
+
+#define BOARD 0
+/* Matt, uncomment this line to get it to work on your arduinoi */
+// #define BOARD 1
 
 //===========================================================================
 //============================ Threottle Settings ===========================
 //===========================================================================
 
-#define THROTTLE_RAW_MIN 100
+#define THROTTLE_RAW_MIN 99
 #define THROTTLE_RAW_MAX 999
 #define THROTTLE_THRESHOLD_ZERO 0.05
 #define THROTTLE_THRESHOLD_BOOST 0.90

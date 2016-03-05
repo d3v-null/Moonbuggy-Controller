@@ -7,18 +7,19 @@ ThrottleSensor::ThrottleSensor(){
     setStatusBounds();
 }
 
-throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusType statusVal){
-    throttleStatusNode node;
-    node.threshold = threshold;
-    node.statusVal = statusVal;
-    return node;
-}
+// throttleStatusNode constructThrottleStatusNode(double threshold, throttleStatusType statusVal){
+//     throttleStatusNode node;
+//     node.threshold = threshold;
+//     node.statusVal = statusVal;
+//     return node;
+// }
 
 void ThrottleSensor::setStatusBounds(double throttleZero, double throttleBoost){
     if(throttleZero >= 0.0 and throttleBoost > throttleZero and throttleBoost <= 1.0){
-        int i=0;
-        _statusTable[i++] = constructThrottleStatusNode(throttleZero,  TH_ZERO);
-        _statusTable[i++] = constructThrottleStatusNode(throttleBoost, TH_NORMAL);
+        _statusTable[0].threshold = throttleZero;
+        _statusTable[0].statusVal = TH_ZERO;
+        _statusTable[1].threshold = throttleBoost;
+        _statusTable[1].statusVal = TH_NORMAL;
     }
 }
 

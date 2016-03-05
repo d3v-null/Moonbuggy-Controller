@@ -67,8 +67,42 @@ void setup() {
     throttleSensor = ThrottleSensor();
     throttleSensor.setPins(THROTTLE_PIN);
     throttleSensor.initPins();
+
+    char buffer[BUFFSIZE];
+    char*start; 
+    int charsPrinted;
+
+    Serial.println("Current throttle ");
+    start = buffer;
+    charsPrinted = 0;
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
+    Serial.println(buffer); delay(100);
+
+    Serial.println("setting throttle ");
+    start = buffer;
+    charsPrinted = 0;
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(THROTTLE_RAW_MIN));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(THROTTLE_RAW_MAX));
+    Serial.println(buffer); delay(100);
+
     throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
+    
+    Serial.println("Current throttle ");
+    start = buffer;
+    charsPrinted = 0;
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
+    Serial.println(buffer); delay(100);
+
     throttleSensor.setStatusBounds(THROTTLE_THRESHOLD_ZERO, THROTTLE_THRESHOLD_BOOST);
+
+    Serial.println("throttle post status bounds ");
+    start = buffer;
+    charsPrinted = 0;
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
+    Serial.println(buffer); delay(100);
 
     #ifndef IGNORE_TEMPS
 
@@ -457,17 +491,17 @@ void printDebugInfo(){
     char buffer[BUFFSIZE];
     int charsPrinted = 0;
     char*start = buffer;
-    int throttleRawVal = throttleSensor.getRawVal();
-    double throttleSensorVal = throttleSensor.getSensorVal();
+    
     throttleStatusType throttleStatus = throttleSensor.getStatus();
-    int throttleSensorTableSize = throttleSensor.getSensorTableSize();
 
     charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
-    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TST:%3d|",throttleSensorTableSize);
-    charsPrinted += throttleSensor.snprintSensorTable((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleRawVal));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensorVal));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
+    // charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TST:%3d|",throttleSensor.getSensorTableSize());
+    // charsPrinted += throttleSensor.snprintSensorTable((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
+    charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
 
 
 
