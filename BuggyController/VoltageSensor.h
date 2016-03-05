@@ -11,6 +11,7 @@ typedef struct sensorNode {
 } sensorNode;
 
 sensorNode constructSensorNode(int input, double sensorVal);
+int snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
 
 class VoltageSensor {
 public:
@@ -18,21 +19,24 @@ public:
     void            setPins(int sensorPin);
     void            initPins();
     void            readInputs();
-    int             getRawVal();
+    virtual int     getRawVal();
     double          getSensorVal();
+    //debugging:
+    int             snprintSensorTable(char* buffer, int remainingChars);
+    int             getSensorTableSize();
 protected:
     int             _sensorPin;
     bool            _pinsSet;
     bool            _pinsInit;
     int             _rawVal;
-    sensorNode*     _sensorTable;
+    sensorNode*      _sensorTable;
     // int             _sensorTableLen;
 };
 
 class NormalizedVoltageSensor: public VoltageSensor {
 public:
     NormalizedVoltageSensor();
-    double          getSensorVal();
+    int             getRawVal();
     void            setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
 protected:
     int             _sensorMin;

@@ -24,9 +24,10 @@ void ThrottleSensor::setStatusBounds(double throttleZero, double throttleBoost){
 
 throttleStatusType ThrottleSensor::getStatus(){
     throttleStatusType statusVal = TH_BOOST;
+    double sensorVal = getSensorVal();
     int i;
     for( i=0; i < THROTTLE_STATUS_NODES; i++) {
-        if(getSensorVal() < _statusTable[i].threshold){
+        if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
         } 

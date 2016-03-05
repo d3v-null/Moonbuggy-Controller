@@ -6,10 +6,10 @@
 #include "Configuration.h"
 #include "ThrottleSensor.h"
 #include "MotorController.h"
-#if ! IGNORE_TEMPS
+#ifndef IGNORE_TEMPS
     #include "TemperatureSensor.h"
 #endif
-#if ! IGNORE_BATTERY
+#ifndef IGNORE_BATTERY
     #include "BatterySensor.h"
 #endif
 

@@ -7,7 +7,7 @@
 
 // This determines the communication speed
 #define BAUDRATE 9600
-
+#define BUFFSIZE 100
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1024
 
@@ -33,7 +33,7 @@
 //===========================================================================
 
 #define THROTTLE_RAW_MIN 100
-#define THROTTLE_RAW_MAX 1000
+#define THROTTLE_RAW_MAX 999
 #define THROTTLE_THRESHOLD_ZERO 0.05
 #define THROTTLE_THRESHOLD_BOOST 0.90
 

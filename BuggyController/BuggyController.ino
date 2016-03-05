@@ -35,10 +35,10 @@ phaseType phaseStatus;
 
 // sensors
 ThrottleSensor throttleSensor;
-#if ! IGNORE_BATTERY
+#ifndef IGNORE_BATTERY
     BatterySensor batterySensor;
 #endif
-#if !IGNORE_TEMPS
+#ifndef IGNORE_TEMPS
     TemperatureSensor systemTempSensor;
 #endif
 
@@ -60,7 +60,7 @@ MotorController motorControllers[MOTORS];
 void setup() {
     if(DEBUG) Serial.begin(BAUDRATE);
     if(DEBUG) Serial.println("Initializing");
-    delay(1000);
+    delay(100);
 
     //Set pinmodes
     // pinMode(THROTTLE_PIN, INPUT);
@@ -70,7 +70,7 @@ void setup() {
     throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
     throttleSensor.setStatusBounds(THROTTLE_THRESHOLD_ZERO, THROTTLE_THRESHOLD_BOOST);
 
-    #if ! IGNORE_TEMPS
+    #ifndef IGNORE_TEMPS
 
         systemTempSensor = TemperatureSensor();
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
@@ -80,7 +80,7 @@ void setup() {
 
     #endif
 
-    #if ! IGNORE_BATTERY
+    #ifndef IGNORE_BATTERY
 
         batterySensor = VoltageDividerSensor();
         batterySensor.setPins(BATTERY_VOLT_PIN);
@@ -92,7 +92,9 @@ void setup() {
 
 
     pinMode(KILLSWITCH_PIN, INPUT);
-    if(! IGNORE_MODE) pinMode(VEHICLE_MODE_PIN, INPUT);
+    #ifndef IGNORE_MODE
+        pinMode(VEHICLE_MODE_PIN, INPUT);
+    #endif
 
     #if MOTORS > 0
         Serial.println("Initializing Fields");
@@ -145,6 +147,7 @@ void setup() {
     modeSwitch = LOW;
     phaseStatus = P_FORWARD;
     phaseVal = HIGH;
+    if(DEBUG) Serial.println("Finished Initializing"); delay(100);
 }
 
 void readInputs() {
@@ -152,13 +155,13 @@ void readInputs() {
     killSwitch = digitalRead(KILLSWITCH_PIN);
 
     throttleSensor.readInputs();
-    #if ! IGNORE_TEMPS
+    #ifndef IGNORE_TEMPS
         systemTempSensor.readInputs();
     #endif
-    #if ! IGNORE_BATTERY
+    #ifndef IGNORE_BATTERY
         batterySensor.readInputs();
     #endif
-    #if ! IGNORE_MODE
+    #ifndef IGNORE_MODE
         modeSwitch = digitalRead(VEHICLE_MODE_PIN);
     #endif
 
@@ -184,14 +187,15 @@ void shutdown() {
  * updates variable safetyStatus
  */
 void safetyCheck() {
+    // if(DEBUG) Serial.println("Starting safety check"); delay(100);
     boolean shouldTerminate = false;
     switch (safetyStatus) {
         case S_SAFE:
             if(!shouldTerminate and killSwitch == HIGH){
-                if(DEBUG) Serial.println("Killswitch Engaged");
+                if(DEBUG) Serial.println("Killswitch Engaged"); delay(100);
                 shouldTerminate = true;
             }
-            #if ! IGNORE_TEMPS
+            #ifndef IGNORE_TEMPS
                 if(!shouldTerminate){
                     int i;
                     for(i=0; i<MOTORS; i++){
@@ -228,7 +232,7 @@ void safetyCheck() {
                 }
             #endif
 
-            #if !IGNORE_CURRENTS
+            #ifndef IGNORE_CURRENTS
                 if(!shouldTerminate){
                     int i;
                     for(i=0; i<MOTORS; i++){
@@ -243,7 +247,7 @@ void safetyCheck() {
                 }
             #endif
 
-            #if ! IGNORE_BATTERY
+            #ifndef IGNORE_BATTERY
                 if(!shouldTerminate){
                     switch(batterySensor.getStatus()){
                         case B_LOW:
@@ -274,9 +278,11 @@ void safetyCheck() {
         default:
             break;
     }
+    // if(DEBUG) Serial.println("Finished safety check"); delay(100);
 }
 
 void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
+    // if(DEBUG) Serial.println("Setting Vehicle Mode"); delay(100);
     if(vehicleMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
@@ -336,7 +342,6 @@ void loop() {
     readInputs();
     safetyCheck();
     if(safetyStatus == S_SAFE){
-        // set vehicle mode
         switch (throttleSensor.getStatus()) {
             case TH_ZERO:
                 setVehicleMode(M_NEUTRAL);
@@ -377,40 +382,40 @@ void loop() {
 
         updateOutputs();
     }    
-    // if(DEBUG){
-    //     printDebugInfo();
-    // }
+    if(DEBUG){
+        printDebugInfo();
+    }
 }
 
-// char* digitalStatusString(int digitalValue){
-//     switch (digitalValue) {
-//         case HIGH:
-//           return "ON ";
-//           break;
-//         case LOW:
-//           return "OFF";
-//           break;
-//         default:
-//           return "???";
-//     }
-// }
+char* digitalStatusString(int digitalValue){
+    switch (digitalValue) {
+        case HIGH:
+          return "ON ";
+          break;
+        case LOW:
+          return "OFF";
+          break;
+        default:
+          return "???";
+    }
+}
 
-// char* throttleStatusString(throttleStatusType throttleStatus){
-//     switch (throttleStatus) {
-//         case TH_ZERO:
-//           return "ZER";
-//           break;
-//         case TH_NORMAL:
-//           return "NOR";
-//           break;
-//         case TH_BOOST:
-//           return "BST";
-//           break;
-//         default:
-//           break;
-//     }
-//   return "???";
-// }
+char* throttleStatusString(throttleStatusType throttleStatus){
+    switch (throttleStatus) {
+        case TH_ZERO:
+          return "ZER";
+          break;
+        case TH_NORMAL:
+          return "NOR";
+          break;
+        case TH_BOOST:
+          return "BST";
+          break;
+        default:
+          break;
+    }
+  return "???";
+}
 
 // char* throttleNormString(double throttleNormalized){
 //     char buffer[50];
@@ -448,69 +453,88 @@ void loop() {
 //     return buffer;
 // }
 
-// void printDebugInfo(){
-//     char * throttleNormStringVal = throttleNormString(throttleNormalized);
-//     Serial.print(throttleNormStringVal);
-//     Serial.print(",");
-//     Serial.print((unsigned int)&throttleNormStringVal, HEX );
-//     Serial.print("|");
-//     char * tempValStringVal = tempValString(systemTempVal);
-//     Serial.print(tempValStringVal);
-//     Serial.print(",");
-//     Serial.print((unsigned int)&tempValStringVal, HEX );
-//     Serial.print("|");
-//     char * tempStatusStringVal = tempStatusString(TemperatureSensor.getTempStatus());
-//     Serial.print(tempStatusStringVal);
-//     Serial.print(",");
-//     Serial.print((unsigned int)&tempStatusStringVal, HEX );
-//     Serial.print("|");
-//     Serial.println();
+void printDebugInfo(){
+    char buffer[BUFFSIZE];
+    int charsPrinted = 0;
+    char*start = buffer;
+    int throttleRawVal = throttleSensor.getRawVal();
+    double throttleSensorVal = throttleSensor.getSensorVal();
+    throttleStatusType throttleStatus = throttleSensor.getStatus();
+    int throttleSensorTableSize = throttleSensor.getSensorTableSize();
 
-//     char* parameters[] = {
-//         // "SSS",
-//         "KSW",
-//         // "VMS",
-//         "THS",
-//         // "THZ",
-//         // "THN",
-//         // "THB",
-//         "THV",
-//         "TMS",
-//         "TMV",
-//         "TMR"
-//     };
-//     char* values[] = {
-//         // SSS
-//         digitalStatusString(killSwitch),
-//         // VMS
-//         throttleStatusString(throttleSensor.getThrottleStatus()),
-//         throttleNormStringVal,
-//         tempStatusStringVal
-//     };
-//     int parLen = sizeof(parameters) / sizeof(parameters[0]);
-//     int valLen = sizeof(values) / sizeof(values[0]);
-//     int minLen = min(parLen, valLen);
-//     int i;
-//     for(i=0; i<minLen; i++){
-//         if(DEBUG) {
-//             Serial.print('|');
-//             Serial.print(parameters[i]);
-//             // Serial.print((int)parameters[i][3]);
-//             Serial.print(':');
-//             Serial.print(values[i]);
-//             // int j;
-//             // for(j=0; j<4; j++){
-//             //     Serial.print(values[i][j]);
-//             // }
-//             // Serial.print((int)values[i][3]);
-//             // free(parameters[i]);
-//             // free(values[i]);
-//         }
-//     }
-//     Serial.println();
-//     // |KSW|VMP|THS|THR|SSS|SMD - system
-//     // TPN|ASN|AVN|FVN|FPN| - per motor
+    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
+    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TST:%3d|",throttleSensorTableSize);
+    charsPrinted += throttleSensor.snprintSensorTable((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleRawVal));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensorVal));
+    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
 
-// }
+
+
+
+
+    // char * throttleNormStringVal = throttleNormString(throttleNormalized);
+    // Serial.print(throttleNormStringVal);
+    // Serial.print(",");
+    // Serial.print((unsigned int)&throttleNormStringVal, HEX );
+    // Serial.print("|");
+    // char * tempValStringVal = tempValString(systemTempVal);
+    // Serial.print(tempValStringVal);
+    // Serial.print(",");
+    // Serial.print((unsigned int)&tempValStringVal, HEX );
+    // Serial.print("|");
+    // char * tempStatusStringVal = tempStatusString(TemperatureSensor.getTempStatus());
+    // Serial.print(tempStatusStringVal);
+    // Serial.print(",");
+    // Serial.print((unsigned int)&tempStatusStringVal, HEX );
+    // Serial.print("|");
+    // Serial.println();
+
+    // char* parameters[] = {
+    //     // "SSS",
+    //     "KSW",
+    //     // "VMS",
+    //     "THS",
+    //     // "THZ",
+    //     // "THN",
+    //     // "THB",
+    //     "THV",
+    //     "TMS",
+    //     "TMV",
+    //     "TMR"
+    // };
+    // char* values[] = {
+    //     // SSS
+    //     digitalStatusString(killSwitch),
+    //     // VMS
+    //     throttleStatusString(throttleSensor.getThrottleStatus()),
+    //     throttleNormStringVal,
+    //     tempStatusStringVal
+    // };
+    // int parLen = sizeof(parameters) / sizeof(parameters[0]);
+    // int valLen = sizeof(values) / sizeof(values[0]);
+    // int minLen = min(parLen, valLen);
+    // int i;
+    // for(i=0; i<minLen; i++){
+    //     if(DEBUG) {
+    //         Serial.print('|');
+    //         Serial.print(parameters[i]);
+    //         // Serial.print((int)parameters[i][3]);
+    //         Serial.print(':');
+    //         Serial.print(values[i]);
+    //         // int j;
+    //         // for(j=0; j<4; j++){
+    //         //     Serial.print(values[i][j]);
+    //         // }
+    //         // Serial.print((int)values[i][3]);
+    //         // free(parameters[i]);
+    //         // free(values[i]);
+    //     }
+    // }
+    Serial.println(buffer); delay(100);
+    // |KSW|VMP|THS|THR|SSS|SMD - system
+    // TPN|ASN|AVN|FVN|FPN| - per motor
+
+}
 
 
