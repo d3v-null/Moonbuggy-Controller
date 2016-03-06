@@ -17,7 +17,7 @@
     #define MOTORS 0
 
     // #define IGNORE_THROTTLE
-    #define IGNORE_TEMPS 
+    // #define IGNORE_TEMPS 
     #define IGNORE_CURRENTS
     #define IGNORE_BATTERY
     #define IGNORE_MODE

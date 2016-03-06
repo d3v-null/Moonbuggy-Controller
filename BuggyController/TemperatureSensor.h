@@ -26,7 +26,7 @@ public:
 
 private:
     int             _sensorType;
-    tempStatusNode* _statusTable;
+    tempStatusNode _statusTable[TEMPERATURE_STATUS_NODES];
 };
 
 #endif

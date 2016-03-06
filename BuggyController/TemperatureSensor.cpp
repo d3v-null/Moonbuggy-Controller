@@ -21,16 +21,13 @@
 
 #include "TemperatureSensor.h"
 
-sensorNode tempTable_1[] = {
-    constructSensorNode(0,                      300.0),
-    constructSensorNode(SYSTEM_ANALOGUE_MAX,    0.0)
-};
+int rawVals_1[]       = {0,     SYSTEM_ANALOGUE_MAX};
+double sensorVals_1[] = {300.0, 0.0};
+int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
 
 TemperatureSensor::TemperatureSensor(){
-    _sensorType = 1;
-    _sensorTable = tempTable_1;
-    // _sensorTableLen = SIZEOFTABLE(_sensorTable);
     setStatusBounds();
+    populateSensorTable(len_1, rawVals_1, sensorVals_1);
 }
 
 /**
@@ -39,13 +36,20 @@ TemperatureSensor::TemperatureSensor(){
  */
 void TemperatureSensor::setSensorType(int sensorType){
     if(_sensorType != sensorType){
+        int* rawVals;
+        double* sensorVals;
+        int len = 0;
+
         switch(sensorType){
             case 1:
-                _sensorTable = tempTable_1;
+                rawVals = rawVals_1;
+                sensorVals = sensorVals_1;
+                len = len_1;
                 break;
             default:
                 return;
         }
+        populateSensorTable(len, rawVals, sensorVals);
         // _sensorTableLen = getSensorTableSize(_sensorTable);
         _sensorType = sensorType;
     }
