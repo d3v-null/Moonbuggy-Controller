@@ -9,7 +9,7 @@ typedef struct batteryStatusNode {
     batteryStatusType   statusVal;
 } batteryStatusNode;
 
-#define BATTERY_STATUS_NODES 2
+#define BATTERY_STATUS_NODES 2 
 
 class BatterySensor: public VoltageDividerSensor {
 public:

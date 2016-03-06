@@ -4,10 +4,11 @@
 
 #include "Arduino.h"
 #define DEBUG true
+#define DEBUG_PRINT_DELAY 100
 
 // This determines the communication speed
 #define BAUDRATE 9600
-#define BUFFSIZE 100
+#define BUFFSIZE 255
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1024
 
@@ -15,6 +16,7 @@
 
     #define MOTORS 0
 
+    // #define IGNORE_THROTTLE
     #define IGNORE_TEMPS 
     #define IGNORE_CURRENTS
     #define IGNORE_BATTERY
@@ -26,18 +28,19 @@
 
 #endif
 
-#define BOARD 0
 /* Matt, uncomment this line to get it to work on your arduinoi */
+// #define BOARD 0
 // #define BOARD 1
+#define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================
 //===========================================================================
 
-#define THROTTLE_RAW_MIN 99
-#define THROTTLE_RAW_MAX 999
-#define THROTTLE_THRESHOLD_ZERO 0.05
+#define THROTTLE_RAW_MIN 180
+#define THROTTLE_RAW_MAX 810
 #define THROTTLE_THRESHOLD_BOOST 0.90
+#define THROTTLE_THRESHOLD_ZERO 0.05
 
 //===========================================================================
 //============================= Thermal Settings ============================
@@ -112,7 +115,8 @@
 
 #endif
 
-#if BOARD == 1
+
+#if BOARD ==  1/*Arduino Mega w/ shield */
 
     #define KILLSWITCH_PIN 41
     #define THROTTLE_PIN A13    
@@ -138,7 +142,13 @@
 
 #endif
 
+#if BOARD == 2 /*Arduino Uno w/ modified shield */
 
+    #define KILLSWITCH_PIN 8
+    #define THROTTLE_PIN A3
+    #define ONBOARD_TEMP_PIN A4
+
+#endif
 
 
 #endif

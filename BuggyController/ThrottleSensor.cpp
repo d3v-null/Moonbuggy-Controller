@@ -57,6 +57,7 @@ int ThrottleSensor::snprintStatusString(char* buffer, int charsRemaining){
 int ThrottleSensor::snprintReadings(char* buffer, int charsRemaining){
     char*start = buffer;
     int charsPrinted = 0;
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PIN:%3d|",(int)(_sensorPin) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PER:%3d|",(int)(100 * getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted));

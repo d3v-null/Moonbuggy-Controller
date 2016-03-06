@@ -58,56 +58,75 @@ int fieldVal;
 MotorController motorControllers[MOTORS];
 
 void setup() {
-    if(DEBUG) Serial.begin(BAUDRATE);
-    if(DEBUG) Serial.println("Initializing");
-    delay(100);
+    if(DEBUG) {Serial.begin(BAUDRATE); delay(DEBUG_PRINT_DELAY);} 
+    if(DEBUG) {Serial.println("Initializing"); delay(DEBUG_PRINT_DELAY);} 
 
-    //Set pinmodes
-    // pinMode(THROTTLE_PIN, INPUT);
-    throttleSensor = ThrottleSensor();
-    throttleSensor.setPins(THROTTLE_PIN);
-    throttleSensor.initPins();
+    if(DEBUG) {Serial.println("Initializing Killswitch"); delay(DEBUG_PRINT_DELAY);} 
+    pinMode(KILLSWITCH_PIN, INPUT);
 
     char buffer[BUFFSIZE];
     char*start; 
     int charsPrinted;
 
-    if(DEBUG){
-        Serial.println("Throttle PRE Input Constraints ");
-        start = buffer; charsPrinted = 0;
-        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
-        Serial.println(buffer); delay(100);
-    }
+    #ifndef IGNORE_THROTTLE
 
-    throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
-    
-    if(DEBUG){
-        Serial.println("Throttle POST Input Constraints ");
-        start = buffer; charsPrinted = 0;
-        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
-        Serial.println(buffer); delay(100);
-    }
+        if(DEBUG) {Serial.println("Initializing Throttle"); delay(DEBUG_PRINT_DELAY);} 
 
-    throttleSensor.setStatusBounds(THROTTLE_THRESHOLD_ZERO, THROTTLE_THRESHOLD_BOOST);
+        //Set pinmodes
+        // pinMode(THROTTLE_PIN, INPUT);
+        throttleSensor = ThrottleSensor();
+        if(DEBUG){ Serial.println("Init Throttle object"); delay(DEBUG_PRINT_DELAY);}
+        throttleSensor.setPins(THROTTLE_PIN);
+        if(DEBUG){ Serial.println("set Throttle pins"); delay(DEBUG_PRINT_DELAY);}
+        throttleSensor.initPins();
+        if(DEBUG){ Serial.println("init Throttle pins"); delay(DEBUG_PRINT_DELAY);}
 
-    if(DEBUG){
-        Serial.println("Throttle POST status bounds ");
-        start = buffer; charsPrinted = 0;
-        charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
-        Serial.println(buffer); delay(100);
-    }
+        if(DEBUG){
+            Serial.println("Throttle PRE Input Constraints ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
+
+        throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
+        
+        if(DEBUG){
+            Serial.println("Throttle POST Input Constraints ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
+
+        throttleSensor.setStatusBounds(THROTTLE_THRESHOLD_ZERO, THROTTLE_THRESHOLD_BOOST);
+
+        if(DEBUG){
+            Serial.println("Throttle POST status bounds ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
+    #endif
+
 
     #ifndef IGNORE_TEMPS
 
+        if(DEBUG) {Serial.println("Initializing Temp"); delay(DEBUG_PRINT_DELAY);} 
+
         systemTempSensor = TemperatureSensor();
+        if(DEBUG){ Serial.println("Init Temp object"); delay(DEBUG_PRINT_DELAY);}
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
+        if(DEBUG){ Serial.println("set Temp pins"); delay(DEBUG_PRINT_DELAY);}
         systemTempSensor.initPins();
+        if(DEBUG){ Serial.println("init Temp pins"); delay(DEBUG_PRINT_DELAY);}
+
         systemTempSensor.setSensorType(TEMP_SENSOR_ONBOARD);
         systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
 
     #endif
 
     #ifndef IGNORE_BATTERY
+
+        if(DEBUG) {Serial.println("Initializing Battery"); delay(DEBUG_PRINT_DELAY);} 
 
         batterySensor = VoltageDividerSensor();
         batterySensor.setPins(BATTERY_VOLT_PIN);
@@ -117,9 +136,8 @@ void setup() {
     
     #endif
 
-
-    pinMode(KILLSWITCH_PIN, INPUT);
     #ifndef IGNORE_MODE
+        if(DEBUG) {Serial.println("Initializing VehicleMode"); delay(DEBUG_PRINT_DELAY);} 
         pinMode(VEHICLE_MODE_PIN, INPUT);
     #endif
 
@@ -174,7 +192,7 @@ void setup() {
     modeSwitch = LOW;
     phaseStatus = P_FORWARD;
     phaseVal = HIGH;
-    if(DEBUG) Serial.println("Finished Initializing"); delay(100);
+    if(DEBUG) Serial.println("Finished Initializing"); delay(DEBUG_PRINT_DELAY);
 }
 
 void readInputs() {
@@ -214,12 +232,12 @@ void shutdown() {
  * updates variable safetyStatus
  */
 void safetyCheck() {
-    // if(DEBUG) Serial.println("Starting safety check"); delay(100);
+    // if(DEBUG) Serial.println("Starting safety check"); delay(DEBUG_PRINT_DELAY);
     boolean shouldTerminate = false;
     switch (safetyStatus) {
         case S_SAFE:
             if(!shouldTerminate and killSwitch == HIGH){
-                if(DEBUG) Serial.println("Killswitch Engaged"); delay(100);
+                if(DEBUG) Serial.println("Killswitch Engaged"); delay(DEBUG_PRINT_DELAY);
                 shouldTerminate = true;
             }
             #ifndef IGNORE_TEMPS
@@ -305,11 +323,11 @@ void safetyCheck() {
         default:
             break;
     }
-    // if(DEBUG) Serial.println("Finished safety check"); delay(100);
+    // if(DEBUG) Serial.println("Finished safety check"); delay(DEBUG_PRINT_DELAY);
 }
 
 void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
-    // if(DEBUG) Serial.println("Setting Vehicle Mode"); delay(100);
+    // if(DEBUG) Serial.println("Setting Vehicle Mode"); delay(DEBUG_PRINT_DELAY);
     if(vehicleMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
@@ -497,9 +515,14 @@ void printDebugInfo(){
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
     // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
-    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "THR{");
-    charsPrinted += throttleSensor.snprintReadings((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
-    charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "}|");
+
+    #ifndef IGNORE_THROTTLE
+
+        charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "THR{");
+        charsPrinted += throttleSensor.snprintReadings((start+charsPrinted), abs(BUFFSIZE-charsPrinted));
+        charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "}|");
+
+    #endif
 
     #ifndef IGNORE_TEMPS
         charsPrinted += snprintf((start+charsPrinted), abs(BUFFSIZE-charsPrinted), "TMP{");
@@ -567,7 +590,7 @@ void printDebugInfo(){
     //         // free(values[i]);
     //     }
     // }
-    Serial.println(buffer); delay(100);
+    Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
     // |KSW|VMP|THS|THR|SSS|SMD - system
     // TPN|ASN|AVN|FVN|FPN| - per motor
 
