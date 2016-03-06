@@ -36,9 +36,9 @@ throttleStatusType ThrottleSensor::getStatus(){
     return statusVal;
 }
 
-int ThrottleSensor::snprintStatusString(char* buffer, int charsRemaining){
+int ThrottleSensor::snprintStatusString(char* buffer, int charsRemaining, throttleStatusType statusVal){
     char* statusStr = "???";
-    switch (getStatus()) {
+    switch (statusVal) {
         case TH_ZERO:
           statusStr = "ZER";
           break;
@@ -54,13 +54,35 @@ int ThrottleSensor::snprintStatusString(char* buffer, int charsRemaining){
     return snprintf(buffer, charsRemaining, statusStr);
 }
 
+int ThrottleSensor::snprintStatusNode(char* buffer, int charsRemaining, throttleStatusNode node){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "{%4d:", (int)(100 * node.threshold) );
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), node.statusVal );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "}" );
+    return charsPrinted;
+}
+
+int ThrottleSensor::snprintStatusTable(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
+    int i;
+    for( i=0; i < THROTTLE_STATUS_NODES; i++) {
+        charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
+    }
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
+    return charsPrinted;
+}
+
 int ThrottleSensor::snprintReadings(char* buffer, int charsRemaining){
-    char*start = buffer;
     int charsPrinted = 0;
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PIN:%3d|",(int)(_sensorPin) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT:");
+    charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STT:");
+    charsPrinted += snprintStatusTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PER:%3d|",(int)(100 * getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
-    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d|",(getRawVal()));
     return charsPrinted;
 }

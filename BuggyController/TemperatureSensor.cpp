@@ -80,9 +80,9 @@ tempStatusType TemperatureSensor::getStatus( ){
 }
 
 
-int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining){
+int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal ){
     char* statusStr = "???";
-    switch (getStatus()) {
+    switch ( statusVal ) {
         case T_HOT:
           statusStr = "HOT";
           break;
@@ -101,12 +101,32 @@ int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining){
     return snprintf(buffer, charsRemaining, statusStr);
 }
 
+int TemperatureSensor::snprintStatusNode(char* buffer, int charsRemaining, tempStatusNode node){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "{%4d:", (int)(node.threshold) );
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), node.statusVal );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "}" );
+    return charsPrinted;
+}
+
+int TemperatureSensor::snprintStatusTable(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
+    int i;
+    for( i=0; i < TEMPERATURE_STATUS_NODES; i++) {
+        charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
+    }
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
+    return charsPrinted;
+}
+
 int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
     char*start = buffer;
     int charsPrinted = 0;
+    charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PER:%3d|",(int)(100 * getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
-    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));
     return charsPrinted;
 }

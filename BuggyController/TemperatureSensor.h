@@ -20,7 +20,10 @@ public:
     tempStatusType  getStatus();
     // debug
     int                     snprintReadings(char* buffer, int charsRemaining);
-    int                     snprintStatusString(char* buffer, int charsRemaining);
+    int                     snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal );
+    int                     snprintStatusNode(char* buffer, int charsRemaining, tempStatusNode node);
+    int                     snprintStatusTable(char* buffer, int charsRemaining);
+
 private:
     int             _sensorType;
     tempStatusNode* _statusTable;

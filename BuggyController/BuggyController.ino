@@ -76,8 +76,20 @@ void setup() {
         // pinMode(THROTTLE_PIN, INPUT);
         throttleSensor = ThrottleSensor();
         if(DEBUG){ Serial.println("Init Throttle object"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){
+            Serial.println("Throttle POST create ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
         throttleSensor.setPins(THROTTLE_PIN);
         if(DEBUG){ Serial.println("set Throttle pins"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){
+            Serial.println("Throttle POST set pins ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
         throttleSensor.initPins();
         if(DEBUG){ Serial.println("init Throttle pins"); delay(DEBUG_PRINT_DELAY);}
 
@@ -114,10 +126,28 @@ void setup() {
 
         systemTempSensor = TemperatureSensor();
         if(DEBUG){ Serial.println("Init Temp object"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){
+            Serial.println("Throttle POST temp object ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
         if(DEBUG){ Serial.println("set Temp pins"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){
+            Serial.println("Throttle POST temp pins ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
         systemTempSensor.initPins();
         if(DEBUG){ Serial.println("init Temp pins"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){
+            Serial.println("Throttle POST init pins ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+        }
 
         systemTempSensor.setSensorType(TEMP_SENSOR_ONBOARD);
         systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);

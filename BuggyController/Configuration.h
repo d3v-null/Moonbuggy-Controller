@@ -4,13 +4,13 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_DELAY 100
+#define DEBUG_PRINT_DELAY 200
 
 // This determines the communication speed
 #define BAUDRATE 9600
 #define BUFFSIZE 255
 #define SYSTEM_VCC 5.0
-#define SYSTEM_ANALOGUE_MAX 1024
+#define SYSTEM_ANALOGUE_MAX 1023
 
 #if DEBUG
 

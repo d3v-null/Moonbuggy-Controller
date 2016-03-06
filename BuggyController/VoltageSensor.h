@@ -24,6 +24,7 @@ public:
     double          getSensorVal();
     //debugging:
     int             getSensorTableSize();
+    int             snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
     int             snprintSensorTable(char* buffer, int remainingChars);
 protected:
     void            populateSensorTable(int len, int rawVals[], double sensorVals[] );
