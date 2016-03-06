@@ -21,8 +21,8 @@
 
 #include "TemperatureSensor.h"
 
-int rawVals_1[]       = {0,     SYSTEM_ANALOGUE_MAX};
-double sensorVals_1[] = {300.0, 0.0};
+int rawVals_1[]       = {0,      102, 526,   600, SYSTEM_ANALOGUE_MAX};
+double sensorVals_1[] = {-100.0, 0.0, 27.0,  34.0, 100.0};
 int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
 
 TemperatureSensor::TemperatureSensor(){
