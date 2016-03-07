@@ -17,7 +17,7 @@ VoltageSensor::VoltageSensor() {
     _pinsSet = false;
     _pinsInit = false;
     _rawVal = 0;
-    initSensorTable();
+    // initSensorTable();
 };
 
 void VoltageSensor::initSensorTable(){
@@ -33,11 +33,6 @@ VoltageSensor::~VoltageSensor(){
 
 void VoltageSensor::populateSensorTable(int len, int rawVals[], double sensorVals[] ){
     _sensorTableLen = len;
-    if(_sensorTable != 0){
-        // for(int i=0; i<len; i++ ){
-        //     free(&_sensorTable[i]);
-        // }
-    }
     _sensorTable = new sensorNode[len];
     int i;
     for(i=0; i<len; i++){

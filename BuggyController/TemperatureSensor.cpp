@@ -21,9 +21,7 @@
 
 #include "TemperatureSensor.h"
 
-int rawVals_1[]       = {0,      102, 526,   600, SYSTEM_ANALOGUE_MAX};
-double sensorVals_1[] = {-100.0, 0.0, 27.0,  34.0, 100.0};
-int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
+// 593 -> 34 
 
 TemperatureSensor::TemperatureSensor(){
     setStatusBounds();
@@ -31,6 +29,9 @@ TemperatureSensor::TemperatureSensor(){
 }
 
 void TemperatureSensor::initSensorTable(){
+    int rawVals_1[]       = {0,      102, 526,   600, SYSTEM_ANALOGUE_MAX};
+    double sensorVals_1[] = {-100.0, 0.0, 27.0,  34.0, 100.0};
+    int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
     populateSensorTable(len_1, rawVals_1, sensorVals_1);
 }
 
@@ -139,7 +140,7 @@ int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
     charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:%3d|",(int)(100 * getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:%3d|",(int)(getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));

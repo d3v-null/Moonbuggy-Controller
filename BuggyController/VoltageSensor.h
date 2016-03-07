@@ -44,8 +44,8 @@ public:
     virtual void    setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
     int             getSensorMin();
     int             getSensorMax();
-protected:
     void            initSensorTable();
+protected:
     int             _sensorMin;
     int             _sensorMax;
 };
@@ -54,7 +54,6 @@ class VoltageDividerSensor: public VoltageSensor {
 public:
     VoltageDividerSensor();
     virtual void    setSensorMultiplier(double sensorMultiplier = 1.0);
-protected:
     void            initSensorTable();
 };
 
