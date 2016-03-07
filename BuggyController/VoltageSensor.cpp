@@ -13,24 +13,31 @@ sensorNode constructSensorNode(int input, double sensorVal){
 
 VoltageSensor::VoltageSensor() {
     // Serial.println("VoltageSensor Constructor"); delay(100);
-    _sensorPin = -1;
+    // _sensorPin = -1;
     _pinsSet = false;
     _pinsInit = false;
-    _sensorTable = new sensorNode[2];
     _rawVal = 0;
+    initSensorTable();
+};
+
+void VoltageSensor::initSensorTable(){
     int rawVals[] =         {0,     SYSTEM_ANALOGUE_MAX};
     double sensorVals[] =   {0.0,   SYSTEM_VCC};
     int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));
     populateSensorTable(len, rawVals, sensorVals);
-};
+}
 
 VoltageSensor::~VoltageSensor(){
-    delete[] _sensorTable;
+    return;
 }
 
 void VoltageSensor::populateSensorTable(int len, int rawVals[], double sensorVals[] ){
     _sensorTableLen = len;
-    delete[] _sensorTable;
+    if(_sensorTable != 0){
+        // for(int i=0; i<len; i++ ){
+        //     free(&_sensorTable[i]);
+        // }
+    }
     _sensorTable = new sensorNode[len];
     int i;
     for(i=0; i<len; i++){
@@ -64,11 +71,12 @@ int VoltageSensor::snprintSensorNode(char* buffer, int charsRemaining, sensorNod
 int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     int i;
-    charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "[");
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "@%d", (int)(_sensorTable)%1000);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
     for(i=0; i < _sensorTableLen ; i++){
-        charsPrinted += snprintSensorNode((buffer+charsPrinted), charsRemaining - charsPrinted, _sensorTable[i]);
+        charsPrinted += snprintSensorNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _sensorTable[i]);
     }
-    charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "]");
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
     return charsPrinted;
 }
 
@@ -100,8 +108,9 @@ double VoltageSensor::getSensorVal(){
     return sensorVal;
 }
 
-NormalizedVoltageSensor::NormalizedVoltageSensor() {
-    // Serial.println("NormalizedVoltageSensor Constructor"); delay(100);
+NormalizedVoltageSensor::NormalizedVoltageSensor() {}
+
+void NormalizedVoltageSensor::initSensorTable(){
     setInputConstraints(0,  SYSTEM_ANALOGUE_MAX);
 }
 
@@ -128,11 +137,9 @@ void NormalizedVoltageSensor::setInputConstraints(int minimum, int maximum) {
     }
 }
 
-// double NormalizedVoltageSensor::getSensorVal(){
-//     return VoltageSensor::getSensorVal();
-// }
+VoltageDividerSensor::VoltageDividerSensor(){}
 
-VoltageDividerSensor::VoltageDividerSensor(){
+void VoltageDividerSensor::initSensorTable(){
     setSensorMultiplier();
 }
 

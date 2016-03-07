@@ -23,8 +23,8 @@ public:
     int                     snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal );
     int                     snprintStatusNode(char* buffer, int charsRemaining, tempStatusNode node);
     int                     snprintStatusTable(char* buffer, int charsRemaining);
-
-private:
+protected:
+    void            initSensorTable();
     int             _sensorType;
     tempStatusNode _statusTable[TEMPERATURE_STATUS_NODES];
 };

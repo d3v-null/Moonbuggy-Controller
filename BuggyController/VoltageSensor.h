@@ -21,13 +21,14 @@ public:
     void            initPins();
     void            readInputs();
     virtual int     getRawVal();
-    double          getSensorVal();
+    virtual double  getSensorVal();
     //debugging:
-    int             getSensorTableSize();
-    int             snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
-    int             snprintSensorTable(char* buffer, int remainingChars);
+    virtual int     getSensorTableSize();
+    virtual int     snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
+    virtual int     snprintSensorTable(char* buffer, int remainingChars);
 protected:
-    void            populateSensorTable(int len, int rawVals[], double sensorVals[] );
+    virtual void    initSensorTable();
+    virtual void    populateSensorTable(int len, int rawVals[], double sensorVals[] );
     int             _sensorPin;
     bool            _pinsSet;
     bool            _pinsInit;
@@ -40,10 +41,11 @@ class NormalizedVoltageSensor: public VoltageSensor {
 public:
     NormalizedVoltageSensor();
     int             getRawVal();
-    void            setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
+    virtual void    setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
     int             getSensorMin();
     int             getSensorMax();
 protected:
+    void            initSensorTable();
     int             _sensorMin;
     int             _sensorMax;
 };
@@ -51,7 +53,9 @@ protected:
 class VoltageDividerSensor: public VoltageSensor {
 public:
     VoltageDividerSensor();
-    void            setSensorMultiplier(double sensorMultiplier = 1.0);
+    virtual void    setSensorMultiplier(double sensorMultiplier = 1.0);
+protected:
+    void            initSensorTable();
 };
 
 #endif

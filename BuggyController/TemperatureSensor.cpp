@@ -27,46 +27,56 @@ int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
 
 TemperatureSensor::TemperatureSensor(){
     setStatusBounds();
+    // populateSensorTable(len_1, rawVals_1, sensorVals_1);
+}
+
+void TemperatureSensor::initSensorTable(){
     populateSensorTable(len_1, rawVals_1, sensorVals_1);
 }
 
-/**
- * Sets the sensorType, tempTable and tempTableLen 
- * if the sensorType is new and valid
- */
-void TemperatureSensor::setSensorType(int sensorType){
-    if(_sensorType != sensorType){
-        int* rawVals;
-        double* sensorVals;
-        int len = 0;
+// /**
+//  * Sets the sensorType, tempTable and tempTableLen 
+//  * if the sensorType is new and valid
+//  */
+// void TemperatureSensor::setSensorType(int sensorType){
+//     if(_sensorType != sensorType){
+//         int* rawVals;
+//         double* sensorVals;
+//         int len = 0;
 
-        switch(sensorType){
-            case 1:
-                rawVals = rawVals_1;
-                sensorVals = sensorVals_1;
-                len = len_1;
-                break;
-            default:
-                return;
-        }
-        populateSensorTable(len, rawVals, sensorVals);
-        // _sensorTableLen = getSensorTableSize(_sensorTable);
-        _sensorType = sensorType;
-    }
-}
+//         switch(sensorType){
+//             case 1:
+//                 rawVals = rawVals_1;
+//                 sensorVals = sensorVals_1;
+//                 len = len_1;
+//                 break;
+//             default:
+//                 return;
+//         }
+//         populateSensorTable(len, rawVals, sensorVals);
+//         // _sensorTableLen = getSensorTableSize(_sensorTable);
+//         _sensorType = sensorType;
+//     }
+// }
 
-tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVal){
-    tempStatusNode node;
-    node.threshold = threshold;
-    node.statusVal = statusVal;
-    return node;
-}
+// tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVal){
+//     tempStatusNode node;
+//     node.threshold = threshold;
+//     node.statusVal = statusVal;
+//     return node;
+// }
 
 void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
     if(regTemp >= minTemp and maxTemp >= regTemp){
-        _statusTable[0].threshold = minTemp; _statusTable[0].statusVal = T_COLD;
-        _statusTable[1].threshold = regTemp; _statusTable[1].statusVal = T_NORMAL;
-        _statusTable[2].threshold = maxTemp; _statusTable[2].statusVal = T_REGULATED;
+        double thresholds[] =       {minTemp,   regTemp,  maxTemp};
+        tempStatusType statuses[] = {T_COLD,    T_NORMAL, T_REGULATED};
+        for(int i=0; i<TEMPERATURE_STATUS_NODES; i++){
+            _statusTable[i].threshold = thresholds[i];
+            _statusTable[i].statusVal = statuses[i];
+        }
+        // _statusTable[0].threshold = minTemp; _statusTable[0].statusVal = T_COLD;
+        // _statusTable[1].threshold = regTemp; _statusTable[1].statusVal = T_NORMAL;
+        // _statusTable[2].threshold = maxTemp; _statusTable[2].statusVal = T_REGULATED;
     }
 }
 
@@ -127,8 +137,9 @@ int TemperatureSensor::snprintStatusTable(char* buffer, int charsRemaining){
 int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
     char*start = buffer;
     int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
     charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PER:%3d|",(int)(100 * getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:%3d|",(int)(100 * getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));

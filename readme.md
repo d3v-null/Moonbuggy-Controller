@@ -6,9 +6,7 @@ Requirements:
 
 TODO:
 
-TemperatureSensor
-ThrottleSensor
-BatterySensor
-CurrentSensor
-MotorController::updateOutputs()
-BuggyController: phaseVal and fieldVal
+move enums into class definitions http://stackoverflow.com/questions/8703743/using-enum-says-invalid-conversion-from-int-to-type
+nums as integers, cast
+integer declaration in for loop
+implement status nodes length as static class variable
