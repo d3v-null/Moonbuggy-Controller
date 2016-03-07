@@ -19,7 +19,7 @@
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
     #define IGNORE_CURRENTS
-    #define IGNORE_BATTERY
+    // #define IGNORE_BATTERY
     #define IGNORE_MODE
 
 #else
@@ -145,6 +145,7 @@
 #if BOARD == 2 /*Arduino Uno w/ modified shield */
 
     #define KILLSWITCH_PIN 8
+    #define BATTERY_VOLT_PIN A2
     #define THROTTLE_PIN A3
     #define ONBOARD_TEMP_PIN A4
 

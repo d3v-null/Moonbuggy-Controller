@@ -35,6 +35,9 @@ protected:
     int             _rawVal;
     sensorNode*     _sensorTable;
     int             _sensorTableLen;
+    // DEBUG
+    // virtual int     snprintSensorVal(char* buffer, int charsRemaining);
+    virtual int     snprintReadings(char* buffer, int charsRemaining){};
 };
 
 class NormalizedVoltageSensor: public VoltageSensor {
