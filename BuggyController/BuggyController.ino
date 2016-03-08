@@ -498,6 +498,20 @@ int snprintVehicleModeString(char* buffer, int charsRemaining, motorModeType mod
     }
     return snprintf(buffer, charsRemaining, statusStr);
 }
+int snprintPhaseString(char* buffer, int charsRemaining, phaseType phase ){
+    char* statusStr = "???";
+    switch ( phase ) {
+        case P_REVERSE:
+          statusStr = "REV";
+          break;
+        case P_FORWARD:
+          statusStr = "FWD";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
 
 // char* throttleNormString(double throttleNormalized){
 //     char buffer[50];
@@ -529,6 +543,11 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
     charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
+
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PHS:");
+    charsPrinted += snprintPhaseString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), phaseStatus);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
+
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
 
 
