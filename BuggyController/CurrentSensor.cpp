@@ -21,52 +21,112 @@
 
 #include "CurrentSensor.h"
 
-sensorNode currentTable_1[] = {
-    constructSensorNode(0,                      0.0),
-    constructSensorNode(SYSTEM_ANALOGUE_MAX,    40.0)
-};
+// sensorNode currentTable_1[] = {
+//     constructSensorNode(0,                      0.0),
+//     constructSensorNode(SYSTEM_ANALOGUE_MAX,    40.0)
+// };
 
 CurrentSensor::CurrentSensor(){
-    _sensorType = 1;
-    _sensorTable = currentTable_1;
+    setStatusBounds();
+    // _sensorTable = currentTable_1;
 }
 
-void CurrentSensor::setSensorType(int sensorType){
-    if(_sensorType != sensorType){
-        switch(sensorType){
-            case 1:
-                _sensorTable = currentTable_1;
-                break;
-            default:
-                return;
+void CurrentSensor::initSensorTable(){
+    int rawVals_1[]       = {0,      SYSTEM_ANALOGUE_MAX};
+    double sensorVals_1[] = {0.0,    40.0};
+    int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
+    populateSensorTable(len_1, rawVals_1, sensorVals_1);
+    // setSensorMultiplier();
+}
+
+// void CurrentSensor::setSensorType(int sensorType){
+//     if(_sensorType != sensorType){
+//         switch(sensorType){
+//             case 1:
+//                 _sensorTable = currentTable_1;
+//                 break;
+//             default:
+//                 return;
+//         }
+//         _sensorType = sensorType;
+//     }
+// }
+
+// currentStatusNode constructCurrentStatusNode(double threshold, currentStatusType statusVal){
+//     currentStatusNode node;
+//     node.threshold = threshold;
+//     node.statusVal = statusVal;
+//     return node;
+// }
+
+void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
+    if(currentReg >= 0.0 and currentMax > currentReg){
+        double thresholds[] =           {currentReg,  currentMax};
+        currentStatusType statuses[]  = {C_NORMAL,    C_REGULATED};
+        for(int i=0; i< CURRENT_STATUS_NODES; i++){
+            _statusTable[i].threshold = thresholds[i];
+            _statusTable[i].statusVal = statuses[i];
         }
-        _sensorType = sensorType;
-    }
-}
-
-currentStatusNode constructCurrentStatusNode(double threshold, currentStatusType statusVal){
-    currentStatusNode node;
-    node.threshold = threshold;
-    node.statusVal = statusVal;
-    return node;
-}
-
-void CurrentSensor::setStatusBounds( double currentReg, double currentMax){
-    if(currentReg >= 0.0 and currentMax <= 1.0){
-        int i=0;
-        _statusTable[i++] = constructCurrentStatusNode(currentReg, C_NORMAL);
-        _statusTable[i++] = constructCurrentStatusNode(currentMax, C_REGULATED);
     }
 }
 
 currentStatusType CurrentSensor::getStatus(){
     currentStatusType statusVal = C_HIGH;
+    double sensorVal = getSensorVal();
     int i;
-    for(i=0; i < CURRENT_STATUS_NODES ; i++){
-        if(getSensorVal() < _statusTable[i].threshold){
+    for( i=0; i < CURRENT_STATUS_NODES; i++) {
+        if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
-        }
+        } 
     }
     return statusVal;
+}
+
+int CurrentSensor::snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal){
+    char* statusStr = "???";
+    switch (statusVal) {
+        case C_NORMAL:
+          statusStr = "NOR";
+          break;
+        case C_REGULATED:
+          statusStr = "REG";
+          break;
+        case C_HIGH:
+          statusStr = "HI ";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
+
+int CurrentSensor::snprintStatusNode(char* buffer, int charsRemaining, currentStatusNode node){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "{%4d:", (int)(node.threshold) );
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), node.statusVal );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "}" );
+    return charsPrinted;
+}
+
+int CurrentSensor::snprintStatusTable(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
+    for(int i=0; i < CURRENT_STATUS_NODES; i++) {
+        charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
+    }
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
+    return charsPrinted;
+}
+
+int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
+    char*start = buffer;
+    int charsPrinted = 0;
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
+    // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:%3d|",(int)(getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
+    charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));
+    return charsPrinted;
 }

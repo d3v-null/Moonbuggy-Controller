@@ -60,8 +60,7 @@ int ThrottleSensor::snprintStatusNode(char* buffer, int charsRemaining, throttle
 int ThrottleSensor::snprintStatusTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
-    int i;
-    for( i=0; i < THROTTLE_STATUS_NODES; i++) {
+    for(int i=0; i < THROTTLE_STATUS_NODES; i++) {
         charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");

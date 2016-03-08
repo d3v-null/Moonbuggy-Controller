@@ -18,9 +18,13 @@
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
-    #define IGNORE_CURRENTS
     // #define IGNORE_BATTERY
+    // #define IGNORE_CURRENTS
     #define IGNORE_MODE
+    #ifndef IGNORE_CURRENTS
+        #define DEBUG_CURRENTS
+    #endif
+    #define CALLIBRATE_SENSORS
 
 #else
     
@@ -46,9 +50,9 @@
 //============================= Thermal Settings ============================
 //===========================================================================
 
-#define TEMP_SENSOR_ONBOARD 1
-#define TEMP_SENSOR_0 1
-#define TEMP_SENSOR_1 1
+// #define TEMP_SENSOR_ONBOARD 1
+// #define TEMP_SENSOR_0 1
+// #define TEMP_SENSOR_1 1
 
 // The minimal temperature defines the temperature below which the motor will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.
@@ -73,12 +77,14 @@
 //===========================================================================
 //
 
-#define CURRENT_SENSOR_0 1
-#define CURRENT_SENSOR_1 1
+// #define CURRENT_SENSOR_0 1
+// #define CURRENT_SENSOR_1 1
 
+#define DEBUG_REG_CURRENT 30
 #define MOTOR_0_REG_CURRENT 30
 #define MOTOR_1_REG_CURRENT 30
 
+#define DEBUG_MAX_CURRENT 40
 #define MOTOR_0_MAX_CURRENT 40
 #define MOTOR_1_MAX_CURRENT 40
 
@@ -148,6 +154,7 @@
     #define BATTERY_VOLT_PIN A2
     #define THROTTLE_PIN A3
     #define ONBOARD_TEMP_PIN A4
+    #define DEBUG_CURRENT_PIN A5
 
 #endif
 

@@ -12,6 +12,11 @@
 #ifndef IGNORE_BATTERY
     #include "BatterySensor.h"
 #endif
+#ifndef IGNORE_CURRENTS
+    #ifndef DEBUG
+        #include "CurrentSensor.h"
+    #endif
+#endif
 
 typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED}  safetyStatusType;
 typedef enum {P_FORWARD, P_REVERSE}                 phaseType;
