@@ -69,7 +69,7 @@ void setup() {
     if(DEBUG) {Serial.println("Initializing Killswitch"); delay(DEBUG_PRINT_DELAY);} 
     pinMode(KILLSWITCH_PIN, INPUT);
 
-    char buffer[BUFFSIZE];
+    char buffer[DEBUG_BUFSIZ];
     char*start; 
     int charsPrinted;
 
@@ -82,7 +82,7 @@ void setup() {
         if(DEBUG){
             Serial.println("Throttle POST construct ");
             start = buffer; charsPrinted = 0;
-            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
             Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
         }
         throttleSensor.setPins(THROTTLE_PIN);
@@ -101,7 +101,7 @@ void setup() {
         if(DEBUG){
             Serial.println("Throttle POST temp construct ");
             start = buffer; charsPrinted = 0;
-            charsPrinted +=  throttleSensor.snprintReadings(start, BUFFSIZE);
+            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
             Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
         }
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
@@ -238,10 +238,11 @@ void shutdown() {
 void safetyCheck() {
     // if(DEBUG) Serial.println("Starting safety check"); delay(DEBUG_PRINT_DELAY);
     boolean shouldTerminate = false;
+    char dispbuffer[DISP_BUFSIZ] = "";
     switch (safetyStatus) {
         case S_SAFE:
             if(!shouldTerminate and killSwitch == HIGH){
-                if(DEBUG) Serial.println("Killswitch Engaged"); delay(DEBUG_PRINT_DELAY);
+                snprintf(dispbuffer, DISP_BUFSIZ, "FAIL KSW: ON");
                 shouldTerminate = true;
             }
             #ifndef IGNORE_TEMPS
@@ -250,13 +251,11 @@ void safetyCheck() {
                     for(i=0; i<MOTORS; i++){
                         switch (motorControllers[i].getTempStatus()) {
                             case T_COLD:
-                              if(DEBUG) Serial.print("Failed temp check on MOTOR: T_COLD, ");
-                              if(DEBUG) Serial.println(i);
+                              snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP MOTOR: T_COLD, %d", i);
                               shouldTerminate = true;
                               break;
                             case T_HOT:
-                              if(DEBUG) Serial.print("Failed temp check on MOTOR: T_HOT, ");
-                              if(DEBUG) Serial.println(i);
+                              snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP MOTOR: T_HOT, %d", i);
                               shouldTerminate = true;
                               break;
                             default:
@@ -268,11 +267,11 @@ void safetyCheck() {
                 if(!shouldTerminate){                    
                     switch(systemTempSensor.getStatus()){
                         case T_COLD:
-                          if(DEBUG) Serial.println("Failed system temp check: T_COLD");
+                          snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_COLD");
                           shouldTerminate = true;
                           break;
                         case T_HOT:
-                          if(DEBUG) Serial.println("Failed system temp check: T_HOT");
+                          snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_HOT");
                           shouldTerminate = true;
                           break;
                         default:
@@ -285,7 +284,7 @@ void safetyCheck() {
                 #ifdef DEBUG_CURRENTS
                     if(!shouldTerminate){
                         if(debugCurrentSensor.getStatus() == C_HIGH){
-                            if(DEBUG) Serial.println("Failed debug current check: C_HIGH, ");
+                            snprintf(dispbuffer, DISP_BUFSIZ, "FAIL CUR: C_HIGH, ");
                             shouldTerminate = true;
                             break;
                         }
@@ -296,8 +295,7 @@ void safetyCheck() {
                         int i;
                         for(i=0; i<MOTORS; i++){
                             if(motorControllers[i].getArmStatus() == C_HIGH){
-                                if(DEBUG) Serial.print("Failed current check on MOTOR: C_HIGH, ");
-                                if(DEBUG) Serial.println(i);
+                                snprintf(dispbuffer, DISP_BUFSIZ, "FAIL CUR MOTOR: C_HIGH, %d", i);
                                 shouldTerminate = true;
                                 break;
                             }
@@ -310,11 +308,11 @@ void safetyCheck() {
                 if(!shouldTerminate){
                     switch(batterySensor.getStatus()){
                         case B_LOW:
-                            if(DEBUG) Serial.println("Failed battery check: B_LOW");
+                            snprintf(dispbuffer, DISP_BUFSIZ, "FAIL BAT: B_LOW");
                             shouldTerminate = true;
                             break;
                         case B_HIGH:
-                            if(DEBUG) Serial.println("Failed battery check: B_HIGH");       
+                            snprintf(dispbuffer, DISP_BUFSIZ, "FAIL BAT: B_HIGH");       
                             shouldTerminate = true;
                             break;
                         default:
@@ -326,6 +324,7 @@ void safetyCheck() {
             // terminates system if necessary
             if(shouldTerminate){
                 safetyStatus = S_TERMINATING;
+                if(DEBUG) Serial.println(dispbuffer);
                 shutdown();
                 safetyStatus = S_TERMINATED;
             }
@@ -442,8 +441,8 @@ void loop() {
         updateOutputs();
     }    
     if(DEBUG){
-        char buffer[BUFFSIZE];
-        snprintDebugInfo(buffer, BUFFSIZE);
+        char buffer[DEBUG_BUFSIZ] = "";
+        snprintDebugInfo(buffer, DEBUG_BUFSIZ);
         Serial.println(buffer); 
         // delay(DEBUG_PRINT_DELAY);
     }
@@ -462,42 +461,23 @@ char* digitalStatusString(int digitalValue){
     }
 }
 
-// char* throttleStatusString(throttleStatusType throttleStatus){
-//     switch (throttleStatus) {
-//         case TH_ZERO:
-//           return "ZER";
-//           break;
-//         case TH_NORMAL:
-//           return "NOR";
-//           break;
-//         case TH_BOOST:
-//           return "BST";
-//           break;
-//         default:
-//           break;
-//     }
-//   return "???";
-// }
-
-// char* tempStatusString(tempStatusType tempStatus){
-//     switch (tempStatus) {
-//         case T_HOT:
-//           return "HOT";
-//           break;
-//         case T_COLD:
-//           return "CLD";
-//           break;
-//         case T_NORMAL:
-//           return "NRM";
-//           break;
-//         case T_REGULATED:
-//           return "REG";
-//           break;
-//         default:
-//           break;
-//     }
-//     return "???";
-// }
+int snprintSafetyStatusString(char* buffer, int charsRemaining, safetyStatusType statusVal ){
+    char* statusStr = "???";
+    switch ( statusVal ) {
+        case S_SAFE:
+          statusStr = "SFE";
+          break;
+        case S_TERMINATING:
+          statusStr = "TMG";
+          break;
+        case S_TERMINATED:
+          statusStr = "TMD";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
 
 // char* throttleNormString(double throttleNormalized){
 //     char buffer[50];
@@ -522,6 +502,9 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     // throttleStatusType throttleStatus = throttleSensor.getStatus();
     // tempStatusType systemTempStatus = systemTempSensor.getStatus();
 
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SSS:");
+    charsPrinted += snprintSafetyStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), safetyStatus);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TST:%3d|",throttleSensor.getSensorTableSize());
     // charsPrinted += throttleSensor.snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
@@ -560,8 +543,8 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         #endif
     #endif
 
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));
-    // charsPrinted += snprintf((start+charsPrinted), BUFFSIZE - charsPrinted, "TMR:%3s|",systemTempSensor.);
+    // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));
+    // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMR:%3s|",systemTempSensor.);
 
 
 

@@ -8,7 +8,8 @@
 
 // This determines the communication speed
 #define BAUDRATE 9600
-#define BUFFSIZE 255
+#define DEBUG_BUFSIZ 255
+#define DISP_BUFSIZ 100
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1023
 
@@ -24,7 +25,7 @@
     #ifndef IGNORE_CURRENTS
         #define DEBUG_CURRENTS
     #endif
-    #define CALLIBRATE_SENSORS
+    // #define CALLIBRATE_SENSORS
 
 #else
     

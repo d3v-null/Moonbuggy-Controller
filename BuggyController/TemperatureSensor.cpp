@@ -143,6 +143,8 @@ int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:%3d|",(int)(getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));
+    #ifdef CALLIBRATE_SENSORS
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d|",(getRawVal()));
+    #endif
     return charsPrinted;
 }
