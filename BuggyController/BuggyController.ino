@@ -478,6 +478,26 @@ int snprintSafetyStatusString(char* buffer, int charsRemaining, safetyStatusType
     }
     return snprintf(buffer, charsRemaining, statusStr);
 }
+int snprintVehicleModeString(char* buffer, int charsRemaining, motorModeType modeVal ){
+    char* statusStr = "???";
+    switch ( modeVal ) {
+        case M_NEUTRAL:
+          statusStr = "NEU";
+          break;
+        case M_REVERSE:
+          statusStr = "REV";
+          break;
+        case M_FORWARD:
+          statusStr = "FWD";
+          break;
+        case M_FORWARD_BOOST:
+          statusStr = "FWB";
+          break;
+        default:
+          break;
+    }
+    return snprintf(buffer, charsRemaining, statusStr);
+}
 
 // char* throttleNormString(double throttleNormalized){
 //     char buffer[50];
@@ -505,7 +525,13 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SSS:");
     charsPrinted += snprintSafetyStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), safetyStatus);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
+
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
+    charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
+
+
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TST:%3d|",throttleSensor.getSensorTableSize());
     // charsPrinted += throttleSensor.snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));

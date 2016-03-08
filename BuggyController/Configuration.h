@@ -19,9 +19,9 @@
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
-    // #define IGNORE_BATTERY
-    // #define IGNORE_CURRENTS
-    #define IGNORE_MODE
+    #define IGNORE_BATTERY
+    #define IGNORE_CURRENTS
+    // #define IGNORE_MODE
     #ifndef IGNORE_CURRENTS
         #define DEBUG_CURRENTS
     #endif
@@ -156,6 +156,8 @@
     #define THROTTLE_PIN A3
     #define ONBOARD_TEMP_PIN A4
     #define DEBUG_CURRENT_PIN A5
+    #define VEHICLE_MODE_PIN 40
+
 
 #endif
 
