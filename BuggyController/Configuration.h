@@ -15,14 +15,14 @@
 
 #if DEBUG
 
-    #define MOTORS 0
+    #define MOTORS 1
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
     #define IGNORE_BATTERY
     #define IGNORE_CURRENTS
     // #define IGNORE_MODE
-    #ifndef IGNORE_CURRENTS
+    #if MOTORS < 1
         #define DEBUG_CURRENTS
     #endif
     // #define CALLIBRATE_SENSORS
@@ -157,6 +157,17 @@
     #define ONBOARD_TEMP_PIN A4
     #define DEBUG_CURRENT_PIN A5
     #define VEHICLE_MODE_PIN 40
+
+
+
+    #define MOTOR_FIELD_VOLT_H_PIN 2
+    #define MOTOR_FIELD_VOLT_L_PIN 3
+
+    #define MOTOR_FIELD_PHASE_PIN 38
+
+    #define MOTOR_0_TEMP_PIN A4
+    #define MOTOR_0_ARM_SENSE_PIN A0
+    #define MOTOR_0_ARM_VOLT_PIN 5
 
 
 #endif

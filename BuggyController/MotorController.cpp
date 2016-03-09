@@ -59,13 +59,13 @@ void MotorController::setPins(int tempPin, int armSensePin, int armVoltPin) {
     // _fieldPhasePin = fieldPhasePin;
 }
 
-void MotorController::setTempBounds(int sensorType, double minTemp, double regTemp, double maxTemp){
-    _temperatureSensor.setSensorType(sensorType);
+void MotorController::setTempBounds(double minTemp, double regTemp, double maxTemp){
+    // _temperatureSensor.setSensorType(sensorType);
     _temperatureSensor.setStatusBounds(minTemp, regTemp, maxTemp);
 }
 
-void MotorController::setArmBounds(int sensorType, double regArm, double maxArm){
-    _armCurrentSensor.setSensorType(sensorType);
+void MotorController::setArmBounds(double regArm, double maxArm){
+    // _armCurrentSensor.setSensorType(sensorType);
     _armCurrentSensor.setStatusBounds(regArm, maxArm);
 }
 

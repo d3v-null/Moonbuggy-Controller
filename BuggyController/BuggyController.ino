@@ -150,15 +150,13 @@ void setup() {
             MOTOR_0_ARM_VOLT_PIN
         );
         motorControllers[0].setTempBounds(
-            TEMP_SENSOR_0,
             MOTOR_0_MINTEMP,
             MOTOR_0_REGTEMP,
-            MOTOR_0_MAXTEMP,
+            MOTOR_0_MAXTEMP
         );
         motorControllers[0].setArmBounds(
-            CURRENT_SENSOR_0,
             MOTOR_0_REG_CURRENT,
-            MOTOR_0_MAX_CURRENT,
+            MOTOR_0_MAX_CURRENT
         );
         motorControllers[0].initPins();
     #endif
@@ -171,15 +169,13 @@ void setup() {
             MOTOR_1_ARM_VOLT_PIN
         );
         motorControllers[1].setTempBounds(
-            TEMP_SENSOR_1,
             MOTOR_1_MINTEMP,
             MOTOR_1_REGTEMP,
-            MOTOR_1_MAXTEMP,
+            MOTOR_1_MAXTEMP
         );
         motorControllers[1].setArmBounds(
-            CURRENT_SENSOR_1,
             MOTOR_1_REG_CURRENT,
-            MOTOR_1_MAX_CURRENT,
+            MOTOR_1_MAX_CURRENT
         );
         motorControllers[1].initPins();
     #endif
@@ -586,6 +582,10 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
             charsPrinted += debugCurrentSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
         #endif
+    #endif
+
+    #if MOTORS > 0
+
     #endif
 
     // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));

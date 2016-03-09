@@ -20,8 +20,8 @@ class MotorController{
 public:
     MotorController();
     void            setPins(int tempPin = -1, int armSensePin = -1 , int armVoltPin = -1);
-    void            setTempBounds(int sensorType = 1, double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0);
-    void            setArmBounds(int sensorType = 1, double regArm = 0.0, double maxArm = 0.0);
+    void            setTempBounds(double minTemp = 0.0, double regTemp = 0.0, double maxTemp = 0.0);
+    void            setArmBounds(double regArm = 0.0, double maxArm = 0.0);
     void            setMotorMode(motorModeType motorMode);
     void            setThrottle(double throttleVal = 0.0);
     void            initPins();
