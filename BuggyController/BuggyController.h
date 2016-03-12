@@ -1,11 +1,26 @@
 #ifndef BuggyController_h
 #define BuggyController_h
 
+#include "arduino.h"
+#include <stdlib.h>
+#include "Configuration.h"
+#include "ThrottleSensor.h"
+#include "MotorController.h"
+#ifndef IGNORE_TEMPS
+    #include "TemperatureSensor.h"
+#endif
+#ifndef IGNORE_BATTERY
+    #include "BatterySensor.h"
+#endif
+#ifndef IGNORE_CURRENTS
+    #ifndef DEBUG
+        #include "CurrentSensor.h"
+    #endif
+#endif
+
 typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED}  safetyStatusType;
-typedef enum {TH_ZERO, TH_NORMAL, TH_BOOST}         throttleStatusType;
-typedef struct throttleStatusNode {
-    double threshold; 
-    throttleStatusType statusVal;
-} throttleStatusNode;
+typedef enum {P_FORWARD, P_REVERSE}                 phaseType;
+
+void printDebugInfo();
 
 #endif

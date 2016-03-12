@@ -16,99 +16,84 @@
  */
 
 /**
- * Source file for temperature sensing functions
+ * Source file for current sensing functions
  */
 
-#include "TemperatureSensor.h"
+#include "CurrentSensor.h"
 
-// 593 -> 34 
+// sensorNode currentTable_1[] = {
+//     constructSensorNode(0,                      0.0),
+//     constructSensorNode(SYSTEM_ANALOGUE_MAX,    40.0)
+// };
 
-TemperatureSensor::TemperatureSensor(){
+CurrentSensor::CurrentSensor(){
     setStatusBounds();
-    // populateSensorTable(len_1, rawVals_1, sensorVals_1);
+    // _sensorTable = currentTable_1;
 }
 
-void TemperatureSensor::initSensorTable(){
-    int rawVals_1[]       = {0,      102, 526,   600, SYSTEM_ANALOGUE_MAX};
-    double sensorVals_1[] = {-100.0, 0.0, 27.0,  34.0, 100.0};
+void CurrentSensor::initSensorTable(){
+    int rawVals_1[]       = {0,      SYSTEM_ANALOGUE_MAX};
+    double sensorVals_1[] = {0.0,    40.0};
     int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
     populateSensorTable(len_1, rawVals_1, sensorVals_1);
+    // setSensorMultiplier();
 }
 
-// /**
-//  * Sets the sensorType, tempTable and tempTableLen 
-//  * if the sensorType is new and valid
-//  */
-// void TemperatureSensor::setSensorType(int sensorType){
+// void CurrentSensor::setSensorType(int sensorType){
 //     if(_sensorType != sensorType){
-//         int* rawVals;
-//         double* sensorVals;
-//         int len = 0;
-
 //         switch(sensorType){
 //             case 1:
-//                 rawVals = rawVals_1;
-//                 sensorVals = sensorVals_1;
-//                 len = len_1;
+//                 _sensorTable = currentTable_1;
 //                 break;
 //             default:
 //                 return;
 //         }
-//         populateSensorTable(len, rawVals, sensorVals);
-//         // _sensorTableLen = getSensorTableSize(_sensorTable);
 //         _sensorType = sensorType;
 //     }
 // }
 
-// tempStatusNode constructTempStatusNode(double threshold, tempStatusType statusVal){
-//     tempStatusNode node;
+// currentStatusNode constructCurrentStatusNode(double threshold, currentStatusType statusVal){
+//     currentStatusNode node;
 //     node.threshold = threshold;
 //     node.statusVal = statusVal;
 //     return node;
 // }
 
-void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
-    if(regTemp >= minTemp and maxTemp >= regTemp){
-        double thresholds[] =       {minTemp,   regTemp,  maxTemp};
-        tempStatusType statuses[] = {T_COLD,    T_NORMAL, T_REGULATED};
-        for(int i=0; i<TEMPERATURE_STATUS_NODES; i++){
+void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
+    if(currentReg >= 0.0 and currentMax > currentReg){
+        double thresholds[] =           {currentReg,  currentMax};
+        currentStatusType statuses[]  = {C_NORMAL,    C_REGULATED};
+        for(int i=0; i< CURRENT_STATUS_NODES; i++){
             _statusTable[i].threshold = thresholds[i];
             _statusTable[i].statusVal = statuses[i];
         }
-        // _statusTable[0].threshold = minTemp; _statusTable[0].statusVal = T_COLD;
-        // _statusTable[1].threshold = regTemp; _statusTable[1].statusVal = T_NORMAL;
-        // _statusTable[2].threshold = maxTemp; _statusTable[2].statusVal = T_REGULATED;
     }
 }
 
-tempStatusType TemperatureSensor::getStatus( ){
-    tempStatusType statusVal = T_HOT;
+currentStatusType CurrentSensor::getStatus(){
+    currentStatusType statusVal = C_HIGH;
     double sensorVal = getSensorVal();
     int i;
-    for(i=0; i < TEMPERATURE_STATUS_NODES ; i++){
+    for( i=0; i < CURRENT_STATUS_NODES; i++) {
         if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
-        }
+        } 
     }
     return statusVal;
 }
 
-
-int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal ){
+int CurrentSensor::snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal){
     char* statusStr = "???";
-    switch ( statusVal ) {
-        case T_HOT:
-          statusStr = "HOT";
+    switch (statusVal) {
+        case C_NORMAL:
+          statusStr = "NOR";
           break;
-        case T_COLD:
-          statusStr = "CLD";
-          break;
-        case T_NORMAL:
-          statusStr = "NRM";
-          break;
-        case T_REGULATED:
+        case C_REGULATED:
           statusStr = "REG";
+          break;
+        case C_HIGH:
+          statusStr = "HI ";
           break;
         default:
           break;
@@ -116,7 +101,7 @@ int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining, tem
     return snprintf(buffer, charsRemaining, statusStr);
 }
 
-int TemperatureSensor::snprintStatusNode(char* buffer, int charsRemaining, tempStatusNode node){
+int CurrentSensor::snprintStatusNode(char* buffer, int charsRemaining, currentStatusNode node){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "{%4d:", (int)(node.threshold) );
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), node.statusVal );
@@ -124,23 +109,22 @@ int TemperatureSensor::snprintStatusNode(char* buffer, int charsRemaining, tempS
     return charsPrinted;
 }
 
-int TemperatureSensor::snprintStatusTable(char* buffer, int charsRemaining){
+int CurrentSensor::snprintStatusTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
-    int i;
-    for( i=0; i < TEMPERATURE_STATUS_NODES; i++) {
+    for(int i=0; i < CURRENT_STATUS_NODES; i++) {
         charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
     return charsPrinted;
 }
 
-int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
+int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
     char*start = buffer;
     int charsPrinted = 0;
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:%3d|",(int)(getSensorVal()) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:%3d|",(int)(getSensorVal()) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     #ifdef CALLIBRATE_SENSORS

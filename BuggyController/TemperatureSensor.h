@@ -1,27 +1,32 @@
 #ifndef TemperatureSensor_h
 #define TemperatureSensor_h 
 
-typedef struct tempNode {
-    int input;
-    double temperature;
-} tempNode;
-
-tempNode constructTempNode(int input, double temperature);
+#include "VoltageSensor.h"
 
 typedef enum {T_COLD, T_NORMAL, T_REGULATED, T_HOT} tempStatusType;
 
 typedef struct tempStatusNode {
-    double temperature;
-    tempStatusType tempStatus;
+    double          threshold;
+    tempStatusType  statusVal;
 } tempStatusNode;
 
-tempStatusNode constructTempStatusNode(double temperature, tempStatusType tempStatus);
+#define TEMPERATURE_STATUS_NODES 3
 
-class TemperatureSensor {
+class TemperatureSensor: public VoltageSensor {
 public:
-    static double analog2temp(int rawValue, int sensorType);
-    static tempStatusType getTempStatus(double temperature, double minTemp, double regTemp, double maxTemp, bool ignoreTemps);
+    TemperatureSensor();
+    void            setSensorType(int sensorType);
+    void            setStatusBounds( double minTemp=0.0, double regTemp=0.0, double maxTemp=0.0 );
+    tempStatusType  getStatus();
+    // debug
+    int             snprintReadings(char* buffer, int charsRemaining);
+    int             snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal );
+    int             snprintStatusNode(char* buffer, int charsRemaining, tempStatusNode node);
+    int             snprintStatusTable(char* buffer, int charsRemaining);
+    void            initSensorTable();
+protected:
+    int             _sensorType;
+    tempStatusNode _statusTable[TEMPERATURE_STATUS_NODES];
 };
-
 
 #endif
