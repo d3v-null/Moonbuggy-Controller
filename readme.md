@@ -6,6 +6,7 @@ Requirements:
 
 TODO:
 
+install mechanical battery isolator
 smooth current sensor voltage
 change field voltage based on battery voltage
 write functions to get sensor val string in sensors: snprintSensorVal

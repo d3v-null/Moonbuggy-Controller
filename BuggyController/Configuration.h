@@ -18,11 +18,11 @@
 
 #if DEBUG
 
-    #define MOTORS 0
+    #define MOTORS 2
 
-    // #define IGNORE_TEMPHROTTLE
+    // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
-    // #define IGNORE_BATTERY
+    #define IGNORE_BATTERY
     // #define IGNORE_CURRENTS
     #define IGNORE_MODE
     // #if MOTORS < 1
@@ -38,8 +38,8 @@
 
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
-// #define BOARD 1
-#define BOARD 2
+#define BOARD 1
+// #define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -109,8 +109,8 @@
 #define BATTERY_SENSOR_MULTIPLIER 6.0
 // #define BATTERY_MIN 22.8
 // #define BATTERY_MAX 28.4
-#define BATTERY_MIN 11.4
-#define BATTERY_MAX 14.2
+#define BATTERY_MIN 11.0
+#define BATTERY_MAX 14.5
 
 //===========================================================================
 //=============================== Pin Settings ==============================
