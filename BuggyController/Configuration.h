@@ -4,7 +4,8 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 200
+#define DEBUG_PRINT_TIME 50
+#define SENSOR_READ_TIME 10
 
 // This determines the communication speed
 #define BAUDRATE 115200

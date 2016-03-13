@@ -37,7 +37,7 @@ batteryStatusType BatterySensor::getStatus(){
 
 
 void BatterySensor::initSmoother(){
-    _smoother = new DigitalSmooth(10);
+    _smoother = new DigitalSmooth(10, 0.15);
     _smootherInit = true;
 }
 

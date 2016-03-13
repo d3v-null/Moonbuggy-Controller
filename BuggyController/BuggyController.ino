@@ -63,6 +63,7 @@ int fieldVal;
 MotorController motorControllers[MOTORS];
 
 unsigned long lastDebug;
+unsigned long lastRead;
 
 void setup() {
 
@@ -395,7 +396,12 @@ void updateOutputs(){
 
 
 void loop() {
-    readInputs();
+    unsigned long now = millis();
+    if(now - lastRead > SENSOR_READ_TIME){
+        readInputs();
+        lastRead = now;
+    }
+    
     safetyCheck();
     if(safetyStatus == S_SAFE){
         switch (throttleSensor.getStatus()) {
@@ -439,7 +445,6 @@ void loop() {
         updateOutputs();
     }    
     if(DEBUG){
-        unsigned long now = millis();
         if( now - lastDebug > DEBUG_PRINT_TIME ){
             lastDebug = now;
             char buffer[DEBUG_BUFSIZ] = "";
