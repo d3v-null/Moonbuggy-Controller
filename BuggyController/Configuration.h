@@ -7,7 +7,7 @@
 #define DEBUG_PRINT_DELAY 200
 
 // This determines the communication speed
-#define BAUDRATE 9600
+#define BAUDRATE 115200
 #define DEBUG_BUFSIZ 255
 #define DISP_BUFSIZ 100
 #define SYSTEM_VCC 5.0
@@ -18,7 +18,7 @@
     #define MOTORS 1
 
     // #define IGNORE_THROTTLE
-    // #define IGNORE_TEMPS 
+    #define IGNORE_TEMPS 
     #define IGNORE_BATTERY
     #define IGNORE_CURRENTS
     // #define IGNORE_MODE
@@ -35,8 +35,8 @@
 
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
-// #define BOARD 1
-#define BOARD 2
+#define BOARD 1
+// #define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -44,7 +44,8 @@
 
 #define THROTTLE_RAW_MIN 180
 #define THROTTLE_RAW_MAX 810
-#define THROTTLE_THRESHOLD_BOOST 0.90
+// #define THROTTLE_THRESHOLD_BOOST 0.90
+#define THROTTLE_THRESHOLD_BOOST 1
 #define THROTTLE_THRESHOLD_ZERO 0.05
 
 //===========================================================================
@@ -95,8 +96,8 @@
 //
 
 #define FIELD_OFF 0
-#define FIELD_ON 200
-#define FIELD_BOOST 100
+#define FIELD_ON 255
+#define FIELD_BOOST 127
 
 //===========================================================================
 //============================= Battery Settings ============================
@@ -117,8 +118,7 @@
     #define THROTTLE_PIN A0
     #define ONBOARD_TEMP_PIN A1
 
-    #define MOTOR_FIELD_VOLT_H_PIN 2
-    #define MOTOR_FIELD_VOLT_L_PIN 3
+    #define MOTOR_FIELD_VOLT_PIN 2
 
 #endif
 
@@ -134,8 +134,7 @@
 
     #define ONBOARD_TEMP_PIN A3
 
-    #define MOTOR_FIELD_VOLT_H_PIN 2
-    #define MOTOR_FIELD_VOLT_L_PIN 3
+    #define MOTOR_FIELD_VOLT_PIN 2
 
     #define MOTOR_FIELD_PHASE_PIN 38
 
@@ -158,10 +157,7 @@
     #define DEBUG_CURRENT_PIN A5
     #define VEHICLE_MODE_PIN 40
 
-
-
-    #define MOTOR_FIELD_VOLT_H_PIN 2
-    #define MOTOR_FIELD_VOLT_L_PIN 3
+    #define MOTOR_FIELD_VOLT_PIN 2
 
     #define MOTOR_FIELD_PHASE_PIN 38
 

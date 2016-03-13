@@ -108,6 +108,15 @@ void MotorController::updateOutputs(){
     analogWrite(_armVoltPin, _armVoltVal);
 }
 
+int MotorController::snprintParameters(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THP:%3d", (int)(100 * _throttleVal) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|ARV:%3d", _armVoltVal);
+
+    return charsPrinted;
+}
+
 void MotorController::shutdown(){
     setMotorMode();
     setThrottle();

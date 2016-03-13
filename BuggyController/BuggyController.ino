@@ -140,7 +140,7 @@ void setup() {
 
     #if MOTORS > 0
         Serial.println("Initializing Fields");
-        pinMode( MOTOR_FIELD_VOLT_H_PIN, OUTPUT );
+        pinMode( MOTOR_FIELD_VOLT_PIN, OUTPUT );
         pinMode( MOTOR_FIELD_PHASE_PIN, OUTPUT);
 
         Serial.println("Initializing Motor 1");
@@ -381,14 +381,13 @@ void setPhase(phaseType phase){
 }
 
 void updateOutputs(){
-    #if ! DEBUG
-        digitalWrite(MOTOR_FIELD_PHASE_PIN, phaseVal);
-        digitalWrite(MOTOR_FIELD_VOLT_H_PIN, fieldVal);
-        digitalWrite(MOTOR_FIELD_VOLT_L_PIN, fieldVal);
-        for(i=0; i<MOTORS; i++){
-            motorControllers[i].updateOutputs();
-        }
-    #endif
+    digitalWrite(MOTOR_FIELD_PHASE_PIN, phaseVal);
+    digitalWrite(MOTOR_FIELD_VOLT_PIN, fieldVal);
+    for(int i=0; i<MOTORS; i++){
+        motorControllers[i].updateOutputs();
+    }
+    // #if ! DEBUG
+    // #endif
 }
 
 
@@ -440,7 +439,7 @@ void loop() {
         char buffer[DEBUG_BUFSIZ] = "";
         snprintDebugInfo(buffer, DEBUG_BUFSIZ);
         Serial.println(buffer); 
-        // delay(DEBUG_PRINT_DELAY);
+        delay(DEBUG_PRINT_DELAY);
     }
 }
 
@@ -585,7 +584,15 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     #endif
 
     #if MOTORS > 0
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%d", fieldVal);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
 
+        for(int i=0; i<MOTORS; i++){
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MOT%d<", i);
+            charsPrinted += motorControllers[i].snprintParameters((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">", i);
+        }
     #endif
 
     // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));

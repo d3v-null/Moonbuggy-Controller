@@ -31,6 +31,7 @@ public:
     // void            setPIDs(double kp, double ki, double kd);
     void            updateOutputs();
     void            shutdown();
+    int             snprintParameters(char* buffer, int charsRemaining);
 
 private:
     TemperatureSensor _temperatureSensor;

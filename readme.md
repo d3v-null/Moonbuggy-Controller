@@ -6,6 +6,7 @@ Requirements:
 
 TODO:
 
+change field voltage based on battery voltage
 write functions to get sensor val string in sensors: snprintSensorVal
 instead of sensor objects, use sensor pointers and construct with parameters
 make safety class mixin for sensors and eventually system class
