@@ -32,11 +32,16 @@ CurrentSensor::CurrentSensor(){
 }
 
 void CurrentSensor::initSensorTable(){
-    int rawVals_1[]       = {0,      SYSTEM_ANALOGUE_MAX};
-    double sensorVals_1[] = {0.0,    40.0};
+    int rawVals_1[]       = {0,     512,  540, 580, SYSTEM_ANALOGUE_MAX};
+    double sensorVals_1[] = {-40.0, 0.0, 3.05,  10, 40.0};
     int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
     populateSensorTable(len_1, rawVals_1, sensorVals_1);
     // setSensorMultiplier();
+
+
+    //10 -> 580
+    //3.05 -> 540
+
 }
 
 // void CurrentSensor::setSensorType(int sensorType){
@@ -124,11 +129,12 @@ int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:%3d|",(int)(getSensorVal()) );
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:");
+    charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     #ifdef CALLIBRATE_SENSORS
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d|",(getRawVal()));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d",(getRawVal()));
     #endif
     return charsPrinted;
 }

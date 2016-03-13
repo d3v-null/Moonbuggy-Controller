@@ -35,8 +35,10 @@
 MotorController::MotorController(){
     // setPins();
     _motorMode = M_NEUTRAL;
-    _temperatureSensor = TemperatureSensor();
-    _armCurrentSensor = CurrentSensor();
+    _temperatureSensor = new TemperatureSensor();
+    _armCurrentSensor = new CurrentSensor();
+    _temperatureSensor->initSensorTable();
+    _armCurrentSensor->initSensorTable();
     // _phaseVal = P_FORWARD;
     // setThrottle();
     // setTempBounds();
@@ -50,8 +52,8 @@ MotorController::MotorController(){
 
 // void MotorController::setPins(int tempPin = -1, int armSensePin = -1, int armVoltPin = -1, int fieldVoltPin = -1, int fieldPhasePin = -1) {
 void MotorController::setPins(int tempPin, int armSensePin, int armVoltPin) {
-    _temperatureSensor.setPins(tempPin);
-    _armCurrentSensor.setPins(armSensePin);
+    _temperatureSensor->setPins(tempPin);
+    _armCurrentSensor->setPins(armSensePin);
     // _tempPin = tempPin;
     // _armSensePin = armSensePin;
     _armVoltPin = armVoltPin;
@@ -60,13 +62,13 @@ void MotorController::setPins(int tempPin, int armSensePin, int armVoltPin) {
 }
 
 void MotorController::setTempBounds(double minTemp, double regTemp, double maxTemp){
-    // _temperatureSensor.setSensorType(sensorType);
-    _temperatureSensor.setStatusBounds(minTemp, regTemp, maxTemp);
+    // _temperatureSensor->setSensorType(sensorType);
+    _temperatureSensor->setStatusBounds(minTemp, regTemp, maxTemp);
 }
 
 void MotorController::setArmBounds(double regArm, double maxArm){
-    // _armCurrentSensor.setSensorType(sensorType);
-    _armCurrentSensor.setStatusBounds(regArm, maxArm);
+    // _armCurrentSensor->setSensorType(sensorType);
+    _armCurrentSensor->setStatusBounds(regArm, maxArm);
 }
 
 void MotorController::setMotorMode(motorModeType motorMode = M_NEUTRAL){
@@ -79,19 +81,21 @@ void MotorController::setThrottle(double throttleVal){
 
 void MotorController::initPins(){
     pinMode(_armVoltPin, OUTPUT);
+    _temperatureSensor->initPins();
+    _armCurrentSensor->initPins();
 }
 
 void MotorController::readInputs(){
-    _temperatureSensor.readInputs();
-    _armCurrentSensor.readInputs();
+    _temperatureSensor->readInputs();
+    _armCurrentSensor->readInputs();
 }
 
 tempStatusType MotorController::getTempStatus(){
-    return _temperatureSensor.getStatus();
+    return _temperatureSensor->getStatus();
 }
 
 currentStatusType MotorController::getArmStatus(){
-    return _armCurrentSensor.getStatus();
+    return _armCurrentSensor->getStatus();
 }
 
 void MotorController::updateOutputs(){
@@ -113,6 +117,12 @@ int MotorController::snprintParameters(char* buffer, int charsRemaining){
 
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THP:%3d", (int)(100 * _throttleVal) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|ARV:%3d", _armVoltVal);
+
+    #ifndef IGNORE_CURRENTS
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|CUR:"); 
+        charsPrinted += _armCurrentSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "");
+    #endif
 
     return charsPrinted;
 }

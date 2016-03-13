@@ -14,7 +14,7 @@ BatterySensor::BatterySensor(){
 void BatterySensor::setStatusBounds(double minBattery, double maxBattery ){
     if( minBattery >= 0.0 and maxBattery >= minBattery ){
         double thresholds[] = {minBattery, maxBattery};
-        batteryStatusType statuses[] = {B_LOW, B_HIGH};
+        batteryStatusType statuses[] = {B_LOW, B_NORMAL};
         for(int i=0; i<BATTERY_STATUS_NODES; i++){
             _statusTable[i].threshold = thresholds[i];
             _statusTable[i].statusVal = statuses[i];
@@ -79,8 +79,9 @@ int BatterySensor::snprintReadings(char* buffer, int charsRemaining){
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STT:");
     // charsPrinted += snprintStatusTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VLT:%3d|",(int)(getSensorVal()) );
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VLT:" );
+    charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|STS:");
     charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
     #ifdef CALLIBRATE_SENSORS
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|RAW:%4d|",(getRawVal()));

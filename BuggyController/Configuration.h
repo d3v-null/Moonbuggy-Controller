@@ -13,19 +13,22 @@
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1023
 
+#define FLOAT_WIDTH 6
+#define FLOAT_PREC 2
+
 #if DEBUG
 
-    #define MOTORS 1
+    #define MOTORS 0
 
-    // #define IGNORE_THROTTLE
-    #define IGNORE_TEMPS 
-    #define IGNORE_BATTERY
-    #define IGNORE_CURRENTS
-    // #define IGNORE_MODE
-    #if MOTORS < 1
-        #define DEBUG_CURRENTS
-    #endif
-    // #define CALLIBRATE_SENSORS
+    // #define IGNORE_TEMPHROTTLE
+    // #define IGNORE_TEMPS 
+    // #define IGNORE_BATTERY
+    // #define IGNORE_CURRENTS
+    #define IGNORE_MODE
+    // #if MOTORS < 1
+    //     #define DEBUG_CURRENTS
+    // #endif
+    #define CALLIBRATE_SENSORS
 
 #else
     
@@ -35,8 +38,8 @@
 
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
-#define BOARD 1
-// #define BOARD 2
+// #define BOARD 1
+#define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -103,9 +106,11 @@
 //============================= Battery Settings ============================
 //===========================================================================
 //
-#define BATTERY_SENSOR_MULTIPLIER 8.0
-#define BATTERY_MIN 22.8
-#define BATTERY_MAX 28.4
+#define BATTERY_SENSOR_MULTIPLIER 6.0
+// #define BATTERY_MIN 22.8
+// #define BATTERY_MAX 28.4
+#define BATTERY_MIN 11.4
+#define BATTERY_MAX 14.2
 
 //===========================================================================
 //=============================== Pin Settings ==============================

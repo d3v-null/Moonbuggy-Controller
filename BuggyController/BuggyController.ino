@@ -585,7 +585,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
 
     #if MOTORS > 0
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%d", fieldVal);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", fieldVal);
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
 
         for(int i=0; i<MOTORS; i++){

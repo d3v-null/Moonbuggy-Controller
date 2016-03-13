@@ -34,8 +34,8 @@ public:
     int             snprintParameters(char* buffer, int charsRemaining);
 
 private:
-    TemperatureSensor _temperatureSensor;
-    CurrentSensor     _armCurrentSensor;
+    TemperatureSensor* _temperatureSensor;
+    CurrentSensor*     _armCurrentSensor;
     int             _armVoltPin;
     int             _armVoltVal;
     motorModeType   _motorMode;

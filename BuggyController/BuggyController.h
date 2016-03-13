@@ -13,9 +13,9 @@
     #include "BatterySensor.h"
 #endif
 #ifndef IGNORE_CURRENTS
-    #ifndef DEBUG
-        #include "CurrentSensor.h"
-    #endif
+    #include "CurrentSensor.h"
+    // #ifndef DEBUG
+    // #endif
 #endif
 
 typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED}  safetyStatusType;
