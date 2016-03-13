@@ -15,7 +15,7 @@ void BatterySensor::setStatusBounds(double minBattery, double maxBattery ){
     if( minBattery >= 0.0 and maxBattery >= minBattery ){
         double thresholds[] = {minBattery, maxBattery};
         batteryStatusType statuses[] = {B_LOW, B_NORMAL};
-        for(int i=0; i<BATTERY_STATUS_NODES; i++){
+        for(int i=0; i<_statusNodes; i++){
             _statusTable[i].threshold = thresholds[i];
             _statusTable[i].statusVal = statuses[i];
         }
@@ -26,7 +26,7 @@ batteryStatusType BatterySensor::getStatus(){
     batteryStatusType statusVal = B_HIGH;
     double sensorVal = getSensorVal();
     int i;
-    for( i=0; i < BATTERY_STATUS_NODES; i++) {
+    for( i=0; i < _statusNodes; i++) {
         if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
@@ -65,7 +65,7 @@ int BatterySensor::snprintStatusTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
     int i;
-    for( i=0; i < BATTERY_STATUS_NODES; i++) {
+    for( i=0; i < _statusNodes; i++) {
         charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");

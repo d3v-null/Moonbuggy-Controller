@@ -71,7 +71,7 @@ void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double m
     if(regTemp >= minTemp and maxTemp >= regTemp){
         double thresholds[] =       {minTemp,   regTemp,  maxTemp};
         tempStatusType statuses[] = {T_COLD,    T_NORMAL, T_REGULATED};
-        for(int i=0; i<TEMPERATURE_STATUS_NODES; i++){
+        for(int i=0; i<_statusNodes; i++){
             _statusTable[i].threshold = thresholds[i];
             _statusTable[i].statusVal = statuses[i];
         }
@@ -85,7 +85,7 @@ tempStatusType TemperatureSensor::getStatus( ){
     tempStatusType statusVal = T_HOT;
     double sensorVal = getSensorVal();
     int i;
-    for(i=0; i < TEMPERATURE_STATUS_NODES ; i++){
+    for(i=0; i < _statusNodes ; i++){
         if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
@@ -128,7 +128,7 @@ int TemperatureSensor::snprintStatusTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
     int i;
-    for( i=0; i < TEMPERATURE_STATUS_NODES; i++) {
+    for( i=0; i < _statusNodes; i++) {
         charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");

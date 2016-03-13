@@ -10,7 +10,7 @@ typedef struct tempStatusNode {
     tempStatusType  statusVal;
 } tempStatusNode;
 
-#define TEMPERATURE_STATUS_NODES 3
+// #define TEMPERATURE_STATUS_NODES 3
 
 class TemperatureSensor: public VoltageSensor {
 public:
@@ -25,8 +25,8 @@ public:
     int             snprintStatusTable(char* buffer, int charsRemaining);
     void            initSensorTable();
 protected:
-    int             _sensorType;
-    tempStatusNode _statusTable[TEMPERATURE_STATUS_NODES];
+    const static int        _statusNodes = 3;
+    tempStatusNode      _statusTable[_statusNodes];
 };
 
 #endif

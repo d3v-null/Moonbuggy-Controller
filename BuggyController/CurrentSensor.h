@@ -11,7 +11,7 @@ typedef struct currentStatusNode {
     currentStatusType   statusVal;
 } currentStatusNode;
 
-#define CURRENT_STATUS_NODES 2
+// #define CURRENT_STATUS_NODES 2
 
 class CurrentSensor: public VoltageSensor {
 public:
@@ -27,7 +27,8 @@ public:
     int                     snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal);
 protected:
     // int                 _sensorType;
-    currentStatusNode  _statusTable[CURRENT_STATUS_NODES];
+    const static int        _statusNodes = 2;
+    currentStatusNode      _statusTable[_statusNodes];
 };
 
 #endif

@@ -9,7 +9,7 @@ typedef struct throttleStatusNode {
     throttleStatusType  statusVal;
 } throttleStatusNode;
 
-#define THROTTLE_STATUS_NODES 2
+// #define THROTTLE_STATUS_NODES 2
 
 class ThrottleSensor: public NormalizedVoltageSensor
 {
@@ -23,7 +23,8 @@ public:
     int                     snprintReadings(char* buffer, int charsRemaining);
     int                     snprintStatusString(char* buffer, int charsRemaining, throttleStatusType statusVal);
 protected:
-    throttleStatusNode     _statusTable[THROTTLE_STATUS_NODES];
+    const static int        _statusNodes = 2;
+    throttleStatusNode      _statusTable[_statusNodes];
 };
 
 #endif

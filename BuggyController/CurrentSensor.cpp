@@ -68,7 +68,7 @@ void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
     if(currentReg >= 0.0 and currentMax > currentReg){
         double thresholds[] =           {currentReg,  currentMax};
         currentStatusType statuses[]  = {C_NORMAL,    C_REGULATED};
-        for(int i=0; i< CURRENT_STATUS_NODES; i++){
+        for(int i=0; i< _statusNodes; i++){
             _statusTable[i].threshold = thresholds[i];
             _statusTable[i].statusVal = statuses[i];
         }
@@ -79,7 +79,7 @@ currentStatusType CurrentSensor::getStatus(){
     currentStatusType statusVal = C_HIGH;
     double sensorVal = getSensorVal();
     int i;
-    for( i=0; i < CURRENT_STATUS_NODES; i++) {
+    for( i=0; i < _statusNodes; i++) {
         if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
@@ -117,7 +117,7 @@ int CurrentSensor::snprintStatusNode(char* buffer, int charsRemaining, currentSt
 int CurrentSensor::snprintStatusTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
-    for(int i=0; i < CURRENT_STATUS_NODES; i++) {
+    for(int i=0; i < _statusNodes; i++) {
         charsPrinted += snprintStatusNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _statusTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
