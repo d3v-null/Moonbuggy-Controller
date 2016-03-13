@@ -6,7 +6,7 @@
 class DigitalSmooth
 {
 public:
-    DigitalSmooth(int sampleWidth = 10, double endDiscard = 0.0);
+    DigitalSmooth(int sampleWidth = 1, double endDiscard = 0.0);
     ~DigitalSmooth();
     int smoothData(int dataPoint);
     int snprintSamples(char* buffer, int charsRemaining);

@@ -37,8 +37,8 @@ MotorController::MotorController(){
     _motorMode = M_NEUTRAL;
     _temperatureSensor = new TemperatureSensor();
     _armCurrentSensor = new CurrentSensor();
-    _temperatureSensor->initSensorTable();
-    _armCurrentSensor->initSensorTable();
+    _temperatureSensor->init();
+    _armCurrentSensor->init();
     // _phaseVal = P_FORWARD;
     // setThrottle();
     // setTempBounds();

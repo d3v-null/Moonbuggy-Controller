@@ -18,7 +18,7 @@
 
 #if DEBUG
 
-    #define MOTORS 2
+    #define MOTORS 0
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
@@ -38,8 +38,8 @@
 
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
-#define BOARD 1
-// #define BOARD 2
+// #define BOARD 1
+#define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================

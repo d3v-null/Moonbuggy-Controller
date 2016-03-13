@@ -16,6 +16,7 @@ VoltageSensor::VoltageSensor() {
     // _sensorPin = -1;
     _pinsSet = false;
     _pinsInit = false;
+    _smootherInit = false;
     _rawVal = 0;
     // initSensorTable();
 };
@@ -25,6 +26,16 @@ void VoltageSensor::initSensorTable(){
     double sensorVals[] =   {0.0,   SYSTEM_VCC};
     int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));
     populateSensorTable(len, rawVals, sensorVals);
+}
+
+void VoltageSensor::initSmoother(){
+    _smoother = new DigitalSmooth();
+    _smootherInit = true;
+}
+
+void VoltageSensor::init(){
+    initSensorTable();
+    initSmoother();
 }
 
 VoltageSensor::~VoltageSensor(){
@@ -55,7 +66,10 @@ void VoltageSensor::initPins(){
 
 void VoltageSensor::readInputs(){
     if(_pinsInit){
-        _rawVal = analogRead(_sensorPin);
+        _rawVal =  analogRead(_sensorPin);
+        if(_smootherInit){
+            _rawVal = _smoother->smoothData( _rawVal );
+        }
     }
 }
 

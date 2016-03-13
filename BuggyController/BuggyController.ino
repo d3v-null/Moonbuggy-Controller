@@ -78,7 +78,7 @@ void setup() {
         // pinMode(THROTTLE_PIN, INPUT);
         if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_DELAY);}
         throttleSensor = ThrottleSensor();
-        throttleSensor.initSensorTable();
+        throttleSensor.init();
         if(DEBUG){
             Serial.println("Throttle POST construct ");
             start = buffer; charsPrinted = 0;
@@ -97,7 +97,7 @@ void setup() {
         if(DEBUG) {Serial.println("Constructing TemperatureSensor"); delay(DEBUG_PRINT_DELAY);} 
 
         systemTempSensor = TemperatureSensor();
-        systemTempSensor.initSensorTable();
+        systemTempSensor.init();
         if(DEBUG){
             Serial.println("Throttle POST temp construct ");
             start = buffer; charsPrinted = 0;
@@ -115,7 +115,7 @@ void setup() {
         if(DEBUG) {Serial.println("Constructing Battery"); delay(DEBUG_PRINT_DELAY);} 
 
         batterySensor = BatterySensor();
-        // batterySensor.initSensorTable();
+        // batterySensor.init();
         batterySensor.setPins(BATTERY_VOLT_PIN);
         batterySensor.initPins();
         batterySensor.setSensorMultiplier(BATTERY_SENSOR_MULTIPLIER);
@@ -126,7 +126,7 @@ void setup() {
     #ifndef IGNORE_CURRENTS
         #ifdef DEBUG_CURRENTS
             debugCurrentSensor = CurrentSensor();
-            debugCurrentSensor.initSensorTable();
+            debugCurrentSensor.init();
             debugCurrentSensor.setPins(DEBUG_CURRENT_PIN);
             debugCurrentSensor.initPins();
             debugCurrentSensor.setStatusBounds(MOTOR_0_REG_CURRENT, MOTOR_0_MAX_CURRENT);

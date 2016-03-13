@@ -1,5 +1,5 @@
 #include "arduino.h"
-#include <DigitalSmooth.h>
+#include "DigitalSmooth.h"
 
 #define THROTTLE_PIN A3
 #define SAMPLE_SIZE 25

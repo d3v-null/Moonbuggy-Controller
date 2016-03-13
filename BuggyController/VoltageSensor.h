@@ -2,6 +2,7 @@
 #define VoltageSensor_h 
 
 #include "Configuration.h"
+#include "DigitalSmooth.h"
 
 #define ARRAYLEN( array ) ( (int)(sizeof( array ) / sizeof( array[0] )) )
 
@@ -19,6 +20,8 @@ public:
     ~VoltageSensor();
     void            setPins(int sensorPin);
     void            initPins();
+    virtual void    initSmoother();
+    virtual void    init();
     void            readInputs();
     virtual int     getRawVal();
     virtual double  getSensorVal();
@@ -32,9 +35,11 @@ protected:
     int             _sensorPin;
     bool            _pinsSet;
     bool            _pinsInit;
+    bool            _smootherInit;
     int             _rawVal;
     sensorNode*     _sensorTable;
     int             _sensorTableLen;
+    DigitalSmooth*  _smoother;
     // DEBUG
     // virtual int     snprintSensorVal(char* buffer, int charsRemaining);
     virtual int     snprintReadings(char* buffer, int charsRemaining){};
