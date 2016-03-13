@@ -62,11 +62,14 @@ int fieldVal;
 // An array pointing to the motor controllers
 MotorController motorControllers[MOTORS];
 
-void setup() {
-    if(DEBUG) {Serial.begin(BAUDRATE); delay(DEBUG_PRINT_DELAY);} 
-    if(DEBUG) {Serial.println("Initializing"); delay(DEBUG_PRINT_DELAY);} 
+unsigned long lastDebug;
 
-    if(DEBUG) {Serial.println("Initializing Killswitch"); delay(DEBUG_PRINT_DELAY);} 
+void setup() {
+
+    if(DEBUG) {Serial.begin(BAUDRATE); delay(DEBUG_PRINT_TIME);} 
+    if(DEBUG) {Serial.println("Initializing"); delay(DEBUG_PRINT_TIME);} 
+
+    if(DEBUG) {Serial.println("Initializing Killswitch"); delay(DEBUG_PRINT_TIME);} 
     pinMode(KILLSWITCH_PIN, INPUT);
 
     char buffer[DEBUG_BUFSIZ];
@@ -76,14 +79,14 @@ void setup() {
     #ifndef IGNORE_THROTTLE
         //Set pinmodes
         // pinMode(THROTTLE_PIN, INPUT);
-        if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_DELAY);}
+        if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_TIME);}
         throttleSensor = ThrottleSensor();
         throttleSensor.init();
         if(DEBUG){
             Serial.println("Throttle POST construct ");
             start = buffer; charsPrinted = 0;
             charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
         }
         throttleSensor.setPins(THROTTLE_PIN);
         throttleSensor.initPins();
@@ -94,7 +97,7 @@ void setup() {
 
     #ifndef IGNORE_TEMPS
 
-        if(DEBUG) {Serial.println("Constructing TemperatureSensor"); delay(DEBUG_PRINT_DELAY);} 
+        if(DEBUG) {Serial.println("Constructing TemperatureSensor"); delay(DEBUG_PRINT_TIME);} 
 
         systemTempSensor = TemperatureSensor();
         systemTempSensor.init();
@@ -102,7 +105,7 @@ void setup() {
             Serial.println("Throttle POST temp construct ");
             start = buffer; charsPrinted = 0;
             charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            Serial.println(buffer); delay(DEBUG_PRINT_DELAY);
+            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
         }
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
         systemTempSensor.initPins();
@@ -112,7 +115,7 @@ void setup() {
 
     #ifndef IGNORE_BATTERY
 
-        if(DEBUG) {Serial.println("Constructing Battery"); delay(DEBUG_PRINT_DELAY);} 
+        if(DEBUG) {Serial.println("Constructing Battery"); delay(DEBUG_PRINT_TIME);} 
 
         batterySensor = BatterySensor();
         // batterySensor.init();
@@ -134,7 +137,7 @@ void setup() {
     #endif
 
     #ifndef IGNORE_MODE
-        if(DEBUG) {Serial.println("Initializing VehicleMode"); delay(DEBUG_PRINT_DELAY);} 
+        if(DEBUG) {Serial.println("Initializing VehicleMode"); delay(DEBUG_PRINT_TIME);} 
         pinMode(VEHICLE_MODE_PIN, INPUT);
     #endif
 
@@ -185,7 +188,7 @@ void setup() {
     modeSwitch = LOW;
     phaseStatus = P_FORWARD;
     phaseVal = HIGH;
-    if(DEBUG) Serial.println("Finished Initializing"); delay(DEBUG_PRINT_DELAY);
+    if(DEBUG) Serial.println("Finished Initializing"); delay(DEBUG_PRINT_TIME);
 }
 
 void readInputs() {
@@ -232,7 +235,7 @@ void shutdown() {
  * updates variable safetyStatus
  */
 void safetyCheck() {
-    // if(DEBUG) Serial.println("Starting safety check"); delay(DEBUG_PRINT_DELAY);
+    // if(DEBUG) Serial.println("Starting safety check"); delay(DEBUG_PRINT_TIME);
     boolean shouldTerminate = false;
     char dispbuffer[DISP_BUFSIZ] = "";
     switch (safetyStatus) {
@@ -332,11 +335,11 @@ void safetyCheck() {
         default:
             break;
     }
-    // if(DEBUG) Serial.println("Finished safety check"); delay(DEBUG_PRINT_DELAY);
+    // if(DEBUG) Serial.println("Finished safety check"); delay(DEBUG_PRINT_TIME);
 }
 
 void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
-    // if(DEBUG) Serial.println("Setting Vehicle Mode"); delay(DEBUG_PRINT_DELAY);
+    // if(DEBUG) Serial.println("Setting Vehicle Mode"); delay(DEBUG_PRINT_TIME);
     if(vehicleMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
@@ -436,10 +439,14 @@ void loop() {
         updateOutputs();
     }    
     if(DEBUG){
-        char buffer[DEBUG_BUFSIZ] = "";
-        snprintDebugInfo(buffer, DEBUG_BUFSIZ);
-        Serial.println(buffer); 
-        delay(DEBUG_PRINT_DELAY);
+        unsigned long now = millis();
+        if( now - lastDebug > DEBUG_PRINT_TIME ){
+            lastDebug = now;
+            char buffer[DEBUG_BUFSIZ] = "";
+            snprintDebugInfo(buffer, DEBUG_BUFSIZ);
+            Serial.println(buffer); 
+        }
+        // delay(DEBUG_PRINT_TIME);
     }
 }
 

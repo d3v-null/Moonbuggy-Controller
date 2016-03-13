@@ -35,6 +35,12 @@ batteryStatusType BatterySensor::getStatus(){
     return statusVal;
 }
 
+
+void BatterySensor::initSmoother(){
+    _smoother = new DigitalSmooth(10);
+    _smootherInit = true;
+}
+
 int BatterySensor::snprintStatusString(char* buffer, int charsRemaining, batteryStatusType statusVal){
     char* statusStr = "???";
     switch (statusVal) {

@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_DELAY 200
+#define DEBUG_PRINT_TIME 200
 
 // This determines the communication speed
 #define BAUDRATE 115200
