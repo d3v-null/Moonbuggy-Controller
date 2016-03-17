@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 50
+#define DEBUG_PRINT_TIME 100
 #define SENSOR_READ_TIME 10
 
 // This determines the communication speed
@@ -67,16 +67,22 @@
 #define MOTOR_1_MINTEMP 5.0
 
 // The tempterature at which the throttle should be regulated in order to bring the temperature down
-#define ONBOARD_REGTEMP 70.0
-#define MOTOR_0_REGTEMP 70.0
-#define MOTOR_1_REGTEMP 70.0
+#define ONBOARD_REGTEMP 31.0
+// #define ONBOARD_REGTEMP 70.0
+#define MOTOR_0_REGTEMP 31.0
+// #define MOTOR_0_REGTEMP 70.0
+#define MOTOR_1_REGTEMP 31.0
+// #define MOTOR_1_REGTEMP 70.0
 
 // When temperature exceeds max temp, your motor will be switched off.
 // This feature exists to protect your motor from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define ONBOARD_MAXTEMP 80.0
-#define MOTOR_0_MAXTEMP 80.0
-#define MOTOR_1_MAXTEMP 80.0
+#define ONBOARD_MAXTEMP 32.0
+#define MOTOR_0_MAXTEMP 32.0
+#define MOTOR_1_MAXTEMP 32.0
+// #define ONBOARD_MAXTEMP 80.0
+// #define MOTOR_0_MAXTEMP 80.0
+// #define MOTOR_1_MAXTEMP 80.0
 
 //===========================================================================
 //============================= Current Settings ============================
@@ -86,13 +92,13 @@
 // #define CURRENT_SENSOR_0 1
 // #define CURRENT_SENSOR_1 1
 
-#define DEBUG_REG_CURRENT 30
-#define MOTOR_0_REG_CURRENT 30
-#define MOTOR_1_REG_CURRENT 30
+#define DEBUG_REG_CURRENT 20
+#define MOTOR_0_REG_CURRENT 20
+#define MOTOR_1_REG_CURRENT 20
 
-#define DEBUG_MAX_CURRENT 40
-#define MOTOR_0_MAX_CURRENT 40
-#define MOTOR_1_MAX_CURRENT 40
+#define DEBUG_MAX_CURRENT 25
+#define MOTOR_0_MAX_CURRENT 25
+#define MOTOR_1_MAX_CURRENT 25
 
 //===========================================================================
 //============================== Field Settings =============================

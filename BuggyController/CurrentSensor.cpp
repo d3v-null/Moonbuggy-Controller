@@ -32,8 +32,10 @@ CurrentSensor::CurrentSensor(){
 }
 
 void CurrentSensor::initSensorTable(){
-    int rawVals_1[]       = {0,     512,  540, 580, SYSTEM_ANALOGUE_MAX};
-    double sensorVals_1[] = {-40.0, 0.0, 3.05,  10, 40.0};
+    int rawVals_1[]       = {0,     512,  520, 532, 580, SYSTEM_ANALOGUE_MAX};
+    double sensorVals_1[] = {-40.0, 0.0,  2.0,  3.0, 10, 40.0};
+    // int rawVals_1[]       = {0,     512,  540, 580, SYSTEM_ANALOGUE_MAX};
+    // double sensorVals_1[] = {-40.0, 0.0, 3.05,  10, 40.0};
     int len_1 = min(ARRAYLEN(rawVals_1), ARRAYLEN(sensorVals_1));
     populateSensorTable(len_1, rawVals_1, sensorVals_1);
     // setSensorMultiplier();
@@ -42,7 +44,17 @@ void CurrentSensor::initSensorTable(){
     //10 -> 580
     //3.05 -> 540
 
+    // 520 -> 2
+    // 532 -> 3.0
+    // 10 -> 580
+
 }
+
+void CurrentSensor::initSmoother(){
+    _smoother = new DigitalSmooth(20, 0.15);
+    _smootherInit = true;
+}
+
 
 // void CurrentSensor::setSensorType(int sensorType){
 //     if(_sensorType != sensorType){
@@ -144,6 +156,11 @@ int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
         #endif
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SMT:");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getSmoothedVal()));
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
     return charsPrinted - 1;

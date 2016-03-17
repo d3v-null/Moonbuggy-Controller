@@ -136,7 +136,6 @@ int TemperatureSensor::snprintStatusTable(char* buffer, int charsRemaining){
 }
 
 int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
-    char*start = buffer;
     int charsPrinted = 0;
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));

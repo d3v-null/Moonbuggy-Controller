@@ -91,7 +91,9 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
 }
 
 // int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
-
+//     int charsPrinted = 0;
+//     charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
+//     return charsPrinted;
 // }
 
 int VoltageSensor::getSensorTableSize(){

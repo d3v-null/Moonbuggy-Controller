@@ -20,6 +20,7 @@ public:
     void                setStatusBounds(double regCurrent=1.0, double maxCurrent=1.0);
     currentStatusType   getStatus();
     void            initSensorTable();
+    void                    initSmoother();
     // DEBUG
     int                     snprintStatusNode(char* buffer, int charsRemaining, currentStatusNode node);
     int                     snprintStatusTable(char* buffer, int charsRemaining);
