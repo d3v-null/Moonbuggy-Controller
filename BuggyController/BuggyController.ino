@@ -39,7 +39,9 @@ ThrottleSensor throttleSensor;
     BatterySensor batterySensor;
 #endif
 #ifndef IGNORE_TEMPS
-    TemperatureSensor systemTempSensor;
+    #ifndef IGNORE_SYS_TEMP
+        TemperatureSensor systemTempSensor;
+    #endif
 #endif
 #ifndef IGNORE_CURRENTS
     #ifdef DEBUG_CURRENTS
@@ -97,21 +99,21 @@ void setup() {
 
 
     #ifndef IGNORE_TEMPS
+        #ifndef IGNORE_SYS_TEMP
+            if(DEBUG) {Serial.println("Constructing TemperatureSensor"); delay(DEBUG_PRINT_TIME);} 
 
-        if(DEBUG) {Serial.println("Constructing TemperatureSensor"); delay(DEBUG_PRINT_TIME);} 
-
-        systemTempSensor = TemperatureSensor();
-        systemTempSensor.init();
-        // if(DEBUG){
-        //     Serial.println("Throttle POST temp construct ");
-        //     start = buffer; charsPrinted = 0;
-        //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-        //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-        // }
-        systemTempSensor.setPins(ONBOARD_TEMP_PIN);
-        systemTempSensor.initPins();
-        systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
-
+            systemTempSensor = TemperatureSensor();
+            systemTempSensor.init();
+            // if(DEBUG){
+            //     Serial.println("Throttle POST temp construct ");
+            //     start = buffer; charsPrinted = 0;
+            //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
+            //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
+            // }
+            systemTempSensor.setPins(ONBOARD_TEMP_PIN);
+            systemTempSensor.initPins();
+            systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
+        #endif
     #endif
 
     #ifndef IGNORE_BATTERY
@@ -204,9 +206,11 @@ void setup() {
         #endif
 
         #ifndef IGNORE_TEMPS
-            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPV\"," );
-            #ifdef CALLIBRATE_SENSORS
-                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPR\"," );
+            #ifndef IGNORE_SYS_TEMP
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPV\"," );
+                #ifdef CALLIBRATE_SENSORS
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPR\"," );
+                #endif
             #endif
         #endif
 
@@ -238,7 +242,9 @@ void readInputs() {
         throttleSensor.readInputs();
     #endif
     #ifndef IGNORE_TEMPS
-        systemTempSensor.readInputs();
+        #ifndef IGNORE_SYS_TEMP
+            systemTempSensor.readInputs();
+        #endif
     #endif
     #ifndef IGNORE_BATTERY
         batterySensor.readInputs();
@@ -312,20 +318,22 @@ void safetyCheck() {
                         if( shouldTerminate ){ break; }
                     }
                 }
-                if(!shouldTerminate){                    
-                    switch(systemTempSensor.getStatus()){
-                        case T_COLD:
-                          snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_COLD");
-                          shouldTerminate = true;
-                          break;
-                        case T_HOT:
-                          snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_HOT");
-                          shouldTerminate = true;
-                          break;
-                        default:
-                          break;
+                #ifndef IGNORE_SYS_TEMP
+                    if(!shouldTerminate){                    
+                        switch(systemTempSensor.getStatus()){
+                            case T_COLD:
+                              snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_COLD");
+                              shouldTerminate = true;
+                              break;
+                            case T_HOT:
+                              snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP: T_HOT");
+                              shouldTerminate = true;
+                              break;
+                            default:
+                              break;
+                        }
                     }
-                }
+                #endif
             #endif
 
             #ifndef IGNORE_CURRENTS
@@ -538,14 +546,16 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     #endif
 
     #ifndef IGNORE_TEMPS
-        #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); //@%d<", (int)(&systemTempSensor)%1000);
+        #ifndef IGNORE_SYS_TEMP
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); //@%d<", (int)(&systemTempSensor)%1000);
+            #endif
+            charsPrinted += systemTempSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+            #endif
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
         #endif
-        charsPrinted += systemTempSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-        #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
 
     #ifndef IGNORE_BATTERY

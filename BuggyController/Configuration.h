@@ -35,7 +35,7 @@
 
 #endif
 
-#define IGNORE_SYS_TEMP
+// #define IGNORE_SYS_TEMP
 
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
