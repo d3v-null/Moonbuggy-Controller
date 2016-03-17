@@ -116,7 +116,10 @@ void MotorController::updateOutputs(){
 int MotorController::snprintParameters(char* buffer, int charsRemaining){
     int charsPrinted = 0;
 
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THV:%3d", (int)(100 * _throttleVal) );
+    #ifndef DATA_LOGGING
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THV:");
+    #endif
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_LT1, (int)(100 * _throttleVal) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "ARV:%3d", _armVoltVal);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);

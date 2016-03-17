@@ -21,6 +21,7 @@ public:
     int                 snprintStatusNode(char* buffer, int charsRemaining, batteryStatusNode node);
     int                 snprintStatusTable(char* buffer, int charsRemaining);
     int                 snprintReadings(char* buffer, int charsRemaining);
+    int                 snprintValLabel(char* buffer, int charsRemaining);
     int                 snprintStatusString(char* buffer, int charsRemaining, batteryStatusType statusVal);
 protected:
     // double              _minBattery;

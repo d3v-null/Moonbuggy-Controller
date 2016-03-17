@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 100
+#define DEBUG_PRINT_TIME 50
 #define SENSOR_READ_TIME 10
 
 // This determines the communication speed
@@ -16,13 +16,13 @@
 
 #if DEBUG
 
-    #define MOTORS 2
+    #define MOTORS 0
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
-    // #define IGNORE_BATTERY
-    // #define IGNORE_CURRENTS
-    // #define IGNORE_MODE
+    #define IGNORE_BATTERY
+    #define IGNORE_CURRENTS
+    #define IGNORE_MODE
     // #if MOTORS < 1
     //     #define DEBUG_CURRENTS
     // #endif
@@ -40,7 +40,7 @@
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
 // #define BOARD 1
-#define BOARD 1
+#define BOARD 2
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -197,8 +197,10 @@
 
 #if DEBUG_CELL_WIDTH == 3
     #define DEBUG_CELL_FMT_D "%3d"
+    #define DEBUG_CELL_FMT_LT1 ".%02d"
 #else
     #define DEBUG_CELL_FMT_D "%6d"
+    #define DEBUG_CELL_FMT_LT1 ".%02d"
 #endif
 
 #endif

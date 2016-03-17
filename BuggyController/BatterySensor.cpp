@@ -71,6 +71,10 @@ int BatterySensor::snprintStatusTable(char* buffer, int charsRemaining){
     return charsPrinted;
 }
 
+int BatterySensor::snprintValLabel(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, "VOL:");
+}
+
 int BatterySensor::snprintReadings(char* buffer, int charsRemaining){
     int charsPrinted = 0;
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PIN:%3d|",(int)(_sensorPin) );
@@ -78,21 +82,25 @@ int BatterySensor::snprintReadings(char* buffer, int charsRemaining){
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STT:");
     // charsPrinted += snprintStatusTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    #ifndef DATA_LOGGING
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VLT:" );
-    #endif
-    charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
+
+    charsPrinted += VoltageSensor::snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    
+    // #ifndef DATA_LOGGING
+    //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VLT:" );
+    // #endif
+    // charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    // #ifdef CALLIBRATE_SENSORS
+    //     #ifndef DATA_LOGGING
+    //         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
+    //     #endif
+    //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
+    //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    // #endif
     #ifndef DATA_LOGGING
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "STS:");
         charsPrinted += snprintStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), getStatus());
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-    #endif
-    #ifdef CALLIBRATE_SENSORS
-        #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
-        #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
     return charsPrinted - 1;

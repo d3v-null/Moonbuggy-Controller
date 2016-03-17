@@ -25,12 +25,14 @@ public:
     void            readInputs();
     virtual int     getRawVal();
     virtual int     getSmoothedVal();
-    virtual double  getSensorVal();
+    double  getSensorVal();
     //debugging:
-    virtual int     getSensorTableSize();
+    // virtual int     getSensorTableSize();
     virtual int     snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
     virtual int     snprintSensorTable(char* buffer, int remainingChars);
-    // virtual int     snprintSensorVal(char* buffer, int charsRemaining);
+    int     snprintSensorVal(char* buffer, int charsRemaining);
+    virtual int     snprintValLabel(char* buffer, int charsRemaining);
+    virtual int     snprintReadings(char* buffer, int charsRemaining);
 protected:
     virtual void    initSensorTable();
     virtual void    populateSensorTable(int len, int rawVals[], double sensorVals[] );
@@ -44,17 +46,16 @@ protected:
     int             _sensorTableLen;
     DigitalSmooth*  _smoother;
     // DEBUG
-    virtual int     snprintReadings(char* buffer, int charsRemaining){};
 };
 
 class NormalizedVoltageSensor: public VoltageSensor {
 public:
-    NormalizedVoltageSensor();
+    // NormalizedVoltageSensor();
     // int             getRawVal();
     int             getSmoothedVal(); 
-    virtual void    setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
-    int             getSensorMin();
-    int             getSensorMax();
+    void    setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
+    // int             getSensorMin();
+    // int             getSensorMax();
     void            initSensorTable();
 protected:
     int             _sensorMin;
@@ -63,8 +64,8 @@ protected:
 
 class VoltageDividerSensor: public VoltageSensor {
 public:
-    VoltageDividerSensor();
-    virtual void    setSensorMultiplier(double sensorMultiplier = 1.0);
+    // VoltageDividerSensor();
+    void    setSensorMultiplier(double sensorMultiplier = 1.0);
     void            initSensorTable();
 protected:
     double          _sensorMultiplier;

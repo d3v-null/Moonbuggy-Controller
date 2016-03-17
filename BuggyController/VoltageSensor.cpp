@@ -90,40 +90,63 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
     return charsPrinted;
 }
 
-// int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
-//     int charsPrinted = 0;
-//     charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
-//     return charsPrinted;
-// }
-
-// int VoltageSensor::snprintReadings(char* buffer, int charsRemaining){
-//     char*start = buffer;
-//     int charsPrinted = 0;
-//     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
-//     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-//     #ifndef DATA_LOGGING
-//         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:");
-//     #endif
-//     charsPrinted += strlen( dtostrf(getSensorVal(), FLOAT_WIDTH, FLOAT_PREC, (buffer+charsPrinted))) ;
-//     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-//     #ifdef CALLIBRATE_SENSORS
-//         #ifndef DATA_LOGGING
-//             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
-//         #endif
-//         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
-//         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-//         #ifndef DATA_LOGGING
-//             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SMT:");
-//         #endif
-//         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getSmoothedVal()));
-//         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-//     #endif
-//     return charsPrinted - 1;
-// }
-
-int VoltageSensor::getSensorTableSize(){
-    return _sensorTableLen ;
+int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
+    double sensorVal = getSensorVal();
+    int digits = 1;
+    if(abs(sensorVal) > 1) {
+        int digits = (int)(log10(abs(sensorVal)));
+        if(sensorVal < 0){ digits++; }
+        if(digits + 1 > DEBUG_CELL_WIDTH){ 
+            return snprintf( buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)(sensorVal) ); 
+        } else {
+            int float_prec = DEBUG_CELL_WIDTH - digits - 1;
+            float_prec = constrain(float_prec, 0, FLOAT_PREC);
+            // sensorVal *= pow(10, float_prec);
+            // sensorVal ++;
+            // sensorVal /= pow(10, float_prec);
+            dtostrf(sensorVal, FLOAT_WIDTH, float_prec, buffer);
+            return DEBUG_CELL_WIDTH;
+        }
+    } else {
+        return snprintf( buffer, charsRemaining, DEBUG_CELL_FMT_LT1, (int)(sensorVal * pow(10, DEBUG_CELL_WIDTH-1)) ); 
+    }
+    // if(digits == 0){float_width = 0; }
 }
+
+int VoltageSensor::snprintValLabel(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, "VAL:");
+}
+
+int VoltageSensor::snprintReadings(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+    // #ifndef DATA_LOGGING
+    //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SNT@%d:", (int)(_sensorTable)%1000);
+    // #endif
+    // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #ifndef DATA_LOGGING
+        charsPrinted += snprintValLabel((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    #endif
+    charsPrinted += snprintSensorVal((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #ifdef CALLIBRATE_SENSORS
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        // #ifndef DATA_LOGGING
+        //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SMR:");
+        // #endif
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getSmoothedVal()));
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+    return charsPrinted - 1;
+}
+
+// int VoltageSensor::getSensorTableSize(){
+//     return _sensorTableLen ;
+// }
 
 /** 
  * Overridden in later classes
@@ -153,7 +176,7 @@ double VoltageSensor::getSensorVal(){
     return sensorVal;
 }
 
-NormalizedVoltageSensor::NormalizedVoltageSensor() {}
+// NormalizedVoltageSensor::NormalizedVoltageSensor() {}
 
 void NormalizedVoltageSensor::initSensorTable(){
     setInputConstraints(0,  SYSTEM_ANALOGUE_MAX);
@@ -168,8 +191,8 @@ int NormalizedVoltageSensor::getSmoothedVal(){
     );
 }
 
-int NormalizedVoltageSensor::getSensorMin() {return _sensorMin;}
-int NormalizedVoltageSensor::getSensorMax() {return _sensorMax;}
+// int NormalizedVoltageSensor::getSensorMin() {return _sensorMin;}
+// int NormalizedVoltageSensor::getSensorMax() {return _sensorMax;}
 
 void NormalizedVoltageSensor::setInputConstraints(int minimum, int maximum) {
     if(minimum >= 0 and maximum >= minimum and maximum <= SYSTEM_ANALOGUE_MAX){
@@ -182,7 +205,7 @@ void NormalizedVoltageSensor::setInputConstraints(int minimum, int maximum) {
     }
 }
 
-VoltageDividerSensor::VoltageDividerSensor(){}
+// VoltageDividerSensor::VoltageDividerSensor(){}
 
 void VoltageDividerSensor::initSensorTable(){
     setSensorMultiplier();

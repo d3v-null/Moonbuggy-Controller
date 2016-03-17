@@ -16,17 +16,18 @@ typedef struct currentStatusNode {
 class CurrentSensor: public VoltageSensor {
 public:
     CurrentSensor();
-    void                setSensorType(int sensorType);
+    // void                setSensorType(int sensorType);
     void                setStatusBounds(double regCurrent=1.0, double maxCurrent=1.0);
     currentStatusType   getStatus();
     void            initSensorTable();
     void                    initSmoother();
+    double              getArmCoefficient();
     // DEBUG
     int                     snprintStatusNode(char* buffer, int charsRemaining, currentStatusNode node);
     int                     snprintStatusTable(char* buffer, int charsRemaining);
+    int                     snprintValLabel(char* buffer, int charsRemaining);
     int                     snprintReadings(char* buffer, int charsRemaining);
     int                     snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal);
-    double              getArmCoefficient();
 protected:
     // int                 _sensorType;
     const static int        _statusNodes = 2;

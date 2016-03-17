@@ -20,6 +20,7 @@ public:
     void                    initSmoother();
     // void                    init();
     // DEBUG
+    // int                     snprintValLabel(char* buffer, int charsRemaining);
     int                     snprintStatusNode(char* buffer, int charsRemaining, throttleStatusNode node);
     int                     snprintStatusTable(char* buffer, int charsRemaining);
     int                     snprintReadings(char* buffer, int charsRemaining);

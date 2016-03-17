@@ -6,6 +6,8 @@
 #include "Configuration.h"
 #include "ThrottleSensor.h"
 #include "MotorController.h"
+#include <Math.h>
+
 #ifndef IGNORE_TEMPS
     #include "TemperatureSensor.h"
 #endif

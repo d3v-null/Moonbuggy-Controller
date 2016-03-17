@@ -85,12 +85,12 @@ void setup() {
         if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_TIME);}
         throttleSensor = ThrottleSensor();
         throttleSensor.init();
-        // if(DEBUG){
-        //     Serial.println("Throttle POST construct ");
-        //     start = buffer; charsPrinted = 0;
-        //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-        //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-        // }
+        if(DEBUG){
+            Serial.println("Throttle POST construct ");
+            start = buffer; charsPrinted = 0;
+            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
+            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
+        }
         throttleSensor.setPins(THROTTLE_PIN);
         throttleSensor.initPins();
         throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
@@ -104,12 +104,12 @@ void setup() {
 
             systemTempSensor = TemperatureSensor();
             systemTempSensor.init();
-            // if(DEBUG){
-            //     Serial.println("Throttle POST temp construct ");
-            //     start = buffer; charsPrinted = 0;
-            //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-            // }
+            if(DEBUG){
+                Serial.println("Throttle POST temp construct ");
+                start = buffer; charsPrinted = 0;
+                charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
+                Serial.println(buffer); delay(DEBUG_PRINT_TIME);
+            }
             systemTempSensor.setPins(ONBOARD_TEMP_PIN);
             systemTempSensor.initPins();
             systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
@@ -149,7 +149,7 @@ void setup() {
         pinMode( MOTOR_FIELD_VOLT_PIN, OUTPUT );
         pinMode( MOTOR_FIELD_PHASE_PIN, OUTPUT);
 
-        Serial.println("Initializing Motor 1");
+        Serial.println("Initializing Motor 0");
         motorControllers[0].setPins(
             MOTOR_0_TEMP_PIN,
             MOTOR_0_ARM_SENSE_PIN,
@@ -168,7 +168,7 @@ void setup() {
     #endif
 
     #if MOTORS > 1
-        if(DEBUG) Serial.println("Initializing Motor 2");
+        if(DEBUG) Serial.println("Initializing Motor 1");
         motorControllers[1].setPins(
             MOTOR_1_TEMP_PIN,
             MOTOR_1_ARM_SENSE_PIN,
@@ -232,6 +232,19 @@ void setup() {
 
         Serial.println(header);
     #endif
+
+    unsigned long now = millis();
+    readInputs();
+    lastRead = now;
+
+    // if(DEBUG){
+    //     lastDebug = now;
+    //     char buffer[DEBUG_BUFSIZ] = "";
+    //     snprintDebugInfo(buffer, DEBUG_BUFSIZ);
+    //     Serial.println(buffer); 
+    //     delay(DEBUG_PRINT_TIME);
+    // }
+
 }
 
 void readInputs() {
@@ -421,7 +434,11 @@ void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
 int getFieldVal(){
     int fieldVal = FIELD_OFF;
     if(safetyStatus == S_SAFE){
-        double currentVoltage = batterySensor.getSensorVal();
+        double currentVoltage = FIELD_TARGET_VOLT;
+        #ifndef IGNORE_BATTERY
+            currentVoltage = batterySensor.getSensorVal();
+        #endif
+        
         // if currentVoltage < targetVoltage => max
         // if currentVoltage >= targetVoltage => max * targetVoltage / currentVoltage
         switch(vehicleMode){
