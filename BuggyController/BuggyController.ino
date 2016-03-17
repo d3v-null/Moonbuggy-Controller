@@ -59,7 +59,7 @@ int modeSwitch;
 int phaseVal;
 
 // the value of the field 
-int fieldVal;
+// int fieldVal;
 
 // An array pointing to the motor controllers
 MotorController motorControllers[MOTORS];
@@ -270,7 +270,7 @@ void shutdown() {
     if(DEBUG) Serial.println("Shutting Down");
 
     vehicleMode = M_NEUTRAL;
-    fieldVal = FIELD_OFF;
+    // fieldVal = FIELD_OFF;
     int i;
     for(i=0; i<MOTORS; i++){
         motorControllers[i].shutdown();
@@ -603,7 +603,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
         #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", fieldVal);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", getFieldVal() );
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
         #endif
