@@ -400,20 +400,14 @@ void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
     if(vehicleMode != motorMode){
         switch(motorMode){
             case M_REVERSE:
-                fieldVal = FIELD_ON;
                 setPhase(P_REVERSE);
                 break;
             case M_FORWARD:
-                fieldVal = FIELD_ON;
-                setPhase(P_FORWARD);
-                break;
             case M_FORWARD_BOOST:
-                fieldVal = FIELD_BOOST;
                 setPhase(P_FORWARD);
                 break;
             case M_NEUTRAL:
             default:
-                fieldVal = FIELD_OFF;
                 break;
         }
         vehicleMode = motorMode;
@@ -422,6 +416,29 @@ void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
             motorControllers[i].setMotorMode(vehicleMode);
         }
     }
+}
+
+int getFieldVal(){
+    int fieldVal = FIELD_OFF;
+    if(safetyStatus == S_SAFE){
+        double currentVoltage = batterySensor.getSensorVal();
+        // if currentVoltage < targetVoltage => max
+        // if currentVoltage >= targetVoltage => max * targetVoltage / currentVoltage
+        switch(vehicleMode){
+            case M_FORWARD_BOOST:
+                //boost disabled
+                // fieldVal = (int)(FIELD_BOOST * min(1.0, targetVoltage / currentVoltage) );
+                // break;
+            case M_REVERSE:
+            case M_FORWARD:
+                fieldVal = (int)(FIELD_ON * min(1.0, FIELD_TARGET_VOLT / currentVoltage) );
+                break;
+            case M_NEUTRAL:
+            default:
+                break;
+        }
+    } 
+    return fieldVal;
 }
 
 void setPhase(phaseType phase){
@@ -442,7 +459,7 @@ void setPhase(phaseType phase){
 
 void updateOutputs(){
     digitalWrite(MOTOR_FIELD_PHASE_PIN, phaseVal);
-    digitalWrite(MOTOR_FIELD_VOLT_PIN, fieldVal);
+    digitalWrite(MOTOR_FIELD_VOLT_PIN, getFieldVal() );
     for(int i=0; i<MOTORS; i++){
         motorControllers[i].updateOutputs();
     }
