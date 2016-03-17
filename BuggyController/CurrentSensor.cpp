@@ -77,6 +77,8 @@ void CurrentSensor::initSmoother(){
 // }
 
 void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
+    _regValue = currentReg;
+    _maxValue = currentMax;
     if(currentReg >= 0.0 and currentMax > currentReg){
         double thresholds[] =           {currentReg,  currentMax};
         currentStatusType statuses[]  = {C_NORMAL,    C_REGULATED};
@@ -98,6 +100,18 @@ currentStatusType CurrentSensor::getStatus(){
         } 
     }
     return statusVal;
+}
+
+double CurrentSensor::getArmCoefficient(){
+    double sensorVal = getSensorVal();
+    if(sensorVal < _regValue){
+        return 1.0;
+    } else if(sensorVal < _maxValue) {
+        return 1.0 - (sensorVal - _regValue)/(_maxValue - _regValue);
+    } else {
+        return 0;
+    }
+
 }
 
 int CurrentSensor::snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal){

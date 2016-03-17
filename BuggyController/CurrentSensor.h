@@ -26,10 +26,13 @@ public:
     int                     snprintStatusTable(char* buffer, int charsRemaining);
     int                     snprintReadings(char* buffer, int charsRemaining);
     int                     snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal);
+    double              getArmCoefficient();
 protected:
     // int                 _sensorType;
     const static int        _statusNodes = 2;
     currentStatusNode      _statusTable[_statusNodes];
+    double                 _regValue;
+    double                 _maxValue; 
 };
 
 #endif

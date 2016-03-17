@@ -106,7 +106,8 @@ void MotorController::updateOutputs(){
         case M_FORWARD:
         case M_REVERSE:
         case M_FORWARD_BOOST:
-            _armVoltVal = (int)(255*_throttleVal);
+            // double current = _armCurrentSensor.getSensorVal();
+            _armVoltVal = (int)(255*_throttleVal*_armCurrentSensor->getArmCoefficient());
     }
     // analogWrite(_fieldVoltPin, _fieldVoltVal);
     analogWrite(_armVoltPin, _armVoltVal);

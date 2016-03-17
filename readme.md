@@ -6,6 +6,7 @@ Requirements:
 
 TODO:
 
+- implement arm coefficient based on how far current is above reg and below max
 - install mechanical battery isolator
 - change field voltage based on battery voltage
 - write functions to get sensor val string in sensors: snprintSensorVal
