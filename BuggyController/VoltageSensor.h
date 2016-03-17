@@ -24,11 +24,13 @@ public:
     virtual void    init();
     void            readInputs();
     virtual int     getRawVal();
+    virtual int     getSmoothedVal();
     virtual double  getSensorVal();
     //debugging:
     virtual int     getSensorTableSize();
     virtual int     snprintSensorNode(char* buffer, int remainingChars, sensorNode node);
     virtual int     snprintSensorTable(char* buffer, int remainingChars);
+    // virtual int     snprintSensorVal(char* buffer, int charsRemaining);
 protected:
     virtual void    initSensorTable();
     virtual void    populateSensorTable(int len, int rawVals[], double sensorVals[] );
@@ -37,18 +39,19 @@ protected:
     bool            _pinsInit;
     bool            _smootherInit;
     int             _rawVal;
+    int             _smoothedVal;
     sensorNode*     _sensorTable;
     int             _sensorTableLen;
     DigitalSmooth*  _smoother;
     // DEBUG
-    // virtual int     snprintSensorVal(char* buffer, int charsRemaining);
     virtual int     snprintReadings(char* buffer, int charsRemaining){};
 };
 
 class NormalizedVoltageSensor: public VoltageSensor {
 public:
     NormalizedVoltageSensor();
-    int             getRawVal();
+    // int             getRawVal();
+    int             getSmoothedVal(); 
     virtual void    setInputConstraints(int minimum = 0, int maximum = SYSTEM_ANALOGUE_MAX);
     int             getSensorMin();
     int             getSensorMax();
@@ -63,6 +66,8 @@ public:
     VoltageDividerSensor();
     virtual void    setSensorMultiplier(double sensorMultiplier = 1.0);
     void            initSensorTable();
+protected:
+    double          _sensorMultiplier;
 };
 
 #endif

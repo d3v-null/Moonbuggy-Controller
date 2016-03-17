@@ -18,6 +18,7 @@ VoltageSensor::VoltageSensor() {
     _pinsInit = false;
     _smootherInit = false;
     _rawVal = 0;
+    _smoothedVal = 0;
     // initSensorTable();
 };
 
@@ -68,7 +69,7 @@ void VoltageSensor::readInputs(){
     if(_pinsInit){
         _rawVal =  analogRead(_sensorPin);
         if(_smootherInit){
-            _rawVal = _smoother->smoothData( _rawVal );
+            _smoothedVal = _smoother->smoothData( _rawVal );
         }
     }
 }
@@ -89,6 +90,10 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
     return charsPrinted;
 }
 
+// int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
+
+// }
+
 int VoltageSensor::getSensorTableSize(){
     return _sensorTableLen ;
 }
@@ -100,9 +105,13 @@ int VoltageSensor::getRawVal(){
     return _rawVal;
 }
 
+int VoltageSensor::getSmoothedVal(){
+    return _smoothedVal;
+}
+
 double VoltageSensor::getSensorVal(){
     double sensorVal = 0.0;
-    int rawVal = getRawVal();
+    int rawVal = getSmoothedVal();
     int i;
     for(i=1; i < _sensorTableLen ; i++){
         if (_sensorTable[i].input >= rawVal){
@@ -123,8 +132,8 @@ void NormalizedVoltageSensor::initSensorTable(){
     setInputConstraints(0,  SYSTEM_ANALOGUE_MAX);
 }
 
-int NormalizedVoltageSensor::getRawVal(){
-    int rawVal = VoltageSensor::getRawVal();
+int NormalizedVoltageSensor::getSmoothedVal(){
+    int rawVal = VoltageSensor::getSmoothedVal();
     return constrain(
         rawVal, 
         _sensorMin, 
@@ -154,6 +163,7 @@ void VoltageDividerSensor::initSensorTable(){
 
 void VoltageDividerSensor::setSensorMultiplier(double sensorMultiplier){
     if(sensorMultiplier > 0.0){
+        _sensorMultiplier = sensorMultiplier;
         int rawVals[] =         {0,   SYSTEM_ANALOGUE_MAX};
         double sensorVals[] =   {0.0, sensorMultiplier * SYSTEM_VCC};
         int len = min(ARRAYLEN(rawVals), ARRAYLEN(sensorVals));

@@ -83,12 +83,12 @@ void setup() {
         if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_TIME);}
         throttleSensor = ThrottleSensor();
         throttleSensor.init();
-        if(DEBUG){
-            Serial.println("Throttle POST construct ");
-            start = buffer; charsPrinted = 0;
-            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-        }
+        // if(DEBUG){
+        //     Serial.println("Throttle POST construct ");
+        //     start = buffer; charsPrinted = 0;
+        //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
+        //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
+        // }
         throttleSensor.setPins(THROTTLE_PIN);
         throttleSensor.initPins();
         throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
@@ -102,12 +102,12 @@ void setup() {
 
         systemTempSensor = TemperatureSensor();
         systemTempSensor.init();
-        if(DEBUG){
-            Serial.println("Throttle POST temp construct ");
-            start = buffer; charsPrinted = 0;
-            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-        }
+        // if(DEBUG){
+        //     Serial.println("Throttle POST temp construct ");
+        //     start = buffer; charsPrinted = 0;
+        //     charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
+        //     Serial.println(buffer); delay(DEBUG_PRINT_TIME);
+        // }
         systemTempSensor.setPins(ONBOARD_TEMP_PIN);
         systemTempSensor.initPins();
         systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
@@ -119,7 +119,7 @@ void setup() {
         if(DEBUG) {Serial.println("Constructing Battery"); delay(DEBUG_PRINT_TIME);} 
 
         batterySensor = BatterySensor();
-        // batterySensor.init();
+        batterySensor.init();
         batterySensor.setPins(BATTERY_VOLT_PIN);
         batterySensor.initPins();
         batterySensor.setSensorMultiplier(BATTERY_SENSOR_MULTIPLIER);
@@ -190,6 +190,44 @@ void setup() {
     phaseStatus = P_FORWARD;
     phaseVal = HIGH;
     if(DEBUG) Serial.println("Finished Initializing"); delay(DEBUG_PRINT_TIME);
+
+    #ifdef DATA_LOGGING
+        char header[DEBUG_BUFSIZ];
+        int charsUsed = 0;
+        int charsRemaining = 0;
+        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TIME\"," );
+        #ifndef IGNORE_THROTTLE
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRV\"," );
+            #ifdef CALLIBRATE_SENSORS
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRR\"," );
+            #endif
+        #endif
+
+        #ifndef IGNORE_TEMPS
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPV\"," );
+            #ifdef CALLIBRATE_SENSORS
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPR\"," );
+            #endif
+        #endif
+
+        #ifndef IGNORE_BATTERY
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATV\"," );
+            #ifdef CALLIBRATE_SENSORS
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATR\"," );
+            #endif
+        #endif
+
+        #ifndef IGNORE_CURRENTS
+            #ifdef DEBUG_CURRENTS
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURV\",");
+                #ifdef CALLIBRATE_SENSORS
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\",");
+                #endif
+            #endif
+        #endif
+
+        Serial.println(header);
+    #endif
 }
 
 void readInputs() {
@@ -220,6 +258,8 @@ void readInputs() {
     }
 }
 
+
+/** temporarily shut down engines while not in use */
 void shutdown() {
     if(DEBUG) Serial.println("Shutting Down");
 
@@ -229,6 +269,13 @@ void shutdown() {
     for(i=0; i<MOTORS; i++){
         motorControllers[i].shutdown();
     }   
+}
+
+/* Terminate system completely until controller is reset */
+void terminate() {
+    safetyStatus = S_TERMINATING;
+    shutdown();
+    safetyStatus = S_TERMINATED;
 }
 
 /**
@@ -241,6 +288,7 @@ void safetyCheck() {
     char dispbuffer[DISP_BUFSIZ] = "";
     switch (safetyStatus) {
         case S_SAFE:
+        case S_INITIAL:
             if(!shouldTerminate and killSwitch == HIGH){
                 snprintf(dispbuffer, DISP_BUFSIZ, "FAIL KSW: ON");
                 shouldTerminate = true;
@@ -323,15 +371,15 @@ void safetyCheck() {
 
             // terminates system if necessary
             if(shouldTerminate){
-                safetyStatus = S_TERMINATING;
                 if(DEBUG) Serial.println(dispbuffer);
-                shutdown();
-                safetyStatus = S_TERMINATED;
+                terminate();
             }
             break;
         case S_TERMINATING:
             // Should not be terminating
-            shutdown();
+            if(DEBUG) Serial.println("terminating?");
+            terminate();
+            safetyStatus = S_TERMINATED;
             break;
         default:
             break;
@@ -455,6 +503,99 @@ void loop() {
     }
 }
 
+void snprintDebugInfo(char* buffer, int charsRemaining){
+    int charsPrinted = 0;
+
+    #ifdef DATA_LOGGING
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%6d", millis() % 1000000 );
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #else
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SSS:");
+        charsPrinted += snprintSafetyStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), safetyStatus);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
+        charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PHS:");
+        charsPrinted += snprintPhaseString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), phaseStatus);
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s",digitalStatusString(killSwitch));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+
+    #ifndef IGNORE_THROTTLE
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THR<"); //@%d<", (int)(&throttleSensor)%1000);
+        #endif
+        charsPrinted += throttleSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+
+    #ifndef IGNORE_TEMPS
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); //@%d<", (int)(&systemTempSensor)%1000);
+        #endif
+        charsPrinted += systemTempSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+
+    #ifndef IGNORE_BATTERY
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "BAT<"); //@%d<", (int)(&batterySensor)%1000);
+        #endif
+        charsPrinted += batterySensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+
+    #ifndef IGNORE_CURRENTS
+        #ifdef DEBUG_CURRENTS
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); //@%d<", (int)(&debugCurrentSensor)%1000);
+            #endif
+            charsPrinted += debugCurrentSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+            #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        #endif
+    #endif
+
+    #if MOTORS > 0
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", fieldVal);
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #endif
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+
+        for(int i=0; i<MOTORS; i++){
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MOT%d<", i);
+            #endif
+            charsPrinted += motorControllers[i].snprintParameters((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">", i);
+            #endif
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        }
+    #endif
+}
+
+
 char* digitalStatusString(int digitalValue){
     switch (digitalValue) {
         case HIGH:
@@ -471,6 +612,9 @@ char* digitalStatusString(int digitalValue){
 int snprintSafetyStatusString(char* buffer, int charsRemaining, safetyStatusType statusVal ){
     char* statusStr = "???";
     switch ( statusVal ) {
+        case S_INITIAL:
+          statusStr = "INI";
+          break;
         case S_SAFE:
           statusStr = "SFE";
           break;
@@ -518,158 +662,6 @@ int snprintPhaseString(char* buffer, int charsRemaining, phaseType phase ){
           break;
     }
     return snprintf(buffer, charsRemaining, statusStr);
-}
-
-// char* throttleNormString(double throttleNormalized){
-//     char buffer[50];
-//     // int percentage = (int)(100* throttleNormalized);
-//     // sprintf(buffer, "%3d", percentage);
-//     // itoa(percentage, buffer, 10);
-//     dtostrf(throttleNormalized,0,3,buffer);
-//     // sprintf(buffer, "%s",  ) ;
-//     return buffer;
-// }
-
-
-// char* tempValString(double tempVal){
-//     char buffer[50];
-//     dtostrf(tempVal, 0,3, buffer);
-//     return buffer;
-// }
-
-void snprintDebugInfo(char* buffer, int charsRemaining){
-    int charsPrinted = 0;
-
-    // throttleStatusType throttleStatus = throttleSensor.getStatus();
-    // tempStatusType systemTempStatus = systemTempSensor.getStatus();
-
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SSS:");
-    charsPrinted += snprintSafetyStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), safetyStatus);
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
-
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
-    charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
-
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PHS:");
-    charsPrinted += snprintPhaseString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), phaseStatus);
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|");
-
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s|",digitalStatusString(killSwitch));
-
-
-    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TST:%3d|",throttleSensor.getSensorTableSize());
-    // charsPrinted += throttleSensor.snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "TMN:%3d|",(throttleSensor.getSensorMin()));
-    // // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "TMX:%3d|",(throttleSensor.getSensorMax()));
-    // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "THP:%3d|",(int)(100 * throttleSensor.getSensorVal()));
-    // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "THS:%3s|",throttleStatusString(throttleStatus));
-    // charsPrinted += snprintf((buffer+charsPrinted), charsRemaining - charsPrinted, "THR:%3d|",(throttleSensor.getRawVal()));
-
-    #ifndef IGNORE_THROTTLE
-
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THR<"); //@%d<", (int)(&throttleSensor)%1000);
-        charsPrinted += throttleSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-
-    #endif
-
-    #ifndef IGNORE_TEMPS
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); //@%d<", (int)(&systemTempSensor)%1000);
-        charsPrinted += systemTempSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-
-    #endif
-
-    #ifndef IGNORE_BATTERY
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "BAT<"); //@%d<", (int)(&batterySensor)%1000);
-        charsPrinted += batterySensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-    #endif
-
-    #ifndef IGNORE_CURRENTS
-        #ifdef DEBUG_CURRENTS
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); //@%d<", (int)(&debugCurrentSensor)%1000);
-            charsPrinted += debugCurrentSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-        #endif
-    #endif
-
-    #if MOTORS > 0
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", fieldVal);
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
-
-        for(int i=0; i<MOTORS; i++){
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MOT%d<", i);
-            charsPrinted += motorControllers[i].snprintParameters((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">", i);
-        }
-    #endif
-
-    // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMS:%3s|",tempStatusString(tempStatus));
-    // charsPrinted += snprintf((start+charsPrinted), DEBUG_BUFSIZ - charsPrinted, "TMR:%3s|",systemTempSensor.);
-
-
-
-
-    // char * tempValStringVal = tempValString(systemTempVal);
-    // Serial.print(tempValStringVal);
-    // Serial.print(",");
-    // Serial.print((unsigned int)&tempValStringVal, HEX );
-    // Serial.print("|");
-    // char * tempStatusStringVal = tempStatusString(TemperatureSensor.getTempStatus());
-    // Serial.print(tempStatusStringVal);
-    // Serial.print(",");
-    // Serial.print((unsigned int)&tempStatusStringVal, HEX );
-    // Serial.print("|");
-    // Serial.println();
-
-    // char* parameters[] = {
-    //     // "SSS",
-    //     "KSW",
-    //     // "VMS",
-    //     "THS",
-    //     // "THZ",
-    //     // "THN",
-    //     // "THB",
-    //     "THV",
-    //     "TMS",
-    //     "TMV",
-    //     "TMR"
-    // };
-    // char* values[] = {
-    //     // SSS
-    //     digitalStatusString(killSwitch),
-    //     // VMS
-    //     throttleStatusString(throttleSensor.getThrottleStatus()),
-    //     throttleNormStringVal,
-    //     tempStatusStringVal
-    // };
-    // int parLen = sizeof(parameters) / sizeof(parameters[0]);
-    // int valLen = sizeof(values) / sizeof(values[0]);
-    // int minLen = min(parLen, valLen);
-    // int i;
-    // for(i=0; i<minLen; i++){
-    //     if(DEBUG) {
-    //         Serial.print('|');
-    //         Serial.print(parameters[i]);
-    //         // Serial.print((int)parameters[i][3]);
-    //         Serial.print(':');
-    //         Serial.print(values[i]);
-    //         // int j;
-    //         // for(j=0; j<4; j++){
-    //         //     Serial.print(values[i][j]);
-    //         // }
-    //         // Serial.print((int)values[i][3]);
-    //         // free(parameters[i]);
-    //         // free(values[i]);
-    //     }
-    // }
-    
-    // |KSW|VMP|THS|THR|SSS|SMD - system
-    // TPN|ASN|AVN|FVN|FPN| - per motor
-
 }
 
 

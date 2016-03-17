@@ -9,27 +9,25 @@
 
 // This determines the communication speed
 #define BAUDRATE 115200
-#define DEBUG_BUFSIZ 255
+#define DEBUG_BUFSIZ 512
 #define DISP_BUFSIZ 100
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1023
 
-#define FLOAT_WIDTH 6
-#define FLOAT_PREC 2
-
 #if DEBUG
 
-    #define MOTORS 0
+    #define MOTORS 2
 
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
-    #define IGNORE_BATTERY
+    // #define IGNORE_BATTERY
     // #define IGNORE_CURRENTS
-    #define IGNORE_MODE
+    // #define IGNORE_MODE
     // #if MOTORS < 1
     //     #define DEBUG_CURRENTS
     // #endif
     #define CALLIBRATE_SENSORS
+    // #define DATA_LOGGING
 
 #else
     
@@ -37,10 +35,12 @@
 
 #endif
 
+#define IGNORE_SYS_TEMP
+
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
 // #define BOARD 1
-#define BOARD 2
+#define BOARD 1
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -157,22 +157,39 @@
 #if BOARD == 2 /*Arduino Uno w/ modified shield */
 
     #define KILLSWITCH_PIN 8
-    #define BATTERY_VOLT_PIN A2
-    #define THROTTLE_PIN A3
-    #define ONBOARD_TEMP_PIN A4
-    #define DEBUG_CURRENT_PIN A5
+    #define BATTERY_VOLT_PIN A0
+    #define THROTTLE_PIN A0
+    #define ONBOARD_TEMP_PIN A0
+    #define DEBUG_CURRENT_PIN A0
     #define VEHICLE_MODE_PIN 40
 
     #define MOTOR_FIELD_VOLT_PIN 2
 
     #define MOTOR_FIELD_PHASE_PIN 38
 
-    #define MOTOR_0_TEMP_PIN A4
+    #define MOTOR_0_TEMP_PIN A0
     #define MOTOR_0_ARM_SENSE_PIN A0
     #define MOTOR_0_ARM_VOLT_PIN 5
 
 
 #endif
 
+#ifdef DATA_LOGGING
+    #define DEBUG_CELL_WIDTH 6
+    #define FLOAT_WIDTH 6
+    #define FLOAT_PREC 2
+    #define DEBUG_DELIMETER ","
+#else
+    #define DEBUG_CELL_WIDTH 3
+    #define FLOAT_WIDTH 4
+    #define FLOAT_PREC 2
+    #define DEBUG_DELIMETER "|"
+#endif
+
+#if DEBUG_CELL_WIDTH == 3
+    #define DEBUG_CELL_FMT_D "%3d"
+#else
+    #define DEBUG_CELL_FMT_D "%6d"
+#endif
 
 #endif

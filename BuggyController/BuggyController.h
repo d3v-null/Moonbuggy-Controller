@@ -18,9 +18,14 @@
     // #endif
 #endif
 
-typedef enum {S_SAFE, S_TERMINATING, S_TERMINATED}  safetyStatusType;
+typedef enum {S_INITIAL, S_SAFE, S_TERMINATING, S_TERMINATED}  safetyStatusType;
 typedef enum {P_FORWARD, P_REVERSE}                 phaseType;
 
 void printDebugInfo();
+
+int snprintVehicleModeString(char* buffer, int charsRemaining, motorModeType modeVal );
+int snprintPhaseString(char* buffer, int charsRemaining, phaseType phase );
+int snprintSafetyStatusString(char* buffer, int charsRemaining, safetyStatusType statusVal );
+char* digitalStatusString(int digitalValue);
 
 #endif

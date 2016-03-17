@@ -115,16 +115,27 @@ void MotorController::updateOutputs(){
 int MotorController::snprintParameters(char* buffer, int charsRemaining){
     int charsPrinted = 0;
 
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THP:%3d", (int)(100 * _throttleVal) );
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|ARV:%3d", _armVoltVal);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THV:%3d", (int)(100 * _throttleVal) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "ARV:%3d", _armVoltVal);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
-    #ifndef IGNORE_CURRENTS
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "|CUR:"); 
-        charsPrinted += _armCurrentSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "");
+    #ifndef IGNORE_TEMPS
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); 
+        charsPrinted += _temperatureSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">"); 
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER );
     #endif
 
-    return charsPrinted;
+    #ifndef IGNORE_CURRENTS
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); 
+        charsPrinted += _armCurrentSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
+
+
+    return charsPrinted - 1;
 }
 
 void MotorController::shutdown(){
