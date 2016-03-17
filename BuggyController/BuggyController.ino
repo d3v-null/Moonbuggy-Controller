@@ -197,37 +197,63 @@ void setup() {
         char header[DEBUG_BUFSIZ];
         int charsUsed = 0;
         int charsRemaining = 0;
-        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TIME\"," );
+        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TIME\"" );
+        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
         #ifndef IGNORE_THROTTLE
-            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRV\"," );
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRV\"" );
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
             #ifdef CALLIBRATE_SENSORS
-                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRR\"," );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"THRR\"" );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
             #endif
         #endif
 
         #ifndef IGNORE_TEMPS
             #ifndef IGNORE_SYS_TEMP
-                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPV\"," );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPV\"" );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                 #ifdef CALLIBRATE_SENSORS
-                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPR\"," );
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"TMPR\"" );
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                 #endif
             #endif
         #endif
 
         #ifndef IGNORE_BATTERY
-            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATV\"," );
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATV\"" );
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
             #ifdef CALLIBRATE_SENSORS
-                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATR\"," );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"BATR\"" );
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
             #endif
         #endif
 
         #ifndef IGNORE_CURRENTS
             #ifdef DEBUG_CURRENTS
-                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURV\",");
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURV\"");
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                 #ifdef CALLIBRATE_SENSORS
-                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\",");
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\"");
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                 #endif
             #endif
+        #endif
+
+        #if MOTORS > 0
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"FLDV\"");
+            charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+
+            for(int i=0; i<MOTORS; i++){
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dTH\"", i);
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dAR\"", i);
+                charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                // charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M0AR\",");
+                // #ifdef CALLIBRATE_SENSORS
+                //     charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\",");
+                // #endif
+            }
+            
         #endif
 
         Serial.println(header);
@@ -620,7 +646,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
         #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "%3d", getFieldVal() );
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, getFieldVal() );
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
         #endif

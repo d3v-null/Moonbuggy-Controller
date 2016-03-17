@@ -36,7 +36,9 @@ void VoltageSensor::initSmoother(){
 
 void VoltageSensor::init(){
     initSensorTable();
-    initSmoother();
+    #ifdef ENABLE_SMOOTHING
+        initSmoother();
+    #endif
 }
 
 VoltageSensor::~VoltageSensor(){
@@ -70,6 +72,8 @@ void VoltageSensor::readInputs(){
         _rawVal =  analogRead(_sensorPin);
         if(_smootherInit){
             _smoothedVal = _smoother->smoothData( _rawVal );
+        } else {
+            _smoothedVal = _rawVal;
         }
     }
 }
@@ -93,22 +97,18 @@ int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
 int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
     double sensorVal = getSensorVal();
     int digits = 1;
-    if(abs(sensorVal) > 1) {
-        int digits = (int)(log10(abs(sensorVal)));
-        if(sensorVal < 0){ digits++; }
-        if(digits + 1 > DEBUG_CELL_WIDTH){ 
-            return snprintf( buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)(sensorVal) ); 
-        } else {
-            int float_prec = DEBUG_CELL_WIDTH - digits - 1;
-            float_prec = constrain(float_prec, 0, FLOAT_PREC);
-            // sensorVal *= pow(10, float_prec);
-            // sensorVal ++;
-            // sensorVal /= pow(10, float_prec);
-            dtostrf(sensorVal, FLOAT_WIDTH, float_prec, buffer);
-            return DEBUG_CELL_WIDTH;
-        }
+    if(abs(sensorVal) > 1) { int digits = (int)(log10(abs(sensorVal))); }
+    if(sensorVal < 0){ digits++; }
+    if(digits + 1 >= DEBUG_CELL_WIDTH){ 
+        return snprintf( buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)(sensorVal) ); 
     } else {
-        return snprintf( buffer, charsRemaining, DEBUG_CELL_FMT_LT1, (int)(sensorVal * pow(10, DEBUG_CELL_WIDTH-1)) ); 
+        int float_prec = DEBUG_CELL_WIDTH - digits - 1;
+        float_prec = constrain(float_prec, 0, FLOAT_PREC);
+        // sensorVal *= pow(10, float_prec);
+        // sensorVal ++;
+        // sensorVal /= pow(10, float_prec);
+        dtostrf(sensorVal, FLOAT_WIDTH, float_prec, buffer);
+        return DEBUG_CELL_WIDTH;
     }
     // if(digits == 0){float_width = 0; }
 }

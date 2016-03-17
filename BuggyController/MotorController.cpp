@@ -121,20 +121,32 @@ int MotorController::snprintParameters(char* buffer, int charsRemaining){
     #endif
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_LT1, (int)(100 * _throttleVal) );
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "ARV:%3d", _armVoltVal);
+
+    #ifndef DATA_LOGGING
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "ARV:");
+    #endif
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, _armVoltVal);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
-    #ifndef IGNORE_TEMPS
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); 
+    #ifndef IGNORE_TEMPSß
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); 
+        #endif
         charsPrinted += _temperatureSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">"); 
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">"); 
+        #endif
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER );
     #endif
 
     #ifndef IGNORE_CURRENTS
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); 
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); 
+        #endif
         charsPrinted += _armCurrentSensor->snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #ifndef DATA_LOGGING
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
+        #endif
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
 
