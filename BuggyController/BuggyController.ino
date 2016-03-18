@@ -301,8 +301,7 @@ void readInputs() {
         modeSwitch = digitalRead(VEHICLE_MODE_PIN);
     #endif
 
-    int i;
-    for(i=0; i<MOTORS; i++){
+    for(int i=0; i<MOTORS; i++){
         motorControllers[i].readInputs();
     }
 }
