@@ -16,13 +16,13 @@
 
 #if DEBUG
 
-    #define MOTORS 1
+    #define MOTORS 2
 
-    #define IGNORE_THROTTLE
-    #define IGNORE_TEMPS 
-    #define IGNORE_BATTERY
-    #define IGNORE_CURRENTS
-    #define IGNORE_MODE
+    // #define IGNORE_THROTTLE
+    // #define IGNORE_TEMPS 
+    // #define IGNORE_BATTERY
+    // #define IGNORE_CURRENTS
+    // #define IGNORE_MODE
     // #if MOTORS < 1
     //     #define DEBUG_CURRENTS
     // #endif
@@ -42,7 +42,7 @@
 /* Matt, uncomment this line to get it to work on your arduinoi */
 // #define BOARD 0
 // #define BOARD 1
-#define BOARD 2
+#define BOARD 1
 
 //===========================================================================
 //============================ Threottle Settings ===========================
@@ -202,7 +202,7 @@
     #define DEBUG_CELL_FMT_LT1 ".%02d"
 #else
     #define DEBUG_CELL_FMT_D "%6d"
-    #define DEBUG_CELL_FMT_LT1 ".%04d"
+    #define DEBUG_CELL_FMT_LT1 ".%05d"
 #endif
 
 #endif

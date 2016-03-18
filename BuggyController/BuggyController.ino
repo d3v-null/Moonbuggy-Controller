@@ -248,6 +248,22 @@ void setup() {
                 charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                 charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dAR\"", i);
                 charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                #ifndef IGNORE_TEMPS
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dTV\"", i );
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                    #ifdef CALLIBRATE_SENSORS
+                        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dTR\"", i );
+                        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                    #endif
+                #endif
+                #ifndef IGNORE_CURRENTS
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dCV\"", i);
+                    charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                    #ifdef CALLIBRATE_SENSORS
+                        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M%dCR\"", i);
+                        charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
+                    #endif
+                #endif
                 // charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M0AR\",");
                 // #ifdef CALLIBRATE_SENSORS
                 //     charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\",");
