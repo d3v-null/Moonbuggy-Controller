@@ -7,19 +7,12 @@ sensorNode constructSensorNode(int input, double sensorVal){
     return node;
 }
 
-// int getSensorTableSize(sensorNode* sensorTable){
-//     return sizeof(sensorTable) / sizeof(sensorTable[0]);
-// }
-
 VoltageSensor::VoltageSensor() {
-    // Serial.println("VoltageSensor Constructor"); delay(100);
-    // _sensorPin = -1;
     _pinsSet = false;
     _pinsInit = false;
     _smootherInit = false;
     _rawVal = 0;
     _smoothedVal = 0;
-    // initSensorTable();
 };
 
 void VoltageSensor::initSensorTable(){
@@ -104,9 +97,6 @@ int VoltageSensor::snprintSensorVal(char* buffer, int charsRemaining){
     } else {
         int float_prec = DEBUG_CELL_WIDTH - digits - 1;
         float_prec = constrain(float_prec, 0, FLOAT_PREC);
-        // sensorVal *= pow(10, float_prec);
-        // sensorVal ++;
-        // sensorVal /= pow(10, float_prec);
         dtostrf(sensorVal, FLOAT_WIDTH, float_prec, buffer);
         return DEBUG_CELL_WIDTH;
     }
@@ -124,22 +114,24 @@ int VoltageSensor::snprintReadings(char* buffer, int charsRemaining){
     // #endif
     // charsPrinted += snprintSensorTable((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-    #ifndef DATA_LOGGING
-        charsPrinted += snprintValLabel((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    #endif
-    charsPrinted += snprintSensorVal((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-    #ifdef CALLIBRATE_SENSORS
+    #ifndef ENABLE_NORMALIZATION
         #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
+            charsPrinted += snprintValLabel((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
         #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
+        charsPrinted += snprintSensorVal((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-        // #ifndef DATA_LOGGING
-        //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SMR:");
-        // #endif
-        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getSmoothedVal()));
-        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        #ifdef CALLIBRATE_SENSORS
+            #ifndef DATA_LOGGING
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "RAW:");
+            #endif
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getRawVal()));
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+            // #ifndef DATA_LOGGING
+            //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "SMR:");
+            // #endif
+            // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D,(getSmoothedVal()));
+            // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        #endif
     #endif
     return charsPrinted - 1;
 }

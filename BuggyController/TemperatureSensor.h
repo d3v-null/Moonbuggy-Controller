@@ -20,6 +20,7 @@ public:
     tempStatusType  getStatus();
     void            initSensorTable();
     // debug
+    int             snprintNormalized(char* buffer, int charsRemaining);
     int             snprintValLabel(char* buffer, int charsRemaining);
     int             snprintReadings(char* buffer, int charsRemaining);
     int             snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal );
@@ -28,6 +29,9 @@ public:
 protected:
     const static int        _statusNodes = 3;
     tempStatusNode      _statusTable[_statusNodes];
+    double              _maxVal;
+    double              _regVal;
+    double              _minVal;
 };
 
 #endif

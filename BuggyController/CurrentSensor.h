@@ -23,6 +23,7 @@ public:
     void                    initSmoother();
     double              getArmCoefficient();
     // DEBUG
+    int             snprintNormalized(char* buffer, int charsRemaining);
     int                     snprintStatusNode(char* buffer, int charsRemaining, currentStatusNode node);
     int                     snprintStatusTable(char* buffer, int charsRemaining);
     int                     snprintValLabel(char* buffer, int charsRemaining);
@@ -32,8 +33,8 @@ protected:
     // int                 _sensorType;
     const static int        _statusNodes = 2;
     currentStatusNode      _statusTable[_statusNodes];
-    double                 _regValue;
-    double                 _maxValue; 
+    double                 _regVal;
+    double                 _maxVal; 
 };
 
 #endif

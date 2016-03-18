@@ -77,8 +77,8 @@ void CurrentSensor::initSmoother(){
 // }
 
 void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
-    _regValue = currentReg;
-    _maxValue = currentMax;
+    _regVal = currentReg;
+    _maxVal = currentMax;
     if(currentReg >= 0.0 and currentMax > currentReg){
         double thresholds[] =           {currentReg,  currentMax};
         currentStatusType statuses[]  = {C_NORMAL,    C_REGULATED};
@@ -104,14 +104,18 @@ currentStatusType CurrentSensor::getStatus(){
 
 double CurrentSensor::getArmCoefficient(){
     double sensorVal = getSensorVal();
-    if(sensorVal < _regValue){
+    if(sensorVal < _regVal){
         return 1.0;
-    } else if(sensorVal < _maxValue) {
-        return 1.0 - (sensorVal - _regValue)/(_maxValue - _regValue);
+    } else if(sensorVal < _maxVal) {
+        return 1.0 - (sensorVal - _regVal)/(_maxVal - _regVal);
     } else {
         return 0;
     }
 
+}
+
+int CurrentSensor::snprintNormalized(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)( 100* getSensorVal() / _maxVal ) );
 }
 
 int CurrentSensor::snprintStatusString(char* buffer, int charsRemaining, currentStatusType statusVal){
@@ -161,6 +165,10 @@ int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
 
     charsPrinted += VoltageSensor::snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #ifdef ENABLE_NORMALIZATION
+        charsPrinted += snprintNormalized((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
 
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:");

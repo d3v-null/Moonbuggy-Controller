@@ -69,6 +69,9 @@ void TemperatureSensor::initSensorTable(){
 
 void TemperatureSensor::setStatusBounds(double minTemp, double regTemp, double maxTemp){
     if(regTemp >= minTemp and maxTemp >= regTemp){
+        _minVal = minTemp;
+        _regVal = regTemp;
+        _maxVal = maxTemp;
         double thresholds[] =       {minTemp,   regTemp,  maxTemp};
         tempStatusType statuses[] = {T_COLD,    T_NORMAL, T_REGULATED};
         for(int i=0; i<_statusNodes; i++){
@@ -94,6 +97,9 @@ tempStatusType TemperatureSensor::getStatus( ){
     return statusVal;
 }
 
+int TemperatureSensor::snprintNormalized(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)( 100* (getSensorVal() - _minVal) / _maxVal ) );
+}
 
 int TemperatureSensor::snprintStatusString(char* buffer, int charsRemaining, tempStatusType statusVal ){
     char* statusStr = "???";
@@ -146,7 +152,10 @@ int TemperatureSensor::snprintReadings(char* buffer, int charsRemaining){
 
     charsPrinted += VoltageSensor::snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-
+    #ifdef ENABLE_NORMALIZATION
+        charsPrinted += snprintNormalized((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "DEG:" );
     // #endif

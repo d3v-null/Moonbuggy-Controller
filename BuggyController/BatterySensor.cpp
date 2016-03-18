@@ -6,6 +6,8 @@ BatterySensor::BatterySensor(){
 
 void BatterySensor::setStatusBounds(double minBattery, double maxBattery ){
     if( minBattery >= 0.0 and maxBattery >= minBattery ){
+        _minVal = minBattery;
+        _maxVal = maxBattery;
         double thresholds[] = {minBattery, maxBattery};
         batteryStatusType statuses[] = {B_LOW, B_NORMAL};
         for(int i=0; i<_statusNodes; i++){
@@ -32,6 +34,11 @@ batteryStatusType BatterySensor::getStatus(){
 void BatterySensor::initSmoother(){
     _smoother = new DigitalSmooth(10, 0.15);
     _smootherInit = true;
+}
+
+
+int BatterySensor::snprintNormalized(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)( 100* (getSensorVal() - _minVal) / _maxVal ) );
 }
 
 int BatterySensor::snprintStatusString(char* buffer, int charsRemaining, batteryStatusType statusVal){
@@ -85,7 +92,10 @@ int BatterySensor::snprintReadings(char* buffer, int charsRemaining){
 
     charsPrinted += VoltageSensor::snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-    
+    #ifdef ENABLE_NORMALIZATION
+        charsPrinted += snprintNormalized((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VLT:" );
     // #endif

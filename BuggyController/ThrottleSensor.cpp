@@ -36,6 +36,10 @@ void ThrottleSensor::initSmoother(){
     _smootherInit = true;
 }
 
+int ThrottleSensor::snprintNormalized(char* buffer, int charsRemaining){
+    return snprintf(buffer, charsRemaining, DEBUG_CELL_FMT_D, (int)( 100* getSensorVal() ) );
+}
+
 // void ThrottleSensor::init(){
 //     initSensorTable();
 //     initSmoother();
@@ -95,7 +99,10 @@ int ThrottleSensor::snprintReadings(char* buffer, int charsRemaining){
     
     charsPrinted += VoltageSensor::snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
-
+    #ifdef ENABLE_NORMALIZATION
+        charsPrinted += snprintNormalized((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    #endif
 
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VAL:" );

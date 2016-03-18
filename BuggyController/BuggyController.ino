@@ -264,10 +264,6 @@ void setup() {
                         charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), DEBUG_DELIMETER);
                     #endif
                 #endif
-                // charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"M0AR\",");
-                // #ifdef CALLIBRATE_SENSORS
-                //     charsUsed += snprintf((header+charsUsed), abs(DEBUG_BUFSIZ-charsUsed), "\"CURR\",");
-                // #endif
             }
             
         #endif
@@ -278,14 +274,6 @@ void setup() {
     unsigned long now = millis();
     readInputs();
     lastRead = now;
-
-    // if(DEBUG){
-    //     lastDebug = now;
-    //     char buffer[DEBUG_BUFSIZ] = "";
-    //     snprintDebugInfo(buffer, DEBUG_BUFSIZ);
-    //     Serial.println(buffer); 
-    //     delay(DEBUG_PRINT_TIME);
-    // }
 
 }
 
@@ -480,9 +468,6 @@ int getFieldVal(){
         #ifndef IGNORE_BATTERY
             currentVoltage = batterySensor.getSensorVal();
         #endif
-        
-        // if currentVoltage < targetVoltage => max
-        // if currentVoltage >= targetVoltage => max * targetVoltage / currentVoltage
         switch(vehicleMode){
             case M_FORWARD_BOOST:
                 //boost disabled
@@ -522,8 +507,6 @@ void updateOutputs(){
     for(int i=0; i<MOTORS; i++){
         motorControllers[i].updateOutputs();
     }
-    // #if ! DEBUG
-    // #endif
 }
 
 
@@ -583,7 +566,6 @@ void loop() {
             snprintDebugInfo(buffer, DEBUG_BUFSIZ);
             Serial.println(buffer); 
         }
-        // delay(DEBUG_PRINT_TIME);
     }
 }
 
@@ -612,7 +594,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
 
     #ifndef IGNORE_THROTTLE
         #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THR<"); //@%d<", (int)(&throttleSensor)%1000);
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THR<"); 
         #endif
         charsPrinted += throttleSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
         #ifndef DATA_LOGGING
@@ -624,7 +606,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     #ifndef IGNORE_TEMPS
         #ifndef IGNORE_SYS_TEMP
             #ifndef DATA_LOGGING
-                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); //@%d<", (int)(&systemTempSensor)%1000);
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "TMP<"); 
             #endif
             charsPrinted += systemTempSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
             #ifndef DATA_LOGGING
@@ -636,7 +618,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
 
     #ifndef IGNORE_BATTERY
         #ifndef DATA_LOGGING
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "BAT<"); //@%d<", (int)(&batterySensor)%1000);
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "BAT<");
         #endif
         charsPrinted += batterySensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
         #ifndef DATA_LOGGING
@@ -648,7 +630,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
     #ifndef IGNORE_CURRENTS
         #ifdef DEBUG_CURRENTS
             #ifndef DATA_LOGGING
-                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); //@%d<", (int)(&debugCurrentSensor)%1000);
+                charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "CUR<"); 2
             #endif
             charsPrinted += debugCurrentSensor.snprintReadings((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
             #ifndef DATA_LOGGING
@@ -662,7 +644,12 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "FLD<");
         #endif
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, getFieldVal() );
+        int fieldVal = getFieldVal() ;
+        #ifdef ENABLE_NORMALIZATION
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, map(fieldVal, 0, SYSTEM_PWM_MAX, 0, 100);
+        #else
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, fieldVal);
+        #endif
         #ifndef DATA_LOGGING
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), ">");
         #endif

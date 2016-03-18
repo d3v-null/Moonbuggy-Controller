@@ -18,14 +18,15 @@ public:
     batteryStatusType   getStatus();
     void                    initSmoother();
     // DEBUG
+    int             snprintNormalized(char* buffer, int charsRemaining);
     int                 snprintStatusNode(char* buffer, int charsRemaining, batteryStatusNode node);
     int                 snprintStatusTable(char* buffer, int charsRemaining);
     int                 snprintReadings(char* buffer, int charsRemaining);
     int                 snprintValLabel(char* buffer, int charsRemaining);
     int                 snprintStatusString(char* buffer, int charsRemaining, batteryStatusType statusVal);
 protected:
-    // double              _minBattery;
-    // double              _maxBattery;
+    double              _minVal;
+    double              _maxVal;
     const static int        _statusNodes = 2;
     batteryStatusNode      _statusTable[_statusNodes];
     // int                 _statusTableLen;

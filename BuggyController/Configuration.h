@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 50
+#define DEBUG_PRINT_TIME 10
 #define SENSOR_READ_TIME 10
 
 // This determines the communication speed
@@ -13,13 +13,17 @@
 #define DISP_BUFSIZ 100
 #define SYSTEM_VCC 5.0
 #define SYSTEM_ANALOGUE_MAX 1023
+#define SYSTEM_PWM_MAX 255
+
+#define ENABLE_SMOOTHING
+#define ENABLE_NORMALIZATION
 
 #if DEBUG
 
-    #define MOTORS 2
+    #define MOTORS 1
 
     // #define IGNORE_THROTTLE
-    // #define IGNORE_TEMPS 
+    #define IGNORE_TEMPS 
     // #define IGNORE_BATTERY
     // #define IGNORE_CURRENTS
     // #define IGNORE_MODE
@@ -35,7 +39,7 @@
 
 #endif
 
-// #define ENABLE_SMOOTHING
+
 
 // #define IGNORE_SYS_TEMP
 
@@ -65,13 +69,15 @@
 // The minimal temperature defines the temperature below which the motor will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.
 #define ONBOARD_MINTEMP 5.0
-#define MOTOR_0_MINTEMP 5.0
+// #define MOTOR_0_MINTEMP 5.0
+#define MOTOR_0_MINTEMP -1000.0
 #define MOTOR_1_MINTEMP 5.0
 
 // The tempterature at which the throttle should be regulated in order to bring the temperature down
 #define ONBOARD_REGTEMP 31.0
 // #define ONBOARD_REGTEMP 70.0
-#define MOTOR_0_REGTEMP 31.0
+// #define MOTOR_0_REGTEMP 31.0
+#define MOTOR_0_REGTEMP 10000.0
 // #define MOTOR_0_REGTEMP 70.0
 #define MOTOR_1_REGTEMP 31.0
 // #define MOTOR_1_REGTEMP 70.0
@@ -80,7 +86,7 @@
 // This feature exists to protect your motor from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
 #define ONBOARD_MAXTEMP 32.0
-#define MOTOR_0_MAXTEMP 32.0
+#define MOTOR_0_MAXTEMP 100000.0
 #define MOTOR_1_MAXTEMP 32.0
 // #define ONBOARD_MAXTEMP 80.0
 // #define MOTOR_0_MAXTEMP 80.0
@@ -94,13 +100,13 @@
 // #define CURRENT_SENSOR_0 1
 // #define CURRENT_SENSOR_1 1
 
-#define DEBUG_REG_CURRENT 20
-#define MOTOR_0_REG_CURRENT 20
-#define MOTOR_1_REG_CURRENT 20
+// #define DEBUG_REG_CURRENT 20
+#define MOTOR_0_REG_CURRENT 5
+#define MOTOR_1_REG_CURRENT 5
 
-#define DEBUG_MAX_CURRENT 25
-#define MOTOR_0_MAX_CURRENT 25
-#define MOTOR_1_MAX_CURRENT 25
+// #define DEBUG_MAX_CURRENT 25
+#define MOTOR_0_MAX_CURRENT 10
+#define MOTOR_1_MAX_CURRENT 10
 
 //===========================================================================
 //============================== Field Settings =============================
@@ -192,7 +198,7 @@
     #define DEBUG_DELIMETER ","
 #else
     #define DEBUG_CELL_WIDTH 3
-    #define FLOAT_WIDTH 4
+    #define FLOAT_WIDTH 3
     #define FLOAT_PREC 2
     #define DEBUG_DELIMETER "|"
 #endif

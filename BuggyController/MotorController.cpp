@@ -107,7 +107,7 @@ void MotorController::updateOutputs(){
         case M_REVERSE:
         case M_FORWARD_BOOST:
             // double current = _armCurrentSensor.getSensorVal();
-            _armVoltVal = (int)(255*_throttleVal*_armCurrentSensor->getArmCoefficient());
+            _armVoltVal = (int)(SYSTEM_PWM_MAX * _throttleVal * _armCurrentSensor->getArmCoefficient());
     }
     // analogWrite(_fieldVoltPin, _fieldVoltVal);
     analogWrite(_armVoltPin, _armVoltVal);
@@ -118,14 +118,18 @@ int MotorController::snprintParameters(char* buffer, int charsRemaining){
 
     #ifndef DATA_LOGGING
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "THV:");
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_LT1, (int)(100 * _throttleVal) );
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_LT1, (int)(100 * _throttleVal) );
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
     #ifndef DATA_LOGGING
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "ARV:");
     #endif
-    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, _armVoltVal);
+    #ifdef ENABLE_NORMALIZATION
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, map(_armVoltVal, 0, SYSTEM_PWM_MAX, 0, 100);
+    #else
+        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, _armVoltVal);
+    #endif
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
     #ifndef IGNORE_TEMPSß
