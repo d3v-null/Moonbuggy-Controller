@@ -313,8 +313,7 @@ void shutdown() {
 
     vehicleMode = M_NEUTRAL;
     // fieldVal = FIELD_OFF;
-    int i;
-    for(i=0; i<MOTORS; i++){
+    for(int i=0; i<MOTORS; i++){
         motorControllers[i].shutdown();
     }   
 }
@@ -343,8 +342,7 @@ void safetyCheck() {
             }
             #ifndef IGNORE_TEMPS
                 if(!shouldTerminate){
-                    int i;
-                    for(i=0; i<MOTORS; i++){
+                    for(int i=0; i<MOTORS; i++){
                         switch (motorControllers[i].getTempStatus()) {
                             case T_COLD:
                               snprintf(dispbuffer, DISP_BUFSIZ, "FAIL TMP MOTOR: T_COLD, %d", i);
@@ -390,8 +388,7 @@ void safetyCheck() {
                 #endif
                 #if MOTORS > 0
                     if(!shouldTerminate){
-                        int i;
-                        for(i=0; i<MOTORS; i++){
+                        for(int i=0; i<MOTORS; i++){
                             if(motorControllers[i].getArmStatus() == C_HIGH){
                                 snprintf(dispbuffer, DISP_BUFSIZ, "FAIL CUR MOTOR: C_HIGH, %d", i);
                                 shouldTerminate = true;
@@ -453,8 +450,7 @@ void setVehicleMode(motorModeType motorMode = M_NEUTRAL){
                 break;
         }
         vehicleMode = motorMode;
-        int i;
-        for(i=0; i<MOTORS; i++){
+        for(int i=0; i<MOTORS; i++){
             motorControllers[i].setMotorMode(vehicleMode);
         }
     }
@@ -551,8 +547,7 @@ void loop() {
         };
 
         // set throttles
-        int i;
-        for(i=0; i<MOTORS; i++){
+        for(int i=0; i<MOTORS; i++){
             motorControllers[i].setThrottle(throttleSensor.getSensorVal());
         }
 
@@ -579,16 +574,16 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         charsPrinted += snprintSafetyStatusString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), safetyStatus);
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
-        charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "VMD:");
+        // charsPrinted += snprintVehicleModeString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), vehicleMode);
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PHS:");
-        charsPrinted += snprintPhaseString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), phaseStatus);
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "PHS:");
+        // charsPrinted += snprintPhaseString((buffer+charsPrinted), abs(charsRemaining-charsPrinted), phaseStatus);
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s",digitalStatusString(killSwitch));
-        charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "KSW:%3s",digitalStatusString(killSwitch));
+        // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
 
     #ifndef IGNORE_THROTTLE
@@ -645,7 +640,7 @@ void snprintDebugInfo(char* buffer, int charsRemaining){
         #endif
         int fieldVal = getFieldVal() ;
         #ifdef ENABLE_NORMALIZATION
-            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, map(fieldVal, 0, SYSTEM_PWM_MAX, 0, 100);
+            charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, map(fieldVal, 0, SYSTEM_PWM_MAX, 0, 100) );
         #else
             charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, fieldVal);
         #endif

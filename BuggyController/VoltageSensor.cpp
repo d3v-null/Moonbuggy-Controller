@@ -41,8 +41,7 @@ VoltageSensor::~VoltageSensor(){
 void VoltageSensor::populateSensorTable(int len, int rawVals[], double sensorVals[] ){
     _sensorTableLen = len;
     _sensorTable = new sensorNode[len];
-    int i;
-    for(i=0; i<len; i++){
+    for(int i=0; i<len; i++){
         _sensorTable[i].input = rawVals[i];
         _sensorTable[i].sensorVal = sensorVals[i];
     }
@@ -77,10 +76,9 @@ int VoltageSensor::snprintSensorNode(char* buffer, int charsRemaining, sensorNod
 
 int VoltageSensor::snprintSensorTable(char* buffer, int charsRemaining){
     int charsPrinted = 0;
-    int i;
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "@%d", (int)(_sensorTable)%1000);
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "[");
-    for(i=0; i < _sensorTableLen ; i++){
+    for(int i=0; i < _sensorTableLen ; i++){
         charsPrinted += snprintSensorNode((buffer+charsPrinted), abs(charsRemaining-charsPrinted), _sensorTable[i]);
     }
     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "]");
@@ -154,8 +152,7 @@ int VoltageSensor::getSmoothedVal(){
 double VoltageSensor::getSensorVal(){
     double sensorVal = 0.0;
     int rawVal = getSmoothedVal();
-    int i;
-    for(i=1; i < _sensorTableLen ; i++){
+    for(int i=1; i < _sensorTableLen ; i++){
         if (_sensorTable[i].input >= rawVal){
             /* y = mx + c */
             sensorVal = _sensorTable[i-1].sensorVal + 

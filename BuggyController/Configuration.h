@@ -4,11 +4,11 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 10
+#define DEBUG_PRINT_TIME 500
 #define SENSOR_READ_TIME 10
 
 // This determines the communication speed
-#define BAUDRATE 115200
+#define BAUDRATE 38400
 #define DEBUG_BUFSIZ 512
 #define DISP_BUFSIZ 100
 #define SYSTEM_VCC 5.0
@@ -16,22 +16,24 @@
 #define SYSTEM_PWM_MAX 255
 
 #define ENABLE_SMOOTHING
-#define ENABLE_NORMALIZATION
+// #define ENABLE_NORMALIZATION
+
+#define BATTERIES 2
 
 #if DEBUG
 
-    #define MOTORS 1
+    #define MOTORS 2
 
     // #define IGNORE_THROTTLE
-    #define IGNORE_TEMPS 
+    // #define IGNORE_TEMPS 
     // #define IGNORE_BATTERY
     // #define IGNORE_CURRENTS
     // #define IGNORE_MODE
     // #if MOTORS < 1
     //     #define DEBUG_CURRENTS
     // #endif
-    // #define CALLIBRATE_SENSORS
-    #define DATA_LOGGING
+    #define CALLIBRATE_SENSORS
+    // #define DATA_LOGGING
 
 #else
     
@@ -101,12 +103,12 @@
 // #define CURRENT_SENSOR_1 1
 
 // #define DEBUG_REG_CURRENT 20
-#define MOTOR_0_REG_CURRENT 5
-#define MOTOR_1_REG_CURRENT 5
+#define MOTOR_0_REG_CURRENT 30
+#define MOTOR_1_REG_CURRENT 30
 
 // #define DEBUG_MAX_CURRENT 25
-#define MOTOR_0_MAX_CURRENT 10
-#define MOTOR_1_MAX_CURRENT 10
+#define MOTOR_0_MAX_CURRENT 35
+#define MOTOR_1_MAX_CURRENT 35
 
 //===========================================================================
 //============================== Field Settings =============================
@@ -125,10 +127,14 @@
 //===========================================================================
 //
 #define BATTERY_SENSOR_MULTIPLIER 6.0
-// #define BATTERY_MIN 22.8
-// #define BATTERY_MAX 28.4
-#define BATTERY_MIN 11.0
-#define BATTERY_MAX 14.5
+#if BATTERIES == 1
+    #define BATTERY_MIN 11.0
+    #define BATTERY_MAX 14.5
+#elif BATTERIES == 2
+    #define BATTERY_MIN 21
+    #define BATTERY_MAX 31
+#endif
+
 
 //===========================================================================
 //=============================== Pin Settings ==============================

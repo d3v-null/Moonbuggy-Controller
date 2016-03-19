@@ -92,8 +92,7 @@ void CurrentSensor::setStatusBounds(double currentReg, double currentMax){
 currentStatusType CurrentSensor::getStatus(){
     currentStatusType statusVal = C_HIGH;
     double sensorVal = getSensorVal();
-    int i;
-    for( i=0; i < _statusNodes; i++) {
+    for(int i=0; i < _statusNodes; i++) {
         if(sensorVal < _statusTable[i].threshold){
             statusVal = _statusTable[i].statusVal;
             break;
@@ -169,6 +168,10 @@ int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
         charsPrinted += snprintNormalized((buffer+charsPrinted), abs(charsRemaining-charsPrinted));
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
+
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MAX:");
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, (int)(_maxVal) );
+    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:");
