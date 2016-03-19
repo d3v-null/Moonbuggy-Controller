@@ -75,7 +75,7 @@ void setup() {
     if(DEBUG) {Serial.println("Initializing Killswitch"); delay(DEBUG_PRINT_TIME);} 
     pinMode(KILLSWITCH_PIN, INPUT);
 
-    char buffer[DEBUG_BUFSIZ];
+    char buffer[DEBUG_BUFSIZ];//
     char*start; 
     int charsPrinted;
 
@@ -85,12 +85,6 @@ void setup() {
         if(DEBUG){ Serial.println("Constructing Throttle object"); delay(DEBUG_PRINT_TIME);}
         throttleSensor = ThrottleSensor();
         throttleSensor.init();
-        if(DEBUG){
-            Serial.println("Throttle POST construct ");
-            start = buffer; charsPrinted = 0;
-            charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-            Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-        }
         throttleSensor.setPins(THROTTLE_PIN);
         throttleSensor.initPins();
         throttleSensor.setInputConstraints(THROTTLE_RAW_MIN, THROTTLE_RAW_MAX);
@@ -104,12 +98,6 @@ void setup() {
 
             systemTempSensor = TemperatureSensor();
             systemTempSensor.init();
-            if(DEBUG){
-                Serial.println("Throttle POST temp construct ");
-                start = buffer; charsPrinted = 0;
-                charsPrinted +=  throttleSensor.snprintReadings(start, DEBUG_BUFSIZ);
-                Serial.println(buffer); delay(DEBUG_PRINT_TIME);
-            }
             systemTempSensor.setPins(ONBOARD_TEMP_PIN);
             systemTempSensor.initPins();
             systemTempSensor.setStatusBounds(ONBOARD_MINTEMP, ONBOARD_REGTEMP, ONBOARD_MAXTEMP);
@@ -191,6 +179,7 @@ void setup() {
     modeSwitch = LOW;
     phaseStatus = P_FORWARD;
     phaseVal = HIGH;
+    killSwitch = LOW;
     if(DEBUG) Serial.println("Finished Initializing"); delay(DEBUG_PRINT_TIME);
 
     #ifdef DATA_LOGGING
@@ -279,8 +268,9 @@ void setup() {
 
 void readInputs() {
     // Store the value of the kill switch in killSwitch;
-    killSwitch = digitalRead(KILLSWITCH_PIN);
-
+    #ifndef IGNORE_KILLSWITCH
+        killSwitch = digitalRead(KILLSWITCH_PIN);
+    #endif
     #ifndef IGNORE_THROTTLE
         throttleSensor.readInputs();
     #endif
@@ -336,10 +326,12 @@ void safetyCheck() {
     switch (safetyStatus) {
         case S_SAFE:
         case S_INITIAL:
-            if(!shouldTerminate and killSwitch == HIGH){
-                snprintf(dispbuffer, DISP_BUFSIZ, "FAIL KSW: ON");
-                shouldTerminate = true;
-            }
+            #ifndef IGNORE_KILLSWITCH
+                if(!shouldTerminate and killSwitch == HIGH){
+                    snprintf(dispbuffer, DISP_BUFSIZ, "FAIL KSW: ON");
+                    shouldTerminate = true;
+                }
+            #endif
             #ifndef IGNORE_TEMPS
                 if(!shouldTerminate){
                     for(int i=0; i<MOTORS; i++){

@@ -24,6 +24,7 @@
 
     #define MOTORS 2
 
+    #define IGNORE_KILLSWITCH
     // #define IGNORE_THROTTLE
     // #define IGNORE_TEMPS 
     // #define IGNORE_BATTERY
@@ -126,7 +127,7 @@
 //============================= Battery Settings ============================
 //===========================================================================
 //
-#define BATTERY_SENSOR_MULTIPLIER 6.0
+#define BATTERY_SENSOR_MULTIPLIER (6.0 / .6)
 #if BATTERIES == 1
     #define BATTERY_MIN 11.0
     #define BATTERY_MAX 14.5
@@ -203,15 +204,15 @@
     #define FLOAT_PREC 2
     #define DEBUG_DELIMETER ","
 #else
-    #define DEBUG_CELL_WIDTH 3
-    #define FLOAT_WIDTH 3
+    #define DEBUG_CELL_WIDTH 4
+    #define FLOAT_WIDTH 4
     #define FLOAT_PREC 2
     #define DEBUG_DELIMETER "|"
 #endif
 
 #if DEBUG_CELL_WIDTH == 3
-    #define DEBUG_CELL_FMT_D "%3d"
-    #define DEBUG_CELL_FMT_LT1 ".%02d"
+    #define DEBUG_CELL_FMT_D "%4d"
+    #define DEBUG_CELL_FMT_LT1 ".%03d"
 #else
     #define DEBUG_CELL_FMT_D "%6d"
     #define DEBUG_CELL_FMT_LT1 ".%05d"
