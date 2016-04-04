@@ -169,9 +169,9 @@ int CurrentSensor::snprintReadings(char* buffer, int charsRemaining){
         charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
     #endif
 
-    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MAX:");
-    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, (int)(_maxVal) );
-    // charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "MAX:");
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_CELL_FMT_D, (int)(_maxVal) );
+    charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), DEBUG_DELIMETER);
 
     // #ifndef DATA_LOGGING
     //     charsPrinted += snprintf((buffer+charsPrinted), abs(charsRemaining-charsPrinted), "AMP:");

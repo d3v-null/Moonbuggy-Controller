@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #define DEBUG true
-#define DEBUG_PRINT_TIME 500
+#define DEBUG_PRINT_TIME 50
 #define SENSOR_READ_TIME 10
 
 // This determines the communication speed
@@ -88,9 +88,9 @@
 // When temperature exceeds max temp, your motor will be switched off.
 // This feature exists to protect your motor from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define ONBOARD_MAXTEMP 32.0
+#define ONBOARD_MAXTEMP 40.0
 #define MOTOR_0_MAXTEMP 100000.0
-#define MOTOR_1_MAXTEMP 32.0
+#define MOTOR_1_MAXTEMP 40.0
 // #define ONBOARD_MAXTEMP 80.0
 // #define MOTOR_0_MAXTEMP 80.0
 // #define MOTOR_1_MAXTEMP 80.0
@@ -127,12 +127,12 @@
 //============================= Battery Settings ============================
 //===========================================================================
 //
-#define BATTERY_SENSOR_MULTIPLIER (6.0 / .6)
+#define BATTERY_SENSOR_MULTIPLIER 6.0
 #if BATTERIES == 1
     #define BATTERY_MIN 11.0
     #define BATTERY_MAX 14.5
 #elif BATTERIES == 2
-    #define BATTERY_MIN 21
+    #define BATTERY_MIN 19
     #define BATTERY_MAX 31
 #endif
 

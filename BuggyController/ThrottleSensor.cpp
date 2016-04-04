@@ -31,7 +31,7 @@ throttleStatusType ThrottleSensor::getStatus(){
 }
 
 void ThrottleSensor::initSmoother(){
-    _smoother = new DigitalSmooth(20);
+    _smoother = new DigitalSmooth(7);
     _smootherInit = true;
 }
 
